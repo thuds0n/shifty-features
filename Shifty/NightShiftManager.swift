@@ -11,7 +11,8 @@ import SwiftLog
 
 class NightShiftManager {
     static let shared = NightShiftManager()
-    let client = CBBlueLightClient.shared
+    let integrations = SystemIntegration.shared
+    let client: NightShiftSystemControlling
     
     var nightShiftChangeListeners = [() -> Void]()
 
@@ -19,7 +20,7 @@ class NightShiftManager {
     var userInitiatedShift = false
     
     static var supportsNightShift: Bool {
-        CBBlueLightClient.supportsNightShift
+        SystemIntegration.shared.nightShiftSystem.supportsNightShift
     }
     
     var isNightShiftEnabled: Bool {
@@ -33,10 +34,10 @@ class NightShiftManager {
     
     var colorTemperature: Float {
         get {
-            client.blueLightReductionAmount
+            client.colorTemperature
         }
         set {
-            client.blueLightReductionAmount = newValue
+            client.colorTemperature = newValue
         }
     }
     
@@ -67,7 +68,8 @@ class NightShiftManager {
         return RuleManager.shared.disableRuleIsActive
     }
 
-    init() {
+    init(client: NightShiftSystemControlling = SystemIntegration.shared.nightShiftSystem) {
+        self.client = client
         var prevSchedule = client.schedule
         
         updateDarkMode()
@@ -79,7 +81,7 @@ class NightShiftManager {
                         ? .enteredScheduledNightShift : .exitedScheduledNightShift)
             } else {
                 self.respond(to: .scheduleChanged)
-                prevSchedule = CBBlueLightClient.shared.schedule
+                prevSchedule = self.client.schedule
             }
             
             self.updateDarkMode()
@@ -94,10 +96,9 @@ class NightShiftManager {
         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: nil) { _ in
             logw("Wake from sleep notification posted")
             
-            if CBBlueLightClient.shared.scheduledState !=
-                CBBlueLightClient.shared.isNightShiftEnabled
+            if self.client.scheduledState != self.client.isNightShiftEnabled
             {
-                self.respond(to: CBBlueLightClient.shared.scheduledState
+                self.respond(to: self.client.scheduledState
                         ? .enteredScheduledNightShift : .exitedScheduledNightShift)
             }
             
@@ -116,13 +117,13 @@ class NightShiftManager {
             switch client.schedule {
             case .off:
                 let darkModeState = isNightShiftEnabled || isDisableRuleActive || isDisabledWithTimer || userSet == .on
-                SLSSetAppearanceThemeLegacy(darkModeState)
+                integrations.appearance.legacyDarkModeEnabled = darkModeState
                 logw("Dark mode set to \(darkModeState)")
             case .solar:
-                SLSSetAppearanceThemeLegacy(scheduledState)
+                integrations.appearance.legacyDarkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             case .custom(start: _, end: _):
-                SLSSetAppearanceThemeLegacy(scheduledState)
+                integrations.appearance.legacyDarkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             }
         }
@@ -130,6 +131,10 @@ class NightShiftManager {
     
     func setNightShiftEnabled(to state: Bool) {
         respond(to: state ? .userEnabledNightShift : .userDisabledNightShift)
+    }
+
+    func previewColorTemperature(_ value: Float) {
+        client.previewColorTemperature(value)
     }
 
     func respond(to event: NightShiftEvent) {
@@ -167,9 +172,7 @@ class NightShiftManager {
         case .nightShiftDisableRuleActivated:
             client.setNightShiftEnabled(false)
             if UserDefaults.standard.bool(forKey: Keys.trueToneControl) {
-                if #available(macOS 10.14, *) {
-                    CBTrueToneClient.shared.isTrueToneEnabled = false
-                }
+                integrations.trueTone.isEnabled = false
             }
         case .nightShiftDisableRuleDeactivated:
             if !isDisabledWithTimer && !isDisableRuleActive {
@@ -184,9 +187,7 @@ class NightShiftManager {
             }
             
             if !isDisableRuleActive && UserDefaults.standard.bool(forKey: Keys.trueToneControl) {
-                if #available(macOS 10.14, *) {
-                    CBTrueToneClient.shared.isTrueToneEnabled = true
-                }
+                integrations.trueTone.isEnabled = true
             }
         case .nightShiftEnableRuleActivated:
             switch userSet {

@@ -17,13 +17,13 @@ class SliderView: NSView {
         let event = NSApplication.shared.currentEvent
         
         if event?.type == .leftMouseUp {
-            CBBlueLightClient.shared.blueLightReductionAmount = sender.floatValue / 100
+            NightShiftManager.shared.colorTemperature = sender.floatValue / 100
             
             sender.superview?.enclosingMenuItem?.menu?.cancelTracking()
             Event.sliderMoved(value: sender.floatValue).record()
             logw("Slider set to \(sender.floatValue)")
         } else {
-            CBBlueLightClient.shared.previewBlueLightReductionAmount(sender.floatValue / 100)
+            NightShiftManager.shared.previewColorTemperature(sender.floatValue / 100)
         }
     }
 

@@ -12,6 +12,7 @@ import AXSwift
 import SwiftLog
 
 class StatusMenuController: NSObject, NSMenuDelegate {
+    let integrations = SystemIntegration.shared
 
     @IBOutlet weak var statusMenu: NSMenu!
     @IBOutlet weak var powerMenuItem: NSMenuItem!
@@ -94,7 +95,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
             powerMenuItem.view = nightShiftSwitchView
             
             trueToneSwitchView = SwitchView(title: "True Tone", onSwitchToggle: { isSwitchEnabled in
-                CBTrueToneClient.shared.isTrueToneEnabled = isSwitchEnabled
+                self.integrations.trueTone.isEnabled = isSwitchEnabled
                 self.updateMenuItems()
             })
             guard let trueToneSwitchView = trueToneSwitchView else { return }
@@ -182,10 +183,10 @@ class StatusMenuController: NSObject, NSMenuDelegate {
             if let nightShiftSwitchView = nightShiftSwitchView as? SwitchView {
                 nightShiftSwitchView.switchState = NightShiftManager.shared.isNightShiftEnabled
             }
-            if CBTrueToneClient.shared.isTrueToneSupported && CBTrueToneClient.shared.isTrueToneAvailable {
+            if integrations.trueTone.isSupportedAndAvailable {
                 trueToneMenuItem.view = trueToneSwitchView
                 if let trueToneSwitchView = trueToneSwitchView as? SwitchView {
-                    trueToneSwitchView.switchState = CBTrueToneClient.shared.isTrueToneEnabled
+                    trueToneSwitchView.switchState = integrations.trueTone.isEnabled
                 }
             } else {
                 trueToneMenuItem.view = nil
@@ -295,11 +296,11 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         
         
         // MARK: toggle True Tone
-        if #available(macOS 10.14, *) {
+        if integrations.trueTone.state != .unsupported {
             trueToneMenuItem.isHidden = false
             trueToneMenuItem.isEnabled = true
             
-            switch CBTrueToneClient.shared.state {
+            switch integrations.trueTone.state {
             case .unsupported:
                 trueToneMenuItem.isHidden = true
             case .unavailable:
@@ -414,8 +415,18 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     
     
     func assignKeyboardShortcutToMenuItem(_ menuItem: NSMenuItem, userDefaultsKey: String) {
-        if let data = UserDefaults.standard.value(forKey: userDefaultsKey),
-            let shortcut = NSKeyedUnarchiver.unarchiveObject(with: data as! Data) as? MASShortcut {
+        let shortcut: MASShortcut?
+        if let data = UserDefaults.standard.value(forKey: userDefaultsKey) as? Data {
+            if #available(macOS 10.13, *) {
+                shortcut = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
+            } else {
+                shortcut = NSKeyedUnarchiver.unarchiveObject(with: data) as? MASShortcut
+            }
+        } else {
+            shortcut = nil
+        }
+
+        if let shortcut = shortcut {
             let flags = shortcut.modifierFlags
             menuItem.keyEquivalentModifierMask = flags
             menuItem.keyEquivalent = shortcut.keyCodeString.lowercased()
@@ -518,8 +529,9 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     
     
     @IBAction func toggleTrueTone(_ sender: Any) {
-        if #available(macOS 10.14, *) {
-            CBTrueToneClient.shared.isTrueToneEnabled = !CBTrueToneClient.shared.isTrueToneEnabled
+        if integrations.trueTone.state != .unsupported {
+            let enabled = integrations.trueTone.isEnabled
+            integrations.trueTone.isEnabled = !enabled
         }
     }
     

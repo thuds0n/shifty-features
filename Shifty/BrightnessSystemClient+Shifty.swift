@@ -8,8 +8,6 @@
 import Foundation
 
 extension BrightnessSystemClient {
-    static var shared = BrightnessSystemClient()
-    
     func sunriseSunsetData() -> [String: Any]? {
         if let sunriseSunsetProperty = copyProperty(forKey: "BlueLightSunSchedule" as CFString),
             let sunriseSunsetDict = sunriseSunsetProperty as? [String: Any] {

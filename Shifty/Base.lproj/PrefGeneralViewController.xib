@@ -215,7 +215,7 @@
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>
-                                <binding destination="HAt-Ds-MVV" name="value" keyPath="values.fabricCrashlyticsPermission" id="xsS-fj-boS"/>
+                                <binding destination="HAt-Ds-MVV" name="value" keyPath="values.analyticsPermission" id="xsS-fj-boS"/>
                             </connections>
                         </button>
                     </subviews>

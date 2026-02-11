@@ -7,13 +7,13 @@
 
 import Cocoa
 import MASPreferences_Shifty
-import ServiceManagement
-import AXSwift
 import SwiftLog
 
 
 @objcMembers
 class PrefGeneralViewController: NSViewController, MASPreferencesViewController {
+    let integrations = SystemIntegration.shared
+    let launcherAppIdentifier = "io.natethompson.ShiftyHelper"
 
     override var nibName: NSNib.Name {
         return "PrefGeneralViewController"
@@ -73,13 +73,9 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
         }
 
         //Hide True Tone settings on unsupported computers
-        if #available(macOS 10.14, *) {
-            trueToneStackView.isHidden = CBTrueToneClient.shared.state == .unsupported
-        } else {
-            trueToneStackView.isHidden = true
-        }
+        trueToneStackView.isHidden = integrations.trueTone.state == .unsupported
         
-        defaultDarkModeState = SLSGetAppearanceThemeLegacy()
+        defaultDarkModeState = integrations.appearance.legacyDarkModeEnabled
 
         //Fix layer-backing issues in 10.12 that cause window corners to not be rounded.
         if !ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 13, patchVersion: 0)) {
@@ -90,6 +86,9 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
     override func viewWillAppear() {
         super.viewWillAppear()
 
+        let loginItemEnabled = integrations.loginItem.isEnabled(helperBundleIdentifier: launcherAppIdentifier)
+        autoLaunchButton.state = loginItemEnabled ? .on : .off
+        UserDefaults.standard.set(loginItemEnabled, forKey: Keys.isAutoLaunchEnabled)
         updateSchedule()
     }
     
@@ -115,9 +114,21 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
     //MARK: IBActions
 
     @IBAction func setAutoLaunch(_ sender: NSButtonCell) {
-        let launcherAppIdentifier = "io.natethompson.ShiftyHelper"
-        SMLoginItemSetEnabled(launcherAppIdentifier as CFString, sender.state == .on)
-        logw("Auto launch on login set to \(sender.state.rawValue)")
+        let shouldEnable = sender.state == .on
+        let didSet = integrations.loginItem.setEnabled(shouldEnable, helperBundleIdentifier: launcherAppIdentifier)
+        let actualEnabled = didSet
+            ? shouldEnable
+            : integrations.loginItem.isEnabled(helperBundleIdentifier: launcherAppIdentifier)
+
+        sender.state = actualEnabled ? .on : .off
+        UserDefaults.standard.set(actualEnabled, forKey: Keys.isAutoLaunchEnabled)
+
+        if !didSet {
+            NSSound.beep()
+            logw("Failed to set auto launch on login state")
+        } else {
+            logw("Auto launch on login set to \(sender.state.rawValue)")
+        }
     }
 
     @IBAction func quickToggle(_ sender: NSButtonCell) {
@@ -134,10 +145,10 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
 
     @IBAction func syncDarkMode(_ sender: NSButtonCell) {
         if sender.state == .on {
-            defaultDarkModeState = SLSGetAppearanceThemeLegacy()
+            defaultDarkModeState = integrations.appearance.legacyDarkModeEnabled
             NightShiftManager.shared.updateDarkMode()
         } else {
-            SLSSetAppearanceThemeLegacy(defaultDarkModeState)
+            integrations.appearance.legacyDarkModeEnabled = defaultDarkModeState
         }
         logw("Dark mode sync preference set to \(sender.state.rawValue)")
     }
@@ -145,7 +156,7 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
     @IBAction func setWebsiteControl(_ sender: NSButtonCell) {
         logw("Website control preference clicked")
         if sender.state == .on {
-            if !UIElement.isProcessTrusted() {
+            if !integrations.permissions.isAccessibilityTrusted(prompt: false) {
                 logw("Accessibility permissions alert shown")
 
                 UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
@@ -158,13 +169,13 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
     }
     
     @IBAction func setTrueToneControl(_ sender: NSButtonCell) {
-        if #available(macOS 10.14, *) {
+        if integrations.trueTone.state != .unsupported {
             if sender.state == .on {
                 if NightShiftManager.shared.isDisableRuleActive {
-                    CBTrueToneClient.shared.isTrueToneEnabled = false
+                    integrations.trueTone.isEnabled = false
                 }
             } else {
-                CBTrueToneClient.shared.isTrueToneEnabled = true
+                integrations.trueTone.isEnabled = true
             }
             logw("True Tone control set to \(sender.state.rawValue)")
         }

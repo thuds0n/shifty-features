@@ -49,6 +49,7 @@ enum SupportedBrowserID: BundleIdentifier {
 
 class BrowserManager {
     static var shared = BrowserManager()
+    let integrations = SystemIntegration.shared
     
     private var browserObserver: Observer?
     private var observedApp: Application?
@@ -106,7 +107,7 @@ class BrowserManager {
     var permissionToAutomateCurrentApp: PrivacyConsentState {
         guard let bundleID = RuleManager.shared.currentApp?.bundleIdentifier else { return .undetermined }
 
-        return AppleEventsManager.automationConsent(forBundleIdentifier: bundleID)
+        return integrations.permissions.automationConsent(forBundleIdentifier: bundleID)
     }
     
     

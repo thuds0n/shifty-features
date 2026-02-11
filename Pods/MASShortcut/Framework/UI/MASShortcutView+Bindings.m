@@ -1,5 +1,13 @@
 #import "MASShortcutView+Bindings.h"
 
+static NSString *MASShortcutDefaultTransformerName(void)
+{
+    if (@available(macOS 10.13, *)) {
+        return NSSecureUnarchiveFromDataTransformerName;
+    }
+    return NSKeyedUnarchiveFromDataTransformerName;
+}
+
 @implementation MASShortcutView (Bindings)
 
 - (NSString*) associatedUserDefaultsKey
@@ -44,7 +52,7 @@
 
 - (void) setAssociatedUserDefaultsKey: (NSString*) newKey
 {
-    [self setAssociatedUserDefaultsKey:newKey withTransformerName:NSKeyedUnarchiveFromDataTransformerName];
+    [self setAssociatedUserDefaultsKey:newKey withTransformerName:MASShortcutDefaultTransformerName()];
 }
 
 @end

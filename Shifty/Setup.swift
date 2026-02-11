@@ -6,7 +6,6 @@
 //
 
 import Cocoa
-import AXSwift
 import SwiftLog
 
 class SetupWindowController: NSWindowController {
@@ -96,6 +95,7 @@ class WebsiteShiftingSetupViewController: NSViewController {
 
 
 class AccessibilityViewController: NSViewController {
+    let integrations = SystemIntegration.shared
     var observer: NSObjectProtocol!
     
     @IBOutlet weak var accessibilitySetupView: NSView!
@@ -111,7 +111,7 @@ class AccessibilityViewController: NSViewController {
         
         observer = DistributedNotificationCenter.default().addObserver(forName: NSNotification.Name("com.apple.accessibility.api"), object: nil, queue: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                if UIElement.isProcessTrusted() {
+                if self.integrations.permissions.isAccessibilityTrusted(prompt: false) {
                     self.showNextView()
                 }
             })
@@ -136,6 +136,12 @@ class AccessibilityViewController: NSViewController {
 
 class FinalViewController: NSViewController {
     @IBOutlet weak var analyticsPermissionButton: NSButton!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let isTelemetryEnabled = UserDefaults.standard.bool(forKey: Keys.analyticsPermission)
+        analyticsPermissionButton.state = isTelemetryEnabled ? .on : .off
+    }
     
     @IBAction func analyticsDetailClicked(_ sender: Any) {
         presentAsSheet(AnalyticsDetailViewController())
@@ -168,5 +174,3 @@ class ContainerViewController: NSViewController {
         self.view.topAnchor.constraint(equalTo: sourceViewController.view.topAnchor).isActive = true
     }
 }
-
-
