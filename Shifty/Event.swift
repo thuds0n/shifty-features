@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import AppCenterAnalytics
 
 enum Event {
     case appLaunched(preferredLocalization: String)
@@ -49,9 +48,7 @@ extension Event {
 
     func record() {
         if UserDefaults.standard.bool(forKey: Keys.analyticsPermission) {
-            #if !DEBUG
-            Analytics.trackEvent(eventName, withProperties: customAttributes)
-            #endif
+            SystemIntegration.shared.telemetry.track(eventName: eventName, properties: customAttributes)
         }
     }
 

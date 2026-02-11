@@ -8,28 +8,48 @@
 import Foundation
 import SwiftLog
 
-extension CBBlueLightClient {
-    static var shared = CBBlueLightClient()
-    
+protocol NightShiftSystemControlling: AnyObject {
+    var supportsNightShift: Bool { get }
+    var isNightShiftEnabled: Bool { get }
+    var colorTemperature: Float { get set }
+    var schedule: ScheduleType { get set }
+    var scheduledState: Bool { get }
+
+    func previewColorTemperature(_ value: Float)
+    func setNightShiftEnabled(_ newValue: Bool)
+    func setToSchedule()
+    func setStatusNotificationBlock(_ block: @escaping () -> Void)
+}
+
+final class CoreBrightnessNightShiftClient: NightShiftSystemControlling {
+    static let shared = CoreBrightnessNightShiftClient()
+
+    private let client = CBBlueLightClient()
+    private let brightnessSystemClient = BrightnessSystemClient()
+
+    var supportsNightShift: Bool {
+        CBBlueLightClient.supportsBlueLightReduction()
+    }
+
     private var blueLightStatus: Status {
         var status: Status = Status()
-        getBlueLightStatus(&status)
+        client.getBlueLightStatus(&status)
         return status
     }
 
-    var blueLightReductionAmount: Float {
+    var colorTemperature: Float {
         get {
             var strength: Float = 0
-            getStrength(&strength)
+            client.getStrength(&strength)
             return strength
         }
         set {
-            setStrength(newValue, commit: true)
+            client.setStrength(newValue, commit: true)
         }
     }
     
-    func previewBlueLightReductionAmount(_ value: Float) {
-        setStrength(value, commit: false)
+    func previewColorTemperature(_ value: Float) {
+        client.setStrength(value, commit: false)
     }
 
     var isNightShiftEnabled: Bool {
@@ -37,19 +57,13 @@ extension CBBlueLightClient {
     }
     
     func setNightShiftEnabled(_ newValue: Bool) {
-        setEnabled(newValue)
+        client.setEnabled(newValue)
         
         // Set to appropriate strength when in schedule transition by resetting schedule
         if newValue && scheduledState {
             let savedSchedule = schedule
             schedule = .off
             schedule = savedSchedule
-        }
-    }
-
-    static var supportsNightShift: Bool {
-        get {
-            CBBlueLightClient.supportsBlueLightReduction()
         }
     }
 
@@ -70,13 +84,13 @@ extension CBBlueLightClient {
         set {
             switch newValue {
             case .off:
-                setMode(0)
+                client.setMode(0)
             case .solar:
-                setMode(1)
+                client.setMode(1)
             case .custom(start: let start, end: let end):
-                setMode(2)
+                client.setMode(2)
                 var schedule = Schedule(fromTime: start, toTime: end)
-                setSchedule(&schedule)
+                client.setSchedule(&schedule)
             }
         }
     }
@@ -99,8 +113,8 @@ extension CBBlueLightClient {
                 return scheduledState
             }
         case .solar:
-            guard let sunrise = BrightnessSystemClient.shared?.sunrise,
-                let sunset = BrightnessSystemClient.shared?.sunset else {
+            guard let sunrise = brightnessSystemClient?.sunrise,
+                let sunset = brightnessSystemClient?.sunset else {
                 logw("Found nil for object BrightnessSystemClient. Returning false for scheduledState.")
                 return false
             }
@@ -127,6 +141,10 @@ extension CBBlueLightClient {
         if isNightShiftEnabled != scheduledState {
             setNightShiftEnabled(scheduledState)
         }
+    }
+
+    func setStatusNotificationBlock(_ block: @escaping () -> Void) {
+        client.setStatusNotificationBlock(block)
     }
 }
 

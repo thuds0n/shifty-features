@@ -7,21 +7,15 @@
 //
 
 import Cocoa
-import ServiceManagement
-import AppCenter
-import AppCenterAnalytics
-import AppCenterCrashes
-import LetsMove
 import MASPreferences_Shifty
-import AXSwift
 import SwiftLog
-import Sparkle
 import Intents
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     let prefs = UserDefaults.standard
+    let integrations = SystemIntegration.shared
     @IBOutlet weak var statusMenu: NSMenu!
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var statusItemClicked: (() -> Void)?
@@ -39,8 +33,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var setupWindowController: NSWindowController!
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        _ = PrefManager.shared
+
         #if !DEBUG
-        PFMoveToApplicationsFolderIfNecessary()
+        integrations.appInstall.moveToApplicationsFolderIfNecessary()
         #endif
         
         UserDefaults.standard.register(defaults: ["NSApplicationCrashOnExceptions": true])
@@ -48,17 +44,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let userDefaults = UserDefaults.standard
         
         if userDefaults.bool(forKey: Keys.analyticsPermission) {
-            #if !DEBUG
-            AppCenter.start(withAppSecret: "a0d14d8b-fd4d-4512-8901-d5cfe5249548", services:[Analytics.self, Crashes.self])
-            #endif
-        } else if userDefaults.bool(forKey: Keys.hasSetupWindowShown)
-            && userDefaults.value(forKey: Keys.lastInstalledShiftyVersion) == nil {
-            // If updated from beta version
-            userDefaults.set(true, forKey: Keys.analyticsPermission)
+            integrations.telemetry.start()
         }
         
         // Initialize Sparkle
-        SUUpdater.shared()
+        integrations.updater.initialize()
         
         
         let versionObject = Bundle.main.infoDictionary?["CFBundleShortVersionString"]
@@ -86,7 +76,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         //Show alert if accessibility permissions have been revoked while app is not running
-        if UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled) && !UIElement.isProcessTrusted() {
+        if UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled)
+            && !integrations.permissions.isAccessibilityTrusted(prompt: false)
+        {
             Event.accessibilityRevokedAlertShown.record()
             logw("Accessibility permissions revoked while app was not running")
             showAccessibilityDeniedAlert()
@@ -111,7 +103,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let hasSetupWindowShown = userDefaults.bool(forKey: Keys.hasSetupWindowShown)
 
-        if (!hasSetupWindowShown && !UIElement.isProcessTrusted()) || ProcessInfo.processInfo.environment["show_setup"] == "true" {
+        if (!hasSetupWindowShown && !integrations.permissions.isAccessibilityTrusted(prompt: false))
+            || ProcessInfo.processInfo.environment["show_setup"] == "true"
+        {
             showSetupWindow()
         }
     }
@@ -138,7 +132,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func verifySupportsNightShift() {
-        if !NightShiftManager.supportsNightShift {
+        if !integrations.nightShiftSystem.supportsNightShift {
             Event.unsupportedHardware.record()
             logw("System does not support Night Shift")
             NSApplication.shared.activate(ignoringOtherApps: true)
@@ -185,9 +179,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func observeAccessibilityApiNotifications() {
         DistributedNotificationCenter.default().addObserver(forName: NSNotification.Name("com.apple.accessibility.api"), object: nil, queue: nil) { _ in
-            logw("Accessibility permissions changed: \(UIElement.isProcessTrusted(withPrompt: false))")
+            logw("Accessibility permissions changed: \(self.integrations.permissions.isAccessibilityTrusted(prompt: false))")
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                if UIElement.isProcessTrusted(withPrompt: false) {
+                if self.integrations.permissions.isAccessibilityTrusted(prompt: false) {
                     UserDefaults.standard.set(true, forKey: Keys.isWebsiteControlEnabled)
                 } else {
                     UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)

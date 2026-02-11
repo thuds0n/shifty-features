@@ -82,15 +82,17 @@ class SetDisableTimerIntentHandler: NSObject, SetDisableTimerIntentHandling {
 
 @available(macOS 12.0, *)
 class GetTrueToneStateIntentHandler: NSObject, GetTrueToneStateIntentHandling {
+    let integrations = SystemIntegration.shared
+
     func handle(intent: GetTrueToneStateIntent) async -> GetTrueToneStateIntentResponse {
-        switch CBTrueToneClient.shared.state {
+        switch integrations.trueTone.state {
         case .unsupported:
             return GetTrueToneStateIntentResponse(code: .trueToneNotSupported, userActivity: nil)
         case .unavailable:
             return GetTrueToneStateIntentResponse(code: .trueToneNotAvailable, userActivity: nil)
         case .enabled, .disabled:
             let response = GetTrueToneStateIntentResponse(code: .success, userActivity: nil)
-            response.trueToneState = CBTrueToneClient.shared.isTrueToneEnabled as NSNumber
+            response.trueToneState = integrations.trueTone.isEnabled as NSNumber
             return response
         }
     }
@@ -98,14 +100,16 @@ class GetTrueToneStateIntentHandler: NSObject, GetTrueToneStateIntentHandling {
 
 @available(macOS 12.0, *)
 class SetTrueToneStateIntentHandler: NSObject, SetTrueToneStateIntentHandling {
+    let integrations = SystemIntegration.shared
+
     func handle(intent: SetTrueToneStateIntent) async -> SetTrueToneStateIntentResponse {
-        if CBTrueToneClient.shared.isTrueToneSupported == false {
+        if integrations.trueTone.state == .unsupported {
             return SetTrueToneStateIntentResponse(code: .trueToneNotSupported, userActivity: nil)
         }
-        if CBTrueToneClient.shared.isTrueToneAvailable == false {
+        if integrations.trueTone.state == .unavailable {
             return SetTrueToneStateIntentResponse(code: .trueToneNotAvailable, userActivity: nil)
         }
-        CBTrueToneClient.shared.isTrueToneEnabled = intent.trueToneState!.boolValue
+        integrations.trueTone.isEnabled = intent.trueToneState!.boolValue
         return SetTrueToneStateIntentResponse(code: .success, userActivity: nil)
     }
     

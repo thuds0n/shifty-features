@@ -11,8 +11,10 @@
 #import "AppleEventsManager.h"
 
 
-// !!!: Workaround for Apple bug. Their AppleEvents.h header conditionally defines errAEEventWouldRequireUserConsent and one other constant, valid only for 10.14 and higher, which means our code inside the @available() check would fail to compile. Remove this definition when they fix it.
-#if __MAC_OS_X_VERSION_MIN_REQUIRED <= __MAC_10_14
+// Fallback for older SDKs that do not define this constant.
+// Gate on MAX_ALLOWED (SDK version), not MIN_REQUIRED (deployment target),
+// to avoid redefining when building with modern AppleEvents headers.
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_14
 enum {
     errAEEventWouldRequireUserConsent = -1744, /* Determining whether this can be sent would require prompting the user, and the AppleEvent was sent with kAEDoNotPromptForPermission */
 };

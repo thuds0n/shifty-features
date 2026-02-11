@@ -11,6 +11,7 @@ import MASShortcut
 
 @objcMembers
 class PrefShortcutsViewController: NSViewController, MASPreferencesViewController {
+    let integrations = SystemIntegration.shared
 
     let statusMenuController = (NSApplication.shared.delegate as? AppDelegate)?.statusMenu.delegate as? StatusMenuController
 
@@ -58,14 +59,9 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
         }
         
         //Hide True Tone settings on unsupported computers
-        if #available(macOS 10.14, *) {
-            let trueToneUnsupported = CBTrueToneClient.shared.state == .unsupported
-            toggleTrueToneLabel.isHidden = trueToneUnsupported
-            toggleTrueToneShortcut.isHidden = trueToneUnsupported
-        } else {
-            toggleTrueToneLabel.isHidden = true
-            toggleTrueToneShortcut.isHidden = true
-        }
+        let trueToneUnsupported = integrations.trueTone.state == .unsupported
+        toggleTrueToneLabel.isHidden = trueToneUnsupported
+        toggleTrueToneShortcut.isHidden = trueToneUnsupported
 
 
         toggleNightShiftShortcut.associatedUserDefaultsKey = Keys.toggleNightShiftShortcut
@@ -181,7 +177,8 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
         }
         
         MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.toggleDarkModeShortcut, toAction: {
-            SLSSetAppearanceThemeLegacy(!SLSGetAppearanceThemeLegacy())
+            let currentState = self.integrations.appearance.legacyDarkModeEnabled
+            self.integrations.appearance.legacyDarkModeEnabled = !currentState
         })
     }
 }

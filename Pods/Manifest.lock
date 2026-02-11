@@ -1,12 +1,4 @@
 PODS:
-  - AppCenter (4.2.0):
-    - AppCenter/Analytics (= 4.2.0)
-    - AppCenter/Crashes (= 4.2.0)
-  - AppCenter/Analytics (4.2.0):
-    - AppCenter/Core
-  - AppCenter/Core (4.2.0)
-  - AppCenter/Crashes (4.2.0):
-    - AppCenter/Core
   - AXSwift (0.3.1)
   - LetsMove (1.25)
   - "MASPreferences+Shifty (1.3.4)"
@@ -16,7 +8,6 @@ PODS:
   - SwiftLog (1.0.0)
 
 DEPENDENCIES:
-  - AppCenter
   - AXSwift
   - LetsMove
   - "MASPreferences+Shifty"
@@ -27,7 +18,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AppCenter
     - AXSwift
     - LetsMove
     - "MASPreferences+Shifty"
@@ -37,7 +27,6 @@ SPEC REPOS:
     - SwiftLog
 
 SPEC CHECKSUMS:
-  AppCenter: 87ef6eefd8ade4df59e88951288587429f3dd2a5
   AXSwift: 24508e48dd103399d5e495201a8157a663029b92
   LetsMove: 7b9fe44737707d984fbd3f47af46609a9a07b461
   "MASPreferences+Shifty": 0270936bfce4fc7c1857eea8b14aaeae568b377a
@@ -46,6 +35,6 @@ SPEC CHECKSUMS:
   Sparkle: d56d028f4b0c123577825f5d1004f6140d77f90e
   SwiftLog: f6c4f9a4ade06263555ab34b2c0f72025ffcda9e
 
-PODFILE CHECKSUM: 7232af95492538b305e0ee2c8345e71ec7bf8d4a
+PODFILE CHECKSUM: b48385615e6763381347b5266fd27f3b72eade3f
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.16.2
