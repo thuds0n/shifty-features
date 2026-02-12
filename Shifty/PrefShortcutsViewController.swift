@@ -22,11 +22,7 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
     var viewIdentifier: String = "PrefShortcutsViewController"
 
     var toolbarItemImage: NSImage? {
-        if #available(macOS 11.0, *) {
-            return NSImage(systemSymbolName: "command", accessibilityDescription: nil)
-        } else {
-            return #imageLiteral(resourceName: "shortcutsIcon")
-        }
+        NSImage(systemSymbolName: "command", accessibilityDescription: nil)
     }
 
     var toolbarItemLabel: String? {
@@ -69,11 +65,6 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        //Fix layer-backing issues in 10.12 that cause window corners to not be rounded.
-        if !ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 13, patchVersion: 0)) {
-            view.wantsLayer = false
-        }
         
         //Hide True Tone settings on unsupported computers
         let trueToneUnsupported = integrations.trueTone.state == .unsupported
@@ -112,6 +103,8 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
         toggleDarkModeShortcut.setAssociatedUserDefaultsKey(
             Keys.toggleDarkModeShortcut,
             with: shortcutDefaultsTransformer)
+
+        applyLayoutPolishForShortcutRows()
     }
 
     override func viewWillDisappear() {
@@ -219,8 +212,8 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
         }
         
         MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.toggleDarkModeShortcut, toAction: {
-            let currentState = self.integrations.appearance.legacyDarkModeEnabled
-            self.integrations.appearance.legacyDarkModeEnabled = !currentState
+            let currentState = self.integrations.appearance.darkModeEnabled
+            self.integrations.appearance.darkModeEnabled = !currentState
         })
     }
 
@@ -233,17 +226,24 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
             if value is [String: Any] { continue }
             guard let data = value as? Data else { continue }
 
-            let shortcut: MASShortcut?
-            if #available(macOS 10.13, *) {
-                shortcut = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
-            } else {
-                shortcut = NSKeyedUnarchiver.unarchiveObject(with: data) as? MASShortcut
-            }
+            let shortcut = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
 
             guard let shortcut, let dictionary = transformer.reverseTransformedValue(shortcut) else {
                 continue
             }
             defaults.set(dictionary, forKey: key)
+        }
+    }
+
+    private func applyLayoutPolishForShortcutRows() {
+        // Prevent localized labels from visually colliding with shortcut recorders.
+        for subview in view.subviews {
+            guard let label = subview as? NSTextField else { continue }
+            guard !label.isEditable else { continue }
+            label.maximumNumberOfLines = 1
+            label.lineBreakMode = .byTruncatingTail
+            label.cell?.truncatesLastVisibleLine = true
+            label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
     }
 }
