@@ -11,16 +11,6 @@
 #import "AppleEventsManager.h"
 
 
-// Fallback for older SDKs that do not define this constant.
-// Gate on MAX_ALLOWED (SDK version), not MIN_REQUIRED (deployment target),
-// to avoid redefining when building with modern AppleEvents headers.
-#if __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_14
-enum {
-    errAEEventWouldRequireUserConsent = -1744, /* Determining whether this can be sent would require prompting the user, and the AppleEvent was sent with kAEDoNotPromptForPermission */
-};
-#endif
-
-
 @implementation AppleEventsManager : NSObject
 
 + (PrivacyConsentState)automationConsentForBundleIdentifier:(NSString *)bundleIdentifier {
