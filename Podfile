@@ -49,6 +49,10 @@ target 'ShiftyHelper' do
 
 end
 
+target 'ShiftyTests' do
+  inherit! :search_paths
+end
+
 post_install do |installer|
   patch_mas_shortcut_transformers(installer)
 

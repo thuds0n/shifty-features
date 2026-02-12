@@ -12,8 +12,11 @@ import ScriptingBridge
 
 class RuleManager {
     static var shared = RuleManager()
+    private let nightShiftEventHandler: (NightShiftEvent) -> Void
     
-    init() {
+    init(nightShiftEventHandler: @escaping (NightShiftEvent) -> Void = { NightShiftManager.shared.respond(to: $0) }) {
+        self.nightShiftEventHandler = nightShiftEventHandler
+
         if let appData = UserDefaults.standard.value(forKey: Keys.currentAppDisableRules) as? Data {
             do {
                 currentAppDisableRules = try PropertyListDecoder().decode(Set<AppRule>.self, from: appData)
@@ -88,6 +91,10 @@ class RuleManager {
     var runningApps: [NSRunningApplication] {
         NSWorkspace.shared.runningApplications
     }
+
+    private func sendNightShiftEvent(_ event: NightShiftEvent) {
+        nightShiftEventHandler(event)
+    }
     
     
     var isDisabledForCurrentApp: Bool {
@@ -103,7 +110,7 @@ class RuleManager {
         guard let bundleID = app.bundleIdentifier else { return }
         let rule = AppRule(bundleIdentifier: bundleID, fullScreenOnly: false)
         currentAppDisableRules.insert(rule)
-        NightShiftManager.shared.respond(to: .nightShiftDisableRuleActivated)
+        sendNightShiftEvent(.nightShiftDisableRuleActivated)
     }
     
     func removeCurrentAppDisableRule(forApp app: NSRunningApplication) {
@@ -113,7 +120,7 @@ class RuleManager {
               }) else { return }
         
         currentAppDisableRules.remove(at: index)
-        NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
+        sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
     }
     
     
@@ -140,7 +147,7 @@ class RuleManager {
         let rule = AppRule(bundleIdentifier: bundleID, fullScreenOnly: false)
         
         runningAppDisableRules.insert(rule)
-        NightShiftManager.shared.respond(to: .nightShiftDisableRuleActivated)
+        sendNightShiftEvent(.nightShiftDisableRuleActivated)
     }
     
     func removeRunningAppDisableRule(forApp app: NSRunningApplication) {
@@ -150,7 +157,7 @@ class RuleManager {
               }) else { return }
                 
         runningAppDisableRules.remove(at: index)
-        NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
+        sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
     }
     
     
@@ -165,7 +172,7 @@ class RuleManager {
         let rule = BrowserRule(type: .domain, host: domain)
         browserRules.insert(rule)
         
-        NightShiftManager.shared.respond(to: .nightShiftDisableRuleActivated)
+        sendNightShiftEvent(.nightShiftDisableRuleActivated)
     }
     
     func removeDomainDisableRule(forDomain domain: String) {
@@ -179,7 +186,7 @@ class RuleManager {
             setSubdomainRule(.none, forSubdomain: currentSubdomain)
         }
         
-        NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
+        sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
     }
     
     
@@ -214,11 +221,11 @@ class RuleManager {
         case .disabled:
             let rule = BrowserRule(type: .subdomainDisabled, host: subdomain)
             browserRules.insert(rule)
-            NightShiftManager.shared.respond(to: .nightShiftDisableRuleActivated)
+            sendNightShiftEvent(.nightShiftDisableRuleActivated)
         case .enabled:
             let rule = BrowserRule(type: .subdomainEnabled, host: subdomain)
             browserRules.insert(rule)
-            NightShiftManager.shared.respond(to: .nightShiftEnableRuleActivated)
+            sendNightShiftEvent(.nightShiftEnableRuleActivated)
         case .none:
             var rule: BrowserRule
             let prevValue = getSubdomainRule(forSubdomain: subdomain)
@@ -237,9 +244,9 @@ class RuleManager {
             
             switch prevValue {
             case .disabled:
-                NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
+                sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
             case .enabled:
-                NightShiftManager.shared.respond(to: .nightShiftEnableRuleDeactivated)
+                sendNightShiftEvent(.nightShiftEnableRuleDeactivated)
             case .none:
                 break
             }
@@ -273,11 +280,11 @@ class RuleManager {
     private func appSwitched(notification: Notification) {
         BrowserManager.shared.stopBrowserWatcher()
         if isDisabledForCurrentApp || isDisabledForRunningApp {
-            NightShiftManager.shared.respond(to: .nightShiftDisableRuleActivated)
+            sendNightShiftEvent(.nightShiftDisableRuleActivated)
         } else if BrowserManager.shared.currentAppIsSupportedBrowser {
             BrowserManager.shared.updateForSupportedBrowser()
         } else {
-            NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
+            sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
         }
     }
 
