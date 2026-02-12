@@ -12,18 +12,46 @@ import SwiftLog
 class SliderView: NSView {
 
     @IBOutlet weak var shiftSlider: NSSlider!
+    private let kelvinLabel = NSTextField(labelWithString: "")
+
+    var showsKelvinValue: Bool = false {
+        didSet {
+            kelvinLabel.isHidden = !showsKelvinValue
+            refreshKelvinLabel()
+        }
+    }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        kelvinLabel.translatesAutoresizingMaskIntoConstraints = false
+        kelvinLabel.alignment = .center
+        kelvinLabel.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
+        kelvinLabel.textColor = .secondaryLabelColor
+        kelvinLabel.isHidden = true
+        addSubview(kelvinLabel)
+
+        NSLayoutConstraint.activate([
+            kelvinLabel.centerXAnchor.constraint(equalTo: shiftSlider.centerXAnchor),
+            kelvinLabel.topAnchor.constraint(equalTo: shiftSlider.bottomAnchor, constant: 2),
+            kelvinLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -2)
+        ])
+        refreshKelvinLabel()
+    }
 
     @IBAction func shiftSliderMoved(_ sender: NSSlider) {
         let event = NSApplication.shared.currentEvent
         
         if event?.type == .leftMouseUp {
             NightShiftManager.shared.colorTemperature = sender.floatValue / 100
+            refreshKelvinLabel()
             
             sender.superview?.enclosingMenuItem?.menu?.cancelTracking()
             Event.sliderMoved(value: sender.floatValue).record()
             logw("Slider set to \(sender.floatValue)")
         } else {
             NightShiftManager.shared.previewColorTemperature(sender.floatValue / 100)
+            refreshKelvinLabel()
         }
     }
 
@@ -34,8 +62,18 @@ class SliderView: NSView {
         statusMenuController.updateMenuItems()
         
         shiftSlider.isEnabled = true
+        refreshKelvinLabel()
         Event.enableSlider.record()
         logw("Enable slider button clicked")
+    }
+
+    func refreshKelvinLabel() {
+        let strength = Double(shiftSlider.floatValue / 100)
+        // Approximation that maps menu slider strength to color temperature.
+        let minKelvin = 3200.0
+        let maxKelvin = 6500.0
+        let kelvin = Int((maxKelvin - ((maxKelvin - minKelvin) * strength)).rounded())
+        kelvinLabel.stringValue = "\(kelvin)K"
     }
 }
 

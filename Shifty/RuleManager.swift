@@ -92,6 +92,23 @@ class RuleManager {
         NSWorkspace.shared.runningApplications
     }
 
+    var currentAppDisableRuleSnapshot: [AppRule] {
+        currentAppDisableRules.sorted { $0.bundleIdentifier.localizedCaseInsensitiveCompare($1.bundleIdentifier) == .orderedAscending }
+    }
+
+    var runningAppDisableRuleSnapshot: [AppRule] {
+        runningAppDisableRules.sorted { $0.bundleIdentifier.localizedCaseInsensitiveCompare($1.bundleIdentifier) == .orderedAscending }
+    }
+
+    var browserRuleSnapshot: [BrowserRule] {
+        browserRules.sorted { lhs, rhs in
+            if lhs.type.rawValue == rhs.type.rawValue {
+                return lhs.host.localizedCaseInsensitiveCompare(rhs.host) == .orderedAscending
+            }
+            return lhs.type.rawValue < rhs.type.rawValue
+        }
+    }
+
     private func sendNightShiftEvent(_ event: NightShiftEvent) {
         nightShiftEventHandler(event)
     }

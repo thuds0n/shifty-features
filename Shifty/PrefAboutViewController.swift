@@ -19,11 +19,7 @@ class PrefAboutViewController: NSViewController, MASPreferencesViewController {
     var viewIdentifier: String = "PrefAboutViewController"
 
     var toolbarItemImage: NSImage? {
-        if #available(macOS 11.0, *) {
-            return NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil)
-        } else {
-            return #imageLiteral(resourceName: "shiftyCircleIcon")
-        }
+        NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil)
     }
 
     var toolbarItemLabel: String? {
@@ -41,11 +37,6 @@ class PrefAboutViewController: NSViewController, MASPreferencesViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        //Fix layer-backing issues in 10.12 that cause window corners to not be rounded.
-        if !ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 13, patchVersion: 0)) {
-            view.wantsLayer = false
-        }
 
         let bundleDisplayName = Bundle.main.localizedInfoDictionary?["CFBundleDisplayName"]
         nameLabel.stringValue = bundleDisplayName as? String ?? ""
@@ -91,7 +82,7 @@ class PrefAboutViewController: NSViewController, MASPreferencesViewController {
 
     @IBAction func creditsButtonClicked(_ sender: Any) {
         guard let path = Bundle.main.path(forResource: "credits", ofType: "rtfd") else { return }
-        NSWorkspace.shared.openFile(path)
+        NSWorkspace.shared.open(URL(fileURLWithPath: path))
         Event.creditsClicked.record()
     }
 }

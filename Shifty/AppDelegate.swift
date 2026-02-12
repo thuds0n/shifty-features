@@ -20,12 +20,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var statusItemClicked: (() -> Void)?
     private var suppressStatusToggleUntil: Date = .distantPast
+    private let circadianCoordinator = CircadianWorkspaceCoordinator.shared
+    private var cliCommandObserver: NSObjectProtocol?
 
     lazy var preferenceWindowController: PrefWindowController = {
         return PrefWindowController(
             viewControllers: [
                 PrefGeneralViewController(),
                 PrefShortcutsViewController(),
+                PrefWhitelistViewController(),
                 PrefAboutViewController()],
             title: NSLocalizedString("prefs.title", comment: "Preferences"))
     }()
@@ -63,7 +66,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         logw("macOS \(ProcessInfo().operatingSystemVersionString)")
         logw("Shifty Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
 
-        verifyOperatingSystemVersion()
         verifySupportsNightShift()
 
         let launcherAppIdentifier = "io.natethompson.ShiftyHelper"
@@ -94,6 +96,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         updateMenuBarIcon()
         setStatusToggle()
+        observeCLICommands()
+        circadianCoordinator.start()
         
         NightShiftManager.shared.onNightShiftChange {
             self.updateMenuBarIcon()
@@ -114,23 +118,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     
     //MARK: Called after application launch
-    
-    func verifyOperatingSystemVersion() {
-        if !ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 12, patchVersion: 4)) {
-            Event.oldMacOSVersion(version: ProcessInfo().operatingSystemVersionString).record()
-            logw("Operating system version not supported")
-            NSApplication.shared.activate(ignoringOtherApps: true)
-            
-            let alert: NSAlert = NSAlert()
-            alert.messageText = NSLocalizedString("alert.version_message", comment: "This version of macOS does not support Night Shift")
-            alert.informativeText = NSLocalizedString("alert.version_informative", comment: "Update your Mac to version 10.12.4 or higher to use Shifty.")
-            alert.alertStyle = NSAlert.Style.warning
-            alert.addButton(withTitle: NSLocalizedString("general.ok", comment: "OK"))
-            alert.runModal()
-            
-            NSApplication.shared.terminate(self)
-        }
-    }
     
     func verifySupportsNightShift() {
         if !integrations.nightShiftSystem.supportsNightShift {
@@ -253,11 +240,46 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
+        if let cliCommandObserver {
+            DistributedNotificationCenter.default().removeObserver(cliCommandObserver)
+            self.cliCommandObserver = nil
+        }
+        circadianCoordinator.stop()
         logw("App terminated")
+    }
+
+    private func observeCLICommands() {
+        cliCommandObserver = DistributedNotificationCenter.default().addObserver(
+            forName: DistributedNotificationCLIBridge.notificationName,
+            object: nil,
+            queue: nil
+        ) { [weak self] notification in
+            guard let self else { return }
+            let payload = notification.userInfo as? [String: Any] ?? [:]
+            guard
+                let commandName = payload["command"] as? String,
+                let command = CLICommand(rawValue: commandName)
+            else { return }
+
+            let response = self.circadianCoordinator.handleCLICommand(command, payload: payload)
+            guard let response else { return }
+
+            var responsePayload = response
+            responsePayload["command"] = command.rawValue
+            if let requestID = payload["requestID"] {
+                responsePayload["requestID"] = requestID
+            }
+
+            DistributedNotificationCenter.default().postNotificationName(
+                DistributedNotificationCLIBridge.responseNotificationName,
+                object: Bundle.main.bundleIdentifier,
+                userInfo: responsePayload,
+                deliverImmediately: true
+            )
+        }
     }
     
     
-    @available(macOS 12.0, *)
     func application(_ application: NSApplication, handlerFor intent: INIntent) -> Any? {
         if intent is GetNightShiftStateIntent {
             return GetNightShiftStateIntentHandler()
