@@ -49,6 +49,23 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
     @IBOutlet weak var disableCustomShortcut: MASShortcutView!
     @IBOutlet weak var toggleTrueToneShortcut: MASShortcutView!
     @IBOutlet weak var toggleDarkModeShortcut: MASShortcutView!
+
+    private var shortcutKeys: [String] {
+        [
+            Keys.toggleNightShiftShortcut,
+            Keys.incrementColorTempShortcut,
+            Keys.decrementColorTempShortcut,
+            Keys.disableAppShortcut,
+            Keys.disableDomainShortcut,
+            Keys.disableSubdomainShortcut,
+            Keys.disableHourShortcut,
+            Keys.disableCustomShortcut,
+            Keys.toggleTrueToneShortcut,
+            Keys.toggleDarkModeShortcut
+        ]
+    }
+
+    private let shortcutDefaultsTransformer = MASDictionaryTransformer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,17 +80,38 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
         toggleTrueToneLabel.isHidden = trueToneUnsupported
         toggleTrueToneShortcut.isHidden = trueToneUnsupported
 
+        migrateLegacyShortcutDefaultsIfNeeded()
 
-        toggleNightShiftShortcut.associatedUserDefaultsKey = Keys.toggleNightShiftShortcut
-        incrementColorTempShortcut.associatedUserDefaultsKey = Keys.incrementColorTempShortcut
-        decrementColorTempShortcut.associatedUserDefaultsKey = Keys.decrementColorTempShortcut
-        disableAppShortcut.associatedUserDefaultsKey = Keys.disableAppShortcut
-        disableDomainShortcut.associatedUserDefaultsKey = Keys.disableDomainShortcut
-        disableSubdomainShortcut.associatedUserDefaultsKey = Keys.disableSubdomainShortcut
-        disableHourShortcut.associatedUserDefaultsKey = Keys.disableHourShortcut
-        disableCustomShortcut.associatedUserDefaultsKey = Keys.disableCustomShortcut
-        toggleTrueToneShortcut.associatedUserDefaultsKey = Keys.toggleTrueToneShortcut
-        toggleDarkModeShortcut.associatedUserDefaultsKey = Keys.toggleDarkModeShortcut
+        toggleNightShiftShortcut.setAssociatedUserDefaultsKey(
+            Keys.toggleNightShiftShortcut,
+            with: shortcutDefaultsTransformer)
+        incrementColorTempShortcut.setAssociatedUserDefaultsKey(
+            Keys.incrementColorTempShortcut,
+            with: shortcutDefaultsTransformer)
+        decrementColorTempShortcut.setAssociatedUserDefaultsKey(
+            Keys.decrementColorTempShortcut,
+            with: shortcutDefaultsTransformer)
+        disableAppShortcut.setAssociatedUserDefaultsKey(
+            Keys.disableAppShortcut,
+            with: shortcutDefaultsTransformer)
+        disableDomainShortcut.setAssociatedUserDefaultsKey(
+            Keys.disableDomainShortcut,
+            with: shortcutDefaultsTransformer)
+        disableSubdomainShortcut.setAssociatedUserDefaultsKey(
+            Keys.disableSubdomainShortcut,
+            with: shortcutDefaultsTransformer)
+        disableHourShortcut.setAssociatedUserDefaultsKey(
+            Keys.disableHourShortcut,
+            with: shortcutDefaultsTransformer)
+        disableCustomShortcut.setAssociatedUserDefaultsKey(
+            Keys.disableCustomShortcut,
+            with: shortcutDefaultsTransformer)
+        toggleTrueToneShortcut.setAssociatedUserDefaultsKey(
+            Keys.toggleTrueToneShortcut,
+            with: shortcutDefaultsTransformer)
+        toggleDarkModeShortcut.setAssociatedUserDefaultsKey(
+            Keys.toggleDarkModeShortcut,
+            with: shortcutDefaultsTransformer)
     }
 
     override func viewWillDisappear() {
@@ -90,6 +128,10 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
     }
 
     func bindShortcuts() {
+        MASShortcutBinder.shared().bindingOptions = [
+            NSBindingOption.valueTransformer: shortcutDefaultsTransformer
+        ]
+
         MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.toggleNightShiftShortcut) {
             guard let menu = self.statusMenuController else { return }
             if !menu.powerMenuItem.isHidden && menu.powerMenuItem.isEnabled {
@@ -180,5 +222,28 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
             let currentState = self.integrations.appearance.legacyDarkModeEnabled
             self.integrations.appearance.legacyDarkModeEnabled = !currentState
         })
+    }
+
+    private func migrateLegacyShortcutDefaultsIfNeeded() {
+        let defaults = UserDefaults.standard
+        let transformer = MASDictionaryTransformer()
+
+        for key in shortcutKeys {
+            guard let value = defaults.object(forKey: key) else { continue }
+            if value is [String: Any] { continue }
+            guard let data = value as? Data else { continue }
+
+            let shortcut: MASShortcut?
+            if #available(macOS 10.13, *) {
+                shortcut = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
+            } else {
+                shortcut = NSKeyedUnarchiver.unarchiveObject(with: data) as? MASShortcut
+            }
+
+            guard let shortcut, let dictionary = transformer.reverseTransformedValue(shortcut) else {
+                continue
+            }
+            defaults.set(dictionary, forKey: key)
+        }
     }
 }

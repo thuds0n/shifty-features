@@ -3,9 +3,11 @@
 
 static NSString *MASShortcutDefaultTransformerName(void)
 {
-    if (@available(macOS 10.13, *)) {
-        return NSSecureUnarchiveFromDataTransformerName;
-    }
+    // MASShortcut instances are archived custom objects. The default secure
+    // unarchive transformer only allows Foundation top-level classes unless a
+    // custom allowed-class transformer is registered, which MASShortcut does
+    // not provide. Use keyed unarchive transformer to keep shortcut binding
+    // and persistence functional.
     return NSKeyedUnarchiveFromDataTransformerName;
 }
 

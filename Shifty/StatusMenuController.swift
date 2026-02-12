@@ -415,16 +415,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     
     
     func assignKeyboardShortcutToMenuItem(_ menuItem: NSMenuItem, userDefaultsKey: String) {
-        let shortcut: MASShortcut?
-        if let data = UserDefaults.standard.value(forKey: userDefaultsKey) as? Data {
-            if #available(macOS 10.13, *) {
-                shortcut = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
-            } else {
-                shortcut = NSKeyedUnarchiver.unarchiveObject(with: data) as? MASShortcut
-            }
-        } else {
-            shortcut = nil
-        }
+        let shortcut = shortcutFromDefaults(forKey: userDefaultsKey)
 
         if let shortcut = shortcut {
             let flags = shortcut.modifierFlags
@@ -434,6 +425,23 @@ class StatusMenuController: NSObject, NSMenuDelegate {
             menuItem.keyEquivalentModifierMask = []
             menuItem.keyEquivalent = ""
         }
+    }
+
+    private func shortcutFromDefaults(forKey key: String) -> MASShortcut? {
+        let value = UserDefaults.standard.value(forKey: key)
+
+        if let dictionary = value as? [String: Any] {
+            return MASDictionaryTransformer().transformedValue(dictionary) as? MASShortcut
+        }
+
+        if let data = value as? Data {
+            if #available(macOS 10.13, *) {
+                return try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
+            }
+            return NSKeyedUnarchiver.unarchiveObject(with: data) as? MASShortcut
+        }
+
+        return nil
     }
     
     
