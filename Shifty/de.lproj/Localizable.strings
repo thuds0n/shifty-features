@@ -45,8 +45,6 @@
 "prefs.shortcuts" = "Tastenkürzel";
 "prefs.about" = "Über";
 
-"alert.version_message" = "Diese macOS-Version unterstützt kein Night Shift";
-"alert.version_informative" = "Um Shifty verwenden zu können, den Mac auf Version 10.12.4 oder höher aktualisieren.";
 
 "alert.hardware_message" = "Dieser Mac unterstützt kein Night Shift";
 "alert.hardware_informative" = "Um Shifty verwenden zu können, ist ein aktueller Mac erforderlich.";
