@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var statusMenu: NSMenu!
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var statusItemClicked: (() -> Void)?
+    private var suppressStatusToggleUntil: Date = .distantPast
 
     lazy var preferenceWindowController: PrefWindowController = {
         return PrefWindowController(
@@ -219,6 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func statusBarButtonClicked(sender: NSStatusBarButton) {
         guard let event = NSApp.currentEvent else { return }
+        let shouldSuppressToggle = Date() < suppressStatusToggleUntil
         
         if UserDefaults.standard.bool(forKey: Keys.isStatusToggleEnabled) {
             if event.type == .rightMouseDown
@@ -228,7 +230,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 statusItem.menu = statusMenu
                 statusItem.button?.performClick(sender)
                 statusItem.menu = nil
+                suppressStatusToggleUntil = Date().addingTimeInterval(0.25)
             } else if event.type == .leftMouseUp {
+                if shouldSuppressToggle { return }
                 statusItemClicked?()
             }
         } else {
@@ -243,6 +247,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 statusItem.menu = statusMenu
                 statusItem.button?.performClick(sender)
                 statusItem.menu = nil
+                suppressStatusToggleUntil = Date().addingTimeInterval(0.25)
             }
         }
     }
