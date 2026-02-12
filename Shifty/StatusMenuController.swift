@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import MASShortcut
 import AXSwift
 import SwiftLog
 

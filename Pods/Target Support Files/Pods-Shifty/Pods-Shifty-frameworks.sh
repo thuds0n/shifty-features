@@ -177,18 +177,14 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/AXSwift/AXSwift.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/LetsMove/LetsMove.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MASPreferences+Shifty/MASPreferences_Shifty.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/MASShortcut/MASShortcut.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PublicSuffix/PublicSuffix.framework"
   install_framework "${PODS_ROOT}/Sparkle/Sparkle.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftLog/SwiftLog.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/AXSwift/AXSwift.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/LetsMove/LetsMove.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MASPreferences+Shifty/MASPreferences_Shifty.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/MASShortcut/MASShortcut.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PublicSuffix/PublicSuffix.framework"
   install_framework "${PODS_ROOT}/Sparkle/Sparkle.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftLog/SwiftLog.framework"
