@@ -45,8 +45,6 @@
 "prefs.shortcuts" = "Сокращения";
 "prefs.about" = "О программе";
 
-"alert.version_message" = "Эта версия macOS не поддерживает Night Shift";
-"alert.version_informative" = "Обновите свой Мак до версии 10.12.4 или выше для пользования Shifty.";
 
 "alert.hardware_message" = "Ваш Мак не поддерживает Night Shift";
 "alert.hardware_informative" = "Для использования Shifty нужен Мак новее.";

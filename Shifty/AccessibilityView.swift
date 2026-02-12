@@ -34,10 +34,10 @@ class AccessibilityView: NSView {
         
         var imageName: String
         
-        if let language = NSLocale.current.languageCode {
+        if let language = Locale.current.language.languageCode?.identifier {
             imageName = "accessibilityScreenshot-\(language)"
             
-            if let script = NSLocale.current.scriptCode {
+            if let script = Locale.current.language.script?.identifier {
                 imageName.append("-\(script)")
             }
         } else {

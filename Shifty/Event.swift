@@ -10,7 +10,6 @@ import Foundation
 
 enum Event {
     case appLaunched(preferredLocalization: String)
-    case oldMacOSVersion(version: String)
     case unsupportedHardware
 
     //StatusMenuController
@@ -55,7 +54,6 @@ extension Event {
     private var eventName: String {
         switch(self) {
         case .appLaunched: return "App Launched"
-        case .oldMacOSVersion(_): return "Unsupported version of macOS"
         case .unsupportedHardware: return "Unsupported Hardware"
         case .menuOpened: return "Menu opened"
         case .toggleNightShift: return "Night Shift Toggled"
@@ -85,8 +83,6 @@ extension Event {
         switch(self) {
         case .appLaunched(preferredLocalization: let localization):
             return ["Preferred localization": localization]
-        case .oldMacOSVersion(let version):
-            return ["Version": version]
         case .toggleNightShift(let state):
             return ["State": state ? "true" : "false"]
         case .disableForCurrentApp(let state):

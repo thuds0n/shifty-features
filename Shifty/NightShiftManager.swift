@@ -117,13 +117,13 @@ class NightShiftManager {
             switch client.schedule {
             case .off:
                 let darkModeState = isNightShiftEnabled || isDisableRuleActive || isDisabledWithTimer || userSet == .on
-                integrations.appearance.legacyDarkModeEnabled = darkModeState
+                integrations.appearance.darkModeEnabled = darkModeState
                 logw("Dark mode set to \(darkModeState)")
             case .solar:
-                integrations.appearance.legacyDarkModeEnabled = scheduledState
+                integrations.appearance.darkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             case .custom(start: _, end: _):
-                integrations.appearance.legacyDarkModeEnabled = scheduledState
+                integrations.appearance.darkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             }
         }
