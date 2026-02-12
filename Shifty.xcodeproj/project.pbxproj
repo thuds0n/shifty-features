@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */; };
 		41A3780894178C5C601604C7 /* Pods_ShiftyHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 060A0A5282083B67EEC6C05D /* Pods_ShiftyHelper.framework */; };
 		43041CC5207DB9FF0076E75C /* CoreBrightness.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43041CC4207DB9FF0076E75C /* CoreBrightness.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		431B7B5D2167C8740039D085 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A934002164019300AFB708 /* Security.framework */; };
@@ -58,8 +59,20 @@
 		4960957E200EB9CD00D966CA /* RuleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4960957D200EB9CD00D966CA /* RuleManager.swift */; };
 		497B2395200B576700669DDE /* NightShiftManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497B2392200B576700669DDE /* NightShiftManager.swift */; };
 		497B2396200B576700669DDE /* NotificationName+Shifty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497B2393200B576700669DDE /* NotificationName+Shifty.swift */; };
+		8E3964AC80CB6F3E95236E90 /* libPods-ShiftyTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDFE83ED0DA11EB5AA0929DD /* libPods-ShiftyTests.a */; };
+		8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F689588C441301528A1021 /* RuleManagerTests.swift */; };
 		B2FB1D17C62BCFBF11038F46 /* Pods_Shifty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0B4370CFA537EB219F40DC7 /* Pods_Shifty.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EC8A6EFAB8629448C7799EF8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 43CC9E3B1EBAB19300983528 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43CC9E421EBAB19300983528;
+			remoteInfo = Shifty;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		43C083891F19AEA600E73B84 /* CopyFiles */ = {
@@ -76,7 +89,10 @@
 
 /* Begin PBXFileReference section */
 		060A0A5282083B67EEC6C05D /* Pods_ShiftyHelper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShiftyHelper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		19F2D7EBD8F305EB6F734D06 /* Pods-Shifty.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shifty.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shifty/Pods-Shifty.debug.xcconfig"; sourceTree = "<group>"; };
+		1D7D6B6AABE9375D5C12A7FB /* Pods-ShiftyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyTests/Pods-ShiftyTests.release.xcconfig"; sourceTree = "<group>"; };
+		2821B5B49DA564B493882989 /* Pods-Shifty.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shifty.release.xcconfig"; path = "Pods/Target Support Files/Pods-Shifty/Pods-Shifty.release.xcconfig"; sourceTree = "<group>"; };
+		29F60FAC8CB1FBE7394EF114 /* Pods-ShiftyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyTests/Pods-ShiftyTests.debug.xcconfig"; sourceTree = "<group>"; };
+		3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightShiftManagerTests.swift; sourceTree = "<group>"; };
 		43041CB3207DB3440076E75C /* SkyLight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SkyLight.framework; sourceTree = "<group>"; };
 		43041CC4207DB9FF0076E75C /* CoreBrightness.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBrightness.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/PrivateFrameworks/CoreBrightness.framework; sourceTree = DEVELOPER_DIR; };
 		43099BA81FC67B5000A0720B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/CustomTimeWindow.strings"; sourceTree = "<group>"; };
@@ -181,10 +197,14 @@
 		4960957D200EB9CD00D966CA /* RuleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RuleManager.swift; path = Shifty/RuleManager.swift; sourceTree = "<group>"; };
 		497B2392200B576700669DDE /* NightShiftManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NightShiftManager.swift; path = Shifty/NightShiftManager.swift; sourceTree = "<group>"; };
 		497B2393200B576700669DDE /* NotificationName+Shifty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NotificationName+Shifty.swift"; path = "Shifty/NotificationName+Shifty.swift"; sourceTree = "<group>"; };
-		920E606CA99940B7E44F1914 /* Pods-Shifty.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shifty.release.xcconfig"; path = "Pods/Target Support Files/Pods-Shifty/Pods-Shifty.release.xcconfig"; sourceTree = "<group>"; };
+		5D74F3DCD01690542A47CF13 /* ShiftyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShiftyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D67B7B95C7943A624FA6BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A54D41077F4E0570C078BAA2 /* Pods-ShiftyHelper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyHelper.release.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyHelper/Pods-ShiftyHelper.release.xcconfig"; sourceTree = "<group>"; };
 		AD3D5B933E033908748B2739 /* Pods-ShiftyHelper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyHelper.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyHelper/Pods-ShiftyHelper.debug.xcconfig"; sourceTree = "<group>"; };
+		B6B7E4937719E29B5C367EB3 /* Pods-Shifty.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shifty.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shifty/Pods-Shifty.debug.xcconfig"; sourceTree = "<group>"; };
+		B7F689588C441301528A1021 /* RuleManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleManagerTests.swift; sourceTree = "<group>"; };
 		D0B4370CFA537EB219F40DC7 /* Pods_Shifty.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shifty.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FDFE83ED0DA11EB5AA0929DD /* libPods-ShiftyTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShiftyTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,16 +229,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CF22B744A8AE710517572F2E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8E3964AC80CB6F3E95236E90 /* libPods-ShiftyTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		2BAD531907046BA9FADE44E3 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				19F2D7EBD8F305EB6F734D06 /* Pods-Shifty.debug.xcconfig */,
-				920E606CA99940B7E44F1914 /* Pods-Shifty.release.xcconfig */,
 				AD3D5B933E033908748B2739 /* Pods-ShiftyHelper.debug.xcconfig */,
 				A54D41077F4E0570C078BAA2 /* Pods-ShiftyHelper.release.xcconfig */,
+				B6B7E4937719E29B5C367EB3 /* Pods-Shifty.debug.xcconfig */,
+				2821B5B49DA564B493882989 /* Pods-Shifty.release.xcconfig */,
+				29F60FAC8CB1FBE7394EF114 /* Pods-ShiftyTests.debug.xcconfig */,
+				1D7D6B6AABE9375D5C12A7FB /* Pods-ShiftyTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -240,6 +270,7 @@
 				434DE5CA21614984002AB147 /* SwiftLog.framework */,
 				D0B4370CFA537EB219F40DC7 /* Pods_Shifty.framework */,
 				060A0A5282083B67EEC6C05D /* Pods_ShiftyHelper.framework */,
+				FDFE83ED0DA11EB5AA0929DD /* libPods-ShiftyTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -357,6 +388,7 @@
 			children = (
 				4394DDA11EBE375300F22908 /* Shifty */,
 				43C7A4861F19F2CB00A697C0 /* ShiftyHelper */,
+				E49A6B9CF9AC8A75FD7C9792 /* ShiftyTests */,
 				43CC9E441EBAB19300983528 /* Products */,
 				433EE8501EBD8ECA007EA870 /* Frameworks */,
 				2BAD531907046BA9FADE44E3 /* Pods */,
@@ -369,8 +401,19 @@
 			children = (
 				43CC9E431EBAB19300983528 /* Shifty.app */,
 				43C7A4851F19F2CB00A697C0 /* ShiftyHelper.app */,
+				5D74F3DCD01690542A47CF13 /* ShiftyTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E49A6B9CF9AC8A75FD7C9792 /* ShiftyTests */ = {
+			isa = PBXGroup;
+			children = (
+				6D67B7B95C7943A624FA6BC6 /* Info.plist */,
+				3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */,
+				B7F689588C441301528A1021 /* RuleManagerTests.swift */,
+			);
+			path = ShiftyTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -414,6 +457,25 @@
 			productReference = 43CC9E431EBAB19300983528 /* Shifty.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7AF02580416D2FE33373C23A /* ShiftyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90A08B891E05AEF3320F7D55 /* Build configuration list for PBXNativeTarget "ShiftyTests" */;
+			buildPhases = (
+				5E11D0D615BBFCDF484EDDA0 /* [CP] Check Pods Manifest.lock */,
+				5A44CCFAD263DFC6BE2800A3 /* Sources */,
+				CF22B744A8AE710517572F2E /* Frameworks */,
+				F08574B4968F942370382A24 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1FE4290326742811E750BF4E /* PBXTargetDependency */,
+			);
+			name = ShiftyTests;
+			productName = ShiftyTests;
+			productReference = 5D74F3DCD01690542A47CF13 /* ShiftyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -451,6 +513,11 @@
 							};
 						};
 					};
+					7AF02580416D2FE33373C23A = {
+						CreatedOnToolsVersion = 13.0;
+						DevelopmentTeam = 9P4QP4BFR9;
+						TestTargetID = 43CC9E421EBAB19300983528;
+					};
 				};
 			};
 			buildConfigurationList = 43CC9E3E1EBAB19300983528 /* Build configuration list for PBXProject "Shifty" */;
@@ -472,6 +539,7 @@
 			targets = (
 				43CC9E421EBAB19300983528 /* Shifty */,
 				43C7A4841F19F2CB00A697C0 /* ShiftyHelper */,
+				7AF02580416D2FE33373C23A /* ShiftyTests */,
 			);
 		};
 /* End PBXProject section */
@@ -507,6 +575,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F08574B4968F942370382A24 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -522,6 +597,28 @@
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-Shifty-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5E11D0D615BBFCDF484EDDA0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ShiftyTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -621,7 +718,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5A44CCFAD263DFC6BE2800A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */,
+				8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1FE4290326742811E750BF4E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43CC9E421EBAB19300983528 /* Shifty */;
+			targetProxy = EC8A6EFAB8629448C7799EF8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		43965AC51FC68A19001A076D /* InfoPlist.strings */ = {
@@ -743,6 +857,30 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		28A63F7BDB7C4F7C438131C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 29F60FAC8CB1FBE7394EF114 /* Pods-ShiftyTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9P4QP4BFR9;
+				INFOPLIST_FILE = ShiftyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = io.natethompson.ShiftyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Shifty.app/Contents/MacOS/Shifty";
+				TEST_TARGET_NAME = Shifty;
+			};
+			name = Debug;
+		};
 		43C7A4921F19F2CB00A697C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AD3D5B933E033908748B2739 /* Pods-ShiftyHelper.debug.xcconfig */;
@@ -905,7 +1043,7 @@
 		};
 		43CC9E531EBAB19300983528 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 19F2D7EBD8F305EB6F734D06 /* Pods-Shifty.debug.xcconfig */;
+			baseConfigurationReference = B6B7E4937719E29B5C367EB3 /* Pods-Shifty.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Shifty/Shifty.entitlements;
@@ -915,6 +1053,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 66;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 9P4QP4BFR9;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -937,7 +1076,7 @@
 		};
 		43CC9E541EBAB19300983528 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 920E606CA99940B7E44F1914 /* Pods-Shifty.release.xcconfig */;
+			baseConfigurationReference = 2821B5B49DA564B493882989 /* Pods-Shifty.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Shifty/Shifty.entitlements;
@@ -946,6 +1085,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 66;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 9P4QP4BFR9;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -963,6 +1103,26 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Shifty/Shifty-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		AB60BB49C8BB5CCE6EDC191E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1D7D6B6AABE9375D5C12A7FB /* Pods-ShiftyTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9P4QP4BFR9;
+				INFOPLIST_FILE = ShiftyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = io.natethompson.ShiftyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Shifty.app/Contents/MacOS/Shifty";
+				TEST_TARGET_NAME = Shifty;
 			};
 			name = Release;
 		};
@@ -992,6 +1152,15 @@
 			buildConfigurations = (
 				43CC9E531EBAB19300983528 /* Debug */,
 				43CC9E541EBAB19300983528 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		90A08B891E05AEF3320F7D55 /* Build configuration list for PBXNativeTarget "ShiftyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28A63F7BDB7C4F7C438131C8 /* Debug */,
+				AB60BB49C8BB5CCE6EDC191E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

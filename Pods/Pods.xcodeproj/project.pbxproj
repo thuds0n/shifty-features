@@ -77,7 +77,7 @@
 		8BD057F8D8332828EC7CA37BA64B63F9 /* MASLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A3EE354F74649E285B28FA7B496CB45 /* MASLocalization.m */; };
 		8F8F60F07C8320D28CA0EB2D70F963AD /* MASPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D569462E3EF51D2E86E5A66B420842 /* MASPreferencesWindowController.m */; };
 		91C61ECF86F9AB16F0C387631472C8FC /* MASShortcutView+Bindings.m in Sources */ = {isa = PBXBuildFile; fileRef = FA95CF0FA9BD8E215131BB95ADA5D873 /* MASShortcutView+Bindings.m */; };
-		9231A94DB6B8AAFCFF73EE049C4F172A /* Pods-ShiftyHelper-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B032AA1928EFFB1A0106CDB87232539D /* Pods-ShiftyHelper-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9231A94DB6B8AAFCFF73EE049C4F172A /* Pods-ShiftyHelper-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E14B808CEE9E9C1C24DE0AF1B47A9A00 /* Pods-ShiftyHelper-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		92AD471C377AF0F69ED194C456E65376 /* PublicSuffix-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A1B2DFC12FB1F4A8ED493865DC509E9B /* PublicSuffix-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		94317703D7C524F18169A1C4E284408C /* es.lproj in Resources */ = {isa = PBXBuildFile; fileRef = AC09A341E4FCC81954B58EDF43F9C839 /* es.lproj */; };
 		946E43BED210484D78C82AF659CF40F2 /* MASShortcut-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D47C9C02D1055E16AAB9F0BA9F909CF4 /* MASShortcut-dummy.m */; };
@@ -85,12 +85,13 @@
 		98DE8D7D0F884D35B74E66BFB6280393 /* da.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 21AC08ECFF2CD69FE901780C414B3D30 /* da.lproj */; };
 		991E84ED68FB489C5B3D5F9002AC5AB3 /* ca.lproj in Resources */ = {isa = PBXBuildFile; fileRef = F11AD6CB355A5D58955181F1997F08FE /* ca.lproj */; };
 		9A19F76A2E3DB1441CC3D6BFAD3C723A /* LetsMove.h in Headers */ = {isa = PBXBuildFile; fileRef = 989EDD347622F51BC7E80826C0E374C6 /* LetsMove.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9B6D791C027DBD6C3D6A6D6DDCDC8D5F /* Pods-ShiftyTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4219E98D4A7734FC4D85DDF0E65AEDA7 /* Pods-ShiftyTests-dummy.m */; };
 		9C3AD6210BE08D94B1A2558E4A135B63 /* MASPreferencesViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 5182453F78DB33396A62F7514CF83141 /* MASPreferencesViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C6C768319928310920F3BE1BA8F3CA4 /* pl.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 7ECAF6285838C82BFBE36044A3ADE36B /* pl.lproj */; };
 		9F368ECE6C1193F19507136970B8B036 /* de.lproj in Resources */ = {isa = PBXBuildFile; fileRef = BB8B5322AEDD1256A0134E7ECF966823 /* de.lproj */; };
 		9F94258506BCA773B20DE145B0E0DBE5 /* SwiftLog-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A37F792ECA06F12421C5202B6A2A90F0 /* SwiftLog-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A0B29293E260F5BC48557A2E41874B22 /* MASShortcut-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5C6C88CC286A37A98615089161AC6B /* MASShortcut-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A22544A67E413956CAEEB022F9D2857E /* Pods-Shifty-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = DE2273CE2EC2C2FFA5D9911F3810F269 /* Pods-Shifty-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A22544A67E413956CAEEB022F9D2857E /* Pods-Shifty-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 9758E3B647F1AC532F7CA376B8F88551 /* Pods-Shifty-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A5370DB478BFBD9D714B980638D67376 /* UIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC13CE41F9584209D300CEDBCDD0837A /* UIElement.swift */; };
 		A8CC726BE86BFA8684251A67BF504003 /* de.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 429B5C65AF216BE219AF17152CDE48A2 /* de.lproj */; };
 		AC94FB04851050FE5AD358EBD381E35F /* SwiftLog-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F0A5A5D49B38E86DBACA194715E77B /* SwiftLog-dummy.m */; };
@@ -103,7 +104,7 @@
 		C033B64263A467EE2E7A9687E0A3FF8F /* el.lproj in Resources */ = {isa = PBXBuildFile; fileRef = CBBD58B10C05C5CD5166F4E6B1A009D8 /* el.lproj */; };
 		C32207A1C17907B7F790DA5ED31D9651 /* zh-Hans.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 11585816F1C6C8A2D910790DAC2E9E52 /* zh-Hans.lproj */; };
 		C87DD80C58FF1BF388AA69860C887D9B /* MASShortcutBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = BE3276E61F3EC083514944D69A9E240A /* MASShortcutBinder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C8870774D2227D2C320D28D47E11F2CB /* Pods-Shifty-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 114EBB45A16700569AE23E231B94ED8F /* Pods-Shifty-dummy.m */; };
+		C8870774D2227D2C320D28D47E11F2CB /* Pods-Shifty-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2947B5B4BDF1C5F363534E3802316BC5 /* Pods-Shifty-dummy.m */; };
 		CD60B25C2492647DC04E2AEEB685D22C /* mk.lproj in Resources */ = {isa = PBXBuildFile; fileRef = A113C0F4E37C1738BB36C9000D265774 /* mk.lproj */; };
 		CEF548DE094ED58C9D17CA0BDE3EB53C /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA697C9820E1D3224F2F8880B54608E7 /* AppKit.framework */; };
 		CF5D98359F8F9887B51AE43B3B7F6459 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 562A3CE32C5BEF6F3E137C948E969B4A /* Cocoa.framework */; };
@@ -115,7 +116,7 @@
 		DF876DEA9D03208792A140EA79105DB2 /* pt.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 54E368FAF381DF0CF994C6A58EC276D4 /* pt.lproj */; };
 		E67ECA555010186A24EE0F537774366C /* AXSwift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 050B091B48DEA933106DC81F0E201CD3 /* AXSwift-dummy.m */; };
 		E6C51B7C26488C06E9EDB14241EF8E13 /* MASShortcutMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 43FCA0ABB1DDE2F570316A895C82F88C /* MASShortcutMonitor.m */; };
-		EA4E07825BF76AB68E5E223A2BE20296 /* Pods-ShiftyHelper-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FBA1FD4F080504F178217820177ABEC3 /* Pods-ShiftyHelper-dummy.m */; };
+		EA4E07825BF76AB68E5E223A2BE20296 /* Pods-ShiftyHelper-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD17B1809108EFF5B275C1357BFAB7 /* Pods-ShiftyHelper-dummy.m */; };
 		EF44B4E6D7CB3219FA148AA27AFFC753 /* zh_TW.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 1F10E9B1159138E970DBED43E9EF78E7 /* zh_TW.lproj */; };
 		F151E5AA0DF79034BE21B2501D4B17AF /* PublicSuffix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB8571BFF82F0E36130919170E8C678 /* PublicSuffix.swift */; };
 		F44BC4A87C5E1E69D8AADBBA898A69C3 /* MASKeyMasks.h in Headers */ = {isa = PBXBuildFile; fileRef = 7AA5B9045F9C6FED3C00A38992EBDBDE /* MASKeyMasks.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -192,10 +193,10 @@
 
 /* Begin PBXFileReference section */
 		00573E79681355464DB300DCBD947F94 /* MASPreferences+Shifty */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "MASPreferences+Shifty"; path = MASPreferences_Shifty.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		01072DDDBD909790E4B95E480C63FE1F /* Pods-Shifty-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Shifty-frameworks.sh"; sourceTree = "<group>"; };
 		01F0A5A5D49B38E86DBACA194715E77B /* SwiftLog-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftLog-dummy.m"; sourceTree = "<group>"; };
 		050B091B48DEA933106DC81F0E201CD3 /* AXSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AXSwift-dummy.m"; sourceTree = "<group>"; };
 		0579C46D157108418D2AF44B4C9B5315 /* SUErrors.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUErrors.h; path = Sparkle.framework/Versions/A/Headers/SUErrors.h; sourceTree = "<group>"; };
-		062E9F6D980364C7E87669A6679DE99B /* Pods-Shifty.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Shifty.debug.xcconfig"; sourceTree = "<group>"; };
 		063D2F010AF86647C5AED728603654E1 /* LetsMove-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "LetsMove-dummy.m"; sourceTree = "<group>"; };
 		06FF9C41B49099FB7405A8535BED071E /* ru.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = ru.lproj; sourceTree = "<group>"; };
 		07E1F194391AAE4447695C1929BD841D /* MASShortcut-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MASShortcut-Info.plist"; sourceTree = "<group>"; };
@@ -205,7 +206,7 @@
 		0C0644479613DD542B53BA0F0F2568AC /* ja.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = ja.lproj; sourceTree = "<group>"; };
 		0CDDBFF5FB66BBAF5938748F458A3464 /* MASShortcutValidator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASShortcutValidator.m; path = Framework/Model/MASShortcutValidator.m; sourceTree = "<group>"; };
 		0D039398AF52A1CD2FDFD3CBE62C0E2C /* MASPreferencesWindowController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASPreferencesWindowController.h; path = Framework/MASPreferencesWindowController.h; sourceTree = "<group>"; };
-		114EBB45A16700569AE23E231B94ED8F /* Pods-Shifty-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Shifty-dummy.m"; sourceTree = "<group>"; };
+		0FF799FB1EB95EF5644E0C10B64C2E0C /* Pods-ShiftyHelper-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-ShiftyHelper-acknowledgements.markdown"; sourceTree = "<group>"; };
 		11585816F1C6C8A2D910790DAC2E9E52 /* zh-Hans.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hans.lproj"; path = "Resources/zh-Hans.lproj"; sourceTree = "<group>"; };
 		13A1BB324E622734DA833738AF87FE7B /* MASShortcut.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASShortcut.m; path = Framework/Model/MASShortcut.m; sourceTree = "<group>"; };
 		154F26C216E08589D20D803C61D941C6 /* pl.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = pl.lproj; path = Resources/pl.lproj; sourceTree = "<group>"; };
@@ -224,7 +225,9 @@
 		230F8208BE63C052A548A7D41A1158B2 /* MASShortcut-MASShortcut */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "MASShortcut-MASShortcut"; path = MASShortcut.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A8810424438A12E7ADBFB3E068C658 /* MASShortcut */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MASShortcut; path = MASShortcut.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		26B246B9AF29062D158D5777C692E632 /* hu.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = hu.lproj; sourceTree = "<group>"; };
+		27A529BAC351787204968822530D9D17 /* Pods-ShiftyTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-ShiftyTests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		27C30E00A2D13CBD94F6D7CFDDAC4648 /* sr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = sr.lproj; sourceTree = "<group>"; };
+		2947B5B4BDF1C5F363534E3802316BC5 /* Pods-Shifty-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Shifty-dummy.m"; sourceTree = "<group>"; };
 		2A3EE354F74649E285B28FA7B496CB45 /* MASLocalization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASLocalization.m; path = Framework/UI/MASLocalization.m; sourceTree = "<group>"; };
 		2B3917774CDC8AE9E6502145CBABEFB1 /* MASShortcut.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MASShortcut.debug.xcconfig; sourceTree = "<group>"; };
 		2CA5BDA4951EF465BA1DBEBB8044BB26 /* LetsMove.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = LetsMove.debug.xcconfig; sourceTree = "<group>"; };
@@ -236,12 +239,17 @@
 		31E81267B9A7102E50410AF2D902E710 /* SPUDownloader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SPUDownloader.h; path = Sparkle.framework/Versions/A/Headers/SPUDownloader.h; sourceTree = "<group>"; };
 		32FEB973A89E5C8A9F569689549D13D4 /* SwiftLog-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftLog-prefix.pch"; sourceTree = "<group>"; };
 		3415A36FC2E6B598A7E022C8D6560B28 /* SPUDownloaderProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SPUDownloaderProtocol.h; path = Sparkle.framework/Versions/A/Headers/SPUDownloaderProtocol.h; sourceTree = "<group>"; };
+		3598B3F7455CF2862566F4F13710D1AC /* Pods-Shifty.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Shifty.release.xcconfig"; sourceTree = "<group>"; };
+		3A7B8490EF4A66701C8F7C09A0A31DD3 /* Pods-ShiftyTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ShiftyTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		40067296CA0E79C090355CFA0AFEC8E7 /* Pods-Shifty.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Shifty.debug.xcconfig"; sourceTree = "<group>"; };
+		4219E98D4A7734FC4D85DDF0E65AEDA7 /* Pods-ShiftyTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-ShiftyTests-dummy.m"; sourceTree = "<group>"; };
 		429B5C65AF216BE219AF17152CDE48A2 /* de.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = de.lproj; path = Resources/de.lproj; sourceTree = "<group>"; };
 		43EA24460E2CE87123E481A23E94239D /* it.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = it.lproj; path = Resources/it.lproj; sourceTree = "<group>"; };
 		43FCA0ABB1DDE2F570316A895C82F88C /* MASShortcutMonitor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASShortcutMonitor.m; path = Framework/Monitoring/MASShortcutMonitor.m; sourceTree = "<group>"; };
 		4441E8A2597446406F6690A5CABCFB0E /* sk.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = sk.lproj; sourceTree = "<group>"; };
 		461729714F839D4EF93BF2B10C3A7083 /* MASPreferences+Shifty.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "MASPreferences+Shifty.debug.xcconfig"; sourceTree = "<group>"; };
 		47BBE8914036032176AC0323C2A18854 /* Pods-Shifty */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-Shifty"; path = Pods_Shifty.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		482052C929D9213C687C5DAAE8D73CF1 /* Pods-Shifty-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Shifty-acknowledgements.plist"; sourceTree = "<group>"; };
 		494DC71FE25A11BB4CAD49F088B8584A /* nl.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = nl.lproj; sourceTree = "<group>"; };
 		4B98505D827B5669379E6327CA9D7A6F /* MASShortcut-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MASShortcut-prefix.pch"; sourceTree = "<group>"; };
 		4E6C4F348BCEC73A92416F74E8EC6614 /* pt.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = pt.lproj; sourceTree = "<group>"; };
@@ -250,6 +258,7 @@
 		5182453F78DB33396A62F7514CF83141 /* MASPreferencesViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASPreferencesViewController.h; path = Framework/MASPreferencesViewController.h; sourceTree = "<group>"; };
 		5211E0BB233A79E8CF50534427C0D420 /* AXSwift-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "AXSwift-Info.plist"; sourceTree = "<group>"; };
 		54E368FAF381DF0CF994C6A58EC276D4 /* pt.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = pt.lproj; path = Resources/pt.lproj; sourceTree = "<group>"; };
+		561DFBFFF1CC236F5152E4A29DED27FB /* Pods-ShiftyHelper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ShiftyHelper.release.xcconfig"; sourceTree = "<group>"; };
 		562A3CE32C5BEF6F3E137C948E969B4A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		5642BAA65102094AA2E900C3DABB5A8F /* SPUDownloadData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SPUDownloadData.h; path = Sparkle.framework/Versions/A/Headers/SPUDownloadData.h; sourceTree = "<group>"; };
 		57F7ADD9F82D5B9B1DEB8AA4DAE9614A /* SUUpdater.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUUpdater.h; path = Sparkle.framework/Versions/A/Headers/SUUpdater.h; sourceTree = "<group>"; };
@@ -261,7 +270,9 @@
 		65B18A28B916BB95E8BEE59BAC4F959F /* MASPreferences+Shifty-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MASPreferences+Shifty-dummy.m"; sourceTree = "<group>"; };
 		65B40A97581F24286BA53EFDFC0F66DC /* MASShortcutBinder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASShortcutBinder.m; path = "Framework/User Defaults Storage/MASShortcutBinder.m"; sourceTree = "<group>"; };
 		6A492F6662FBA5D089122EF8C6BEC047 /* MASDictionaryTransformer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASDictionaryTransformer.h; path = "Framework/User Defaults Storage/MASDictionaryTransformer.h"; sourceTree = "<group>"; };
+		6B14106B31B198351A1AD5404B58CA5F /* Pods-ShiftyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ShiftyTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6B80D0F601B966B1A7C0D5A860CA7FCA /* PublicSuffix-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "PublicSuffix-Info.plist"; sourceTree = "<group>"; };
+		6F85F2F688DBBE5B7D0DD168C13111F6 /* Pods-ShiftyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ShiftyTests.release.xcconfig"; sourceTree = "<group>"; };
 		7609FF4F836ED5B3CCC1B041F2E4A171 /* Error.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Error.swift; path = Sources/Error.swift; sourceTree = "<group>"; };
 		769608F49B10931FFE23C28D7EA03A20 /* MASShortcutMonitor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASShortcutMonitor.h; path = Framework/Monitoring/MASShortcutMonitor.h; sourceTree = "<group>"; };
 		781EF81489D41E8667F51395D53C8175 /* MASShortcut.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MASShortcut.release.xcconfig; sourceTree = "<group>"; };
@@ -277,24 +288,22 @@
 		7F8790AFAD424BCD9A9725D29668AD7F /* ResourceBundle-MASShortcut-MASShortcut-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-MASShortcut-MASShortcut-Info.plist"; sourceTree = "<group>"; };
 		807263052484DA1804839542903A1034 /* LetsMove.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = LetsMove.release.xcconfig; sourceTree = "<group>"; };
 		856EDECD7A69C8E06A0ED4687F5B2CF3 /* SUVersionComparisonProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUVersionComparisonProtocol.h; path = Sparkle.framework/Versions/A/Headers/SUVersionComparisonProtocol.h; sourceTree = "<group>"; };
+		860D79CB76DD16F34C7A2EAE3E73D384 /* Pods-Shifty-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Shifty-Info.plist"; sourceTree = "<group>"; };
 		8772AAE90CDF55F8AD0E1F18AA808CB8 /* tr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = tr.lproj; sourceTree = "<group>"; };
-		8B207B6F8A9287F21A467778824AF187 /* Pods-Shifty-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Shifty-Info.plist"; sourceTree = "<group>"; };
 		8BD815DF9D08570AE6480F5605C6C1E1 /* SPUURLRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SPUURLRequest.h; path = Sparkle.framework/Versions/A/Headers/SPUURLRequest.h; sourceTree = "<group>"; };
-		8CF3FB655B81F8C182FBA857296E0077 /* Pods-ShiftyHelper-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-ShiftyHelper-acknowledgements.markdown"; sourceTree = "<group>"; };
 		8DA85F6A2432B2DC37F4DC0D2BD94577 /* zh_CN.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = zh_CN.lproj; sourceTree = "<group>"; };
-		8ED3510D8CE4E0F228CF6380BC3CF9D9 /* Pods-Shifty.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Shifty.modulemap"; sourceTree = "<group>"; };
 		90D13AB1D1D2A6B94459FE5E3B0E9C13 /* zh-Hant.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = "zh-Hant.lproj"; path = "Resources/zh-Hant.lproj"; sourceTree = "<group>"; };
+		90F68293050DE50C615C2E9786C50863 /* Pods-ShiftyTests */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-ShiftyTests"; path = "libPods-ShiftyTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		914B10F65111F367F117949D75E620D6 /* Sparkle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Sparkle.h; path = Sparkle.framework/Versions/A/Headers/Sparkle.h; sourceTree = "<group>"; };
-		92BFB36D66A36B4446D62C63C5F8B830 /* Pods-ShiftyHelper-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ShiftyHelper-Info.plist"; sourceTree = "<group>"; };
-		93709021D38B9CAB55E343C848B00DDE /* Pods-Shifty-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Shifty-acknowledgements.plist"; sourceTree = "<group>"; };
+		9316D5165665228583BA48FAF6B3AC65 /* Pods-ShiftyHelper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ShiftyHelper.debug.xcconfig"; sourceTree = "<group>"; };
+		956EF12E67EA84DA723F6BAE6E639281 /* Pods-Shifty-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Shifty-acknowledgements.markdown"; sourceTree = "<group>"; };
 		95ADE25599258FB0182317742E23C6D4 /* Base.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = Base.lproj; sourceTree = "<group>"; };
 		96E1B451434586950DBBF37FF7CA8014 /* MASPreferences+Shifty-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MASPreferences+Shifty-umbrella.h"; sourceTree = "<group>"; };
+		9758E3B647F1AC532F7CA376B8F88551 /* Pods-Shifty-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-Shifty-umbrella.h"; sourceTree = "<group>"; };
 		97DF208E6B737EE4FB06F1656ADBE43A /* MASShortcutValidator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASShortcutValidator.h; path = Framework/Model/MASShortcutValidator.h; sourceTree = "<group>"; };
 		989EDD347622F51BC7E80826C0E374C6 /* LetsMove.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = LetsMove.h; sourceTree = "<group>"; };
-		99ACCD890F8AEFC3C07A428D39FE224E /* Pods-Shifty.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Shifty.release.xcconfig"; sourceTree = "<group>"; };
 		9B7CF59004BE180801B95BD5318033A6 /* Observer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Observer.swift; path = Sources/Observer.swift; sourceTree = "<group>"; };
 		9BCF00CA8E2C6739CC2EA72104E974FB /* AXSwift.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AXSwift.h; path = Sources/AXSwift.h; sourceTree = "<group>"; };
-		9BD7D76FEDEB7053693FACED56004997 /* Pods-ShiftyHelper-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ShiftyHelper-acknowledgements.plist"; sourceTree = "<group>"; };
 		9BDF3EB70DFE415F1D267A145408F067 /* AXSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AXSwift.release.xcconfig; sourceTree = "<group>"; };
 		9C6009CBCB91BC63F7C473F1CEB9107B /* nl.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = nl.lproj; path = Resources/nl.lproj; sourceTree = "<group>"; };
 		9D7972B060778A6451B5589FA3E65CDE /* MASShortcutView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASShortcutView.m; path = Framework/UI/MASShortcutView.m; sourceTree = "<group>"; };
@@ -313,16 +322,15 @@
 		AB125E0ECB65704A5840E2A3D3070B67 /* MASPreferences+Shifty-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MASPreferences+Shifty-prefix.pch"; sourceTree = "<group>"; };
 		AC09A341E4FCC81954B58EDF43F9C839 /* es.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = es.lproj; path = Resources/es.lproj; sourceTree = "<group>"; };
 		AC9DFC64FBEE099523233D4DB5DFE348 /* SPUDownloaderSession.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SPUDownloaderSession.h; path = Sparkle.framework/Versions/A/Headers/SPUDownloaderSession.h; sourceTree = "<group>"; };
+		AE1F6CC818452A1C1821B3C1BE64E86D /* Pods-ShiftyHelper.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-ShiftyHelper.modulemap"; sourceTree = "<group>"; };
 		AFFE3D5B687BC85ED4CAEBC07EF06487 /* MASKeyCodes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASKeyCodes.h; path = Framework/Model/MASKeyCodes.h; sourceTree = "<group>"; };
-		B032AA1928EFFB1A0106CDB87232539D /* Pods-ShiftyHelper-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-ShiftyHelper-umbrella.h"; sourceTree = "<group>"; };
 		B17C951994D02008424BA234A1692A08 /* SwiftLog-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "SwiftLog-Info.plist"; sourceTree = "<group>"; };
 		B2ABDE5D68199FF07A1F241A1A223EAE /* SUUpdaterDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUUpdaterDelegate.h; path = Sparkle.framework/Versions/A/Headers/SUUpdaterDelegate.h; sourceTree = "<group>"; };
 		B56F0CC36D766ECD85E3A06CA5012AC0 /* MASShortcutView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASShortcutView.h; path = Framework/UI/MASShortcutView.h; sourceTree = "<group>"; };
 		B5A626927BD5A64AE6FF5A86D0B52B3E /* LetsMove-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "LetsMove-umbrella.h"; sourceTree = "<group>"; };
-		B6F2E5909F74CE2C3F2C81CF462CC7E7 /* Pods-Shifty-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Shifty-frameworks.sh"; sourceTree = "<group>"; };
+		B65D5CD7F88DDF3916D372A6133C0E3C /* Pods-ShiftyHelper-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ShiftyHelper-Info.plist"; sourceTree = "<group>"; };
 		B8B1D6CE189B5A30B90654FC8E882F98 /* en.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = en.lproj; sourceTree = "<group>"; };
 		B8C0E7F7ED454465E1827E4753DA2522 /* AXSwift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AXSwift; path = AXSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B96E46C63FCF289F8E370F8BC68508D8 /* Pods-ShiftyHelper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ShiftyHelper.release.xcconfig"; sourceTree = "<group>"; };
 		BB8B5322AEDD1256A0134E7ECF966823 /* de.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = de.lproj; sourceTree = "<group>"; };
 		BE3276E61F3EC083514944D69A9E240A /* MASShortcutBinder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASShortcutBinder.h; path = "Framework/User Defaults Storage/MASShortcutBinder.h"; sourceTree = "<group>"; };
 		BE56EE47115F6B60DCBBB4472BD74D9B /* MASLocalization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASLocalization.h; path = Framework/UI/MASLocalization.h; sourceTree = "<group>"; };
@@ -333,6 +341,7 @@
 		C35CA139F4D7E1735E7D0049E504001C /* MASPreferences+Shifty.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "MASPreferences+Shifty.modulemap"; sourceTree = "<group>"; };
 		C38450C3622488679E7B69F86604C90F /* MASPreferences+Shifty-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MASPreferences+Shifty-Info.plist"; sourceTree = "<group>"; };
 		C41A049B785D25962BB7DF0D66D1CAAD /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Carbon.framework; sourceTree = DEVELOPER_DIR; };
+		C4CE77D6EFDA556395297A336EFEC660 /* Pods-Shifty.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-Shifty.modulemap"; sourceTree = "<group>"; };
 		C6EAB2BAF72AC0A6A6CCE3F1D7155CED /* sv.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = sv.lproj; path = Resources/sv.lproj; sourceTree = "<group>"; };
 		C8D569462E3EF51D2E86E5A66B420842 /* MASPreferencesWindowController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASPreferencesWindowController.m; path = Framework/MASPreferencesWindowController.m; sourceTree = "<group>"; };
 		C93AB56F15A1F789A3977FD52482302F /* LetsMove-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "LetsMove-prefix.pch"; sourceTree = "<group>"; };
@@ -340,22 +349,21 @@
 		CE320F1B93AABC25C0F21D5B6492E7B9 /* Log.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		D12EF467BC33B31E74B45B84EC95D095 /* sv.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = sv.lproj; sourceTree = "<group>"; };
 		D174965376F86F5CEE85C017ADCB7A2D /* AXSwift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AXSwift-prefix.pch"; sourceTree = "<group>"; };
-		D302E2DE92D4A906DB0856D56444B0E2 /* Pods-Shifty-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Shifty-acknowledgements.markdown"; sourceTree = "<group>"; };
 		D46E318E24783D37B0C659FED0E0271A /* PFMoveApplication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = PFMoveApplication.m; sourceTree = "<group>"; };
 		D47C9C02D1055E16AAB9F0BA9F909CF4 /* MASShortcut-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MASShortcut-dummy.m"; sourceTree = "<group>"; };
 		D4AB71F7848334C6682DC99E9A6A0B28 /* it.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = it.lproj; sourceTree = "<group>"; };
+		D875E41E7D6751736B3374064F6EF8BE /* Pods-ShiftyHelper-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ShiftyHelper-acknowledgements.plist"; sourceTree = "<group>"; };
 		D87AC91B19D0A6B161BD3ED08F81D6E9 /* LetsMove */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = LetsMove; path = LetsMove.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8987958B7F68CC8BDDCE047E1D85896 /* cs.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = cs.lproj; sourceTree = "<group>"; };
+		D8DD17B1809108EFF5B275C1357BFAB7 /* Pods-ShiftyHelper-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-ShiftyHelper-dummy.m"; sourceTree = "<group>"; };
 		D9FAA8A860E4022634D99238647107BC /* SUStandardVersionComparator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUStandardVersionComparator.h; path = Sparkle.framework/Versions/A/Headers/SUStandardVersionComparator.h; sourceTree = "<group>"; };
 		DC13CE41F9584209D300CEDBCDD0837A /* UIElement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UIElement.swift; path = Sources/UIElement.swift; sourceTree = "<group>"; };
 		DE1029CAE9D9F5CFB93C3BCC103BA832 /* Shortcut.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Shortcut.h; path = Framework/Shortcut.h; sourceTree = "<group>"; };
-		DE2273CE2EC2C2FFA5D9911F3810F269 /* Pods-Shifty-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-Shifty-umbrella.h"; sourceTree = "<group>"; };
+		E14B808CEE9E9C1C24DE0AF1B47A9A00 /* Pods-ShiftyHelper-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-ShiftyHelper-umbrella.h"; sourceTree = "<group>"; };
 		E17DCA0873791FB4BA61CED05B0BBCDF /* cs.lproj */ = {isa = PBXFileReference; includeInIndex = 1; name = cs.lproj; path = Resources/cs.lproj; sourceTree = "<group>"; };
 		E36529760192D3DF8FDF16C347029669 /* Constants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Sources/Constants.swift; sourceTree = "<group>"; };
 		E3FF7D1D5A072DFD0B418FCAE9BF973C /* MASShortcut.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = MASShortcut.modulemap; sourceTree = "<group>"; };
-		E4F9CE1B86DF96A8F5A7B6EB17F4F0B6 /* Pods-ShiftyHelper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ShiftyHelper.debug.xcconfig"; sourceTree = "<group>"; };
 		E50E8EFF63308F71C01998B5B50BB53E /* MASPreferences+Shifty.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "MASPreferences+Shifty.release.xcconfig"; sourceTree = "<group>"; };
-		E60CD21C0EAD65A852D0888C5D1D9D9B /* Pods-ShiftyHelper.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-ShiftyHelper.modulemap"; sourceTree = "<group>"; };
 		E6D16B0ED6CCB0A1D7AD34C2EAD2FFF5 /* AXSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = AXSwift.modulemap; sourceTree = "<group>"; };
 		EEF9CBD08B4EB3B47F6C8CCE14B23EA2 /* SUVersionDisplayProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUVersionDisplayProtocol.h; path = Sparkle.framework/Versions/A/Headers/SUVersionDisplayProtocol.h; sourceTree = "<group>"; };
 		EFC74D370ED49FDBD121AE4EE8E125CA /* SUAppcast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUAppcast.h; path = Sparkle.framework/Versions/A/Headers/SUAppcast.h; sourceTree = "<group>"; };
@@ -365,7 +373,6 @@
 		F50480DEAA26C526DE469440E13E2749 /* ko.lproj */ = {isa = PBXFileReference; includeInIndex = 1; path = ko.lproj; sourceTree = "<group>"; };
 		FA697C9820E1D3224F2F8880B54608E7 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
 		FA95CF0FA9BD8E215131BB95ADA5D873 /* MASShortcutView+Bindings.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "MASShortcutView+Bindings.m"; path = "Framework/UI/MASShortcutView+Bindings.m"; sourceTree = "<group>"; };
-		FBA1FD4F080504F178217820177ABEC3 /* Pods-ShiftyHelper-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-ShiftyHelper-dummy.m"; sourceTree = "<group>"; };
 		FE5C6C88CC286A37A98615089161AC6B /* MASShortcut-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MASShortcut-umbrella.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -375,6 +382,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE1BBA5EE0D5C4AE2D0F788994C1364B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0534776958275ED9553F72FB94F349E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,17 +491,27 @@
 			path = MASShortcut;
 			sourceTree = "<group>";
 		};
-		0C70129843E1DAD78096B01595BE0470 /* Pods-ShiftyHelper */ = {
+		041166254D30FAAFCB6ADB40068E2EE5 /* Targets Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				E60CD21C0EAD65A852D0888C5D1D9D9B /* Pods-ShiftyHelper.modulemap */,
-				8CF3FB655B81F8C182FBA857296E0077 /* Pods-ShiftyHelper-acknowledgements.markdown */,
-				9BD7D76FEDEB7053693FACED56004997 /* Pods-ShiftyHelper-acknowledgements.plist */,
-				FBA1FD4F080504F178217820177ABEC3 /* Pods-ShiftyHelper-dummy.m */,
-				92BFB36D66A36B4446D62C63C5F8B830 /* Pods-ShiftyHelper-Info.plist */,
-				B032AA1928EFFB1A0106CDB87232539D /* Pods-ShiftyHelper-umbrella.h */,
-				E4F9CE1B86DF96A8F5A7B6EB17F4F0B6 /* Pods-ShiftyHelper.debug.xcconfig */,
-				B96E46C63FCF289F8E370F8BC68508D8 /* Pods-ShiftyHelper.release.xcconfig */,
+				23DAA291B8C1BBFF61BF4A006D1010C1 /* Pods-Shifty */,
+				0C502ABCE58E267376F91E8948E68C36 /* Pods-ShiftyHelper */,
+				8498E2929EE24BD06C0A33CC588516A1 /* Pods-ShiftyTests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		0C502ABCE58E267376F91E8948E68C36 /* Pods-ShiftyHelper */ = {
+			isa = PBXGroup;
+			children = (
+				AE1F6CC818452A1C1821B3C1BE64E86D /* Pods-ShiftyHelper.modulemap */,
+				0FF799FB1EB95EF5644E0C10B64C2E0C /* Pods-ShiftyHelper-acknowledgements.markdown */,
+				D875E41E7D6751736B3374064F6EF8BE /* Pods-ShiftyHelper-acknowledgements.plist */,
+				D8DD17B1809108EFF5B275C1357BFAB7 /* Pods-ShiftyHelper-dummy.m */,
+				B65D5CD7F88DDF3916D372A6133C0E3C /* Pods-ShiftyHelper-Info.plist */,
+				E14B808CEE9E9C1C24DE0AF1B47A9A00 /* Pods-ShiftyHelper-umbrella.h */,
+				9316D5165665228583BA48FAF6B3AC65 /* Pods-ShiftyHelper.debug.xcconfig */,
+				561DFBFFF1CC236F5152E4A29DED27FB /* Pods-ShiftyHelper.release.xcconfig */,
 			);
 			name = "Pods-ShiftyHelper";
 			path = "Target Support Files/Pods-ShiftyHelper";
@@ -534,6 +558,23 @@
 			path = "MASPreferences+Shifty";
 			sourceTree = "<group>";
 		};
+		23DAA291B8C1BBFF61BF4A006D1010C1 /* Pods-Shifty */ = {
+			isa = PBXGroup;
+			children = (
+				C4CE77D6EFDA556395297A336EFEC660 /* Pods-Shifty.modulemap */,
+				956EF12E67EA84DA723F6BAE6E639281 /* Pods-Shifty-acknowledgements.markdown */,
+				482052C929D9213C687C5DAAE8D73CF1 /* Pods-Shifty-acknowledgements.plist */,
+				2947B5B4BDF1C5F363534E3802316BC5 /* Pods-Shifty-dummy.m */,
+				01072DDDBD909790E4B95E480C63FE1F /* Pods-Shifty-frameworks.sh */,
+				860D79CB76DD16F34C7A2EAE3E73D384 /* Pods-Shifty-Info.plist */,
+				9758E3B647F1AC532F7CA376B8F88551 /* Pods-Shifty-umbrella.h */,
+				40067296CA0E79C090355CFA0AFEC8E7 /* Pods-Shifty.debug.xcconfig */,
+				3598B3F7455CF2862566F4F13710D1AC /* Pods-Shifty.release.xcconfig */,
+			);
+			name = "Pods-Shifty";
+			path = "Target Support Files/Pods-Shifty";
+			sourceTree = "<group>";
+		};
 		2A9ABF6CFBC61835527143C8E75A7C0D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -576,6 +617,23 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		4C31A057715BA9C28F611E71F6E59A08 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B8C0E7F7ED454465E1827E4753DA2522 /* AXSwift */,
+				D87AC91B19D0A6B161BD3ED08F81D6E9 /* LetsMove */,
+				00573E79681355464DB300DCBD947F94 /* MASPreferences+Shifty */,
+				26A8810424438A12E7ADBFB3E068C658 /* MASShortcut */,
+				230F8208BE63C052A548A7D41A1158B2 /* MASShortcut-MASShortcut */,
+				47BBE8914036032176AC0323C2A18854 /* Pods-Shifty */,
+				5E67E4A25425897A01D824CE276671AD /* Pods-ShiftyHelper */,
+				90F68293050DE50C615C2E9786C50863 /* Pods-ShiftyTests */,
+				9EE7D3B7FD2980F994F1F512941869A6 /* PublicSuffix */,
+				3014030FC40FBE93D28F7F198B4D14BA /* SwiftLog */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		6922D1E654213ACEA510984358B0AE06 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -589,15 +647,6 @@
 			);
 			name = "Support Files";
 			path = "../Target Support Files/PublicSuffix";
-			sourceTree = "<group>";
-		};
-		6AA1978CCBFD6121BD1919F1EBFC724A /* Targets Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				CA3CB3CEF635756387B83BEE8AEA4297 /* Pods-Shifty */,
-				0C70129843E1DAD78096B01595BE0470 /* Pods-ShiftyHelper */,
-			);
-			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
 		7A581DE545CC1CB992A0C436A6A64C96 /* Frameworks */ = {
@@ -620,6 +669,19 @@
 				90E881184316DB11D9619C0A4EFDFB0F /* SwiftLog */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		8498E2929EE24BD06C0A33CC588516A1 /* Pods-ShiftyTests */ = {
+			isa = PBXGroup;
+			children = (
+				27A529BAC351787204968822530D9D17 /* Pods-ShiftyTests-acknowledgements.markdown */,
+				3A7B8490EF4A66701C8F7C09A0A31DD3 /* Pods-ShiftyTests-acknowledgements.plist */,
+				4219E98D4A7734FC4D85DDF0E65AEDA7 /* Pods-ShiftyTests-dummy.m */,
+				6B14106B31B198351A1AD5404B58CA5F /* Pods-ShiftyTests.debug.xcconfig */,
+				6F85F2F688DBBE5B7D0DD168C13111F6 /* Pods-ShiftyTests.release.xcconfig */,
+			);
+			name = "Pods-ShiftyTests";
+			path = "Target Support Files/Pods-ShiftyTests";
 			sourceTree = "<group>";
 		};
 		8952234709D82B768E94D5F61E4B88C5 /* Support Files */ = {
@@ -783,31 +845,14 @@
 			path = "../Target Support Files/Sparkle";
 			sourceTree = "<group>";
 		};
-		CA3CB3CEF635756387B83BEE8AEA4297 /* Pods-Shifty */ = {
-			isa = PBXGroup;
-			children = (
-				8ED3510D8CE4E0F228CF6380BC3CF9D9 /* Pods-Shifty.modulemap */,
-				D302E2DE92D4A906DB0856D56444B0E2 /* Pods-Shifty-acknowledgements.markdown */,
-				93709021D38B9CAB55E343C848B00DDE /* Pods-Shifty-acknowledgements.plist */,
-				114EBB45A16700569AE23E231B94ED8F /* Pods-Shifty-dummy.m */,
-				B6F2E5909F74CE2C3F2C81CF462CC7E7 /* Pods-Shifty-frameworks.sh */,
-				8B207B6F8A9287F21A467778824AF187 /* Pods-Shifty-Info.plist */,
-				DE2273CE2EC2C2FFA5D9911F3810F269 /* Pods-Shifty-umbrella.h */,
-				062E9F6D980364C7E87669A6679DE99B /* Pods-Shifty.debug.xcconfig */,
-				99ACCD890F8AEFC3C07A428D39FE224E /* Pods-Shifty.release.xcconfig */,
-			);
-			name = "Pods-Shifty";
-			path = "Target Support Files/Pods-Shifty";
-			sourceTree = "<group>";
-		};
 		CF1408CF629C7361332E53B88F7BD30C = {
 			isa = PBXGroup;
 			children = (
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
 				A3CDB250FFEFB42CA2C68F1FBD92997D /* Frameworks */,
 				80894A6898D909936A3864B2DAC3B161 /* Pods */,
-				F043FBEEDDE212B84D7B846E29E41AD8 /* Products */,
-				6AA1978CCBFD6121BD1919F1EBFC724A /* Targets Support Files */,
+				4C31A057715BA9C28F611E71F6E59A08 /* Products */,
+				041166254D30FAAFCB6ADB40068E2EE5 /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
@@ -834,22 +879,6 @@
 				562A3CE32C5BEF6F3E137C948E969B4A /* Cocoa.framework */,
 			);
 			name = "OS X";
-			sourceTree = "<group>";
-		};
-		F043FBEEDDE212B84D7B846E29E41AD8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B8C0E7F7ED454465E1827E4753DA2522 /* AXSwift */,
-				D87AC91B19D0A6B161BD3ED08F81D6E9 /* LetsMove */,
-				00573E79681355464DB300DCBD947F94 /* MASPreferences+Shifty */,
-				26A8810424438A12E7ADBFB3E068C658 /* MASShortcut */,
-				230F8208BE63C052A548A7D41A1158B2 /* MASShortcut-MASShortcut */,
-				47BBE8914036032176AC0323C2A18854 /* Pods-Shifty */,
-				5E67E4A25425897A01D824CE276671AD /* Pods-ShiftyHelper */,
-				9EE7D3B7FD2980F994F1F512941869A6 /* PublicSuffix */,
-				3014030FC40FBE93D28F7F198B4D14BA /* SwiftLog */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -938,9 +967,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F47F2BBEDA84178B2F01934A7A75B380 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		20E39D9104EEF771B103B031A9D1F8BC /* Pods-ShiftyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2E4C6CBDBE3315386C03BE0440B7B5F /* Build configuration list for PBXNativeTarget "Pods-ShiftyTests" */;
+			buildPhases = (
+				F47F2BBEDA84178B2F01934A7A75B380 /* Headers */,
+				F7F45D33AA52841FA7F12491E25E6147 /* Sources */,
+				0534776958275ED9553F72FB94F349E9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-ShiftyTests";
+			productName = "Pods-ShiftyTests";
+			productReference = 90F68293050DE50C615C2E9786C50863 /* Pods-ShiftyTests */;
+			productType = "com.apple.product-type.library.static";
+		};
 		2B2B481A164695722839BD581D442457 /* MASShortcut */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1AF9F8BDF1B47E1134F02872286A9E8 /* Build configuration list for PBXNativeTarget "MASShortcut" */;
@@ -1157,7 +1210,7 @@
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
 			minimizedProjectReferenceProxies = 0;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = F043FBEEDDE212B84D7B846E29E41AD8 /* Products */;
+			productRefGroup = 4C31A057715BA9C28F611E71F6E59A08 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1168,6 +1221,7 @@
 				73C37A16ECCEAD845651DCDEE95675BE /* MASShortcut-MASShortcut */,
 				EA0D1D170B60317F8FD13FE311349260 /* Pods-Shifty */,
 				CF6C672432187AE74215523EDE4A1EED /* Pods-ShiftyHelper */,
+				20E39D9104EEF771B103B031A9D1F8BC /* Pods-ShiftyTests */,
 				D3567D18D207F583F8CBBED04E28234E /* PublicSuffix */,
 				ED77B4B88587C894E85C361023D67C53 /* Sparkle */,
 				45964FBC491EF3BFA656D38382D9D7FC /* SwiftLog */,
@@ -1378,6 +1432,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F7F45D33AA52841FA7F12491E25E6147 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B6D791C027DBD6C3D6A6D6DDCDC8D5F /* Pods-ShiftyTests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1482,7 +1544,7 @@
 		};
 		1BD967DFA9A9D0995F6DCD270B82178B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 99ACCD890F8AEFC3C07A428D39FE224E /* Pods-Shifty.release.xcconfig */;
+			baseConfigurationReference = 3598B3F7455CF2862566F4F13710D1AC /* Pods-Shifty.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
@@ -1567,6 +1629,30 @@
 			};
 			name = Debug;
 		};
+		411C328115178B6F7982BD60EB6050C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F85F2F688DBBE5B7D0DD168C13111F6 /* Pods-ShiftyTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				ENABLE_MODULE_VERIFIER = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				EXECUTABLE_PREFIX = lib;
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		49F36573093D64F77EE672F1B453460F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B29B0C8A5CC8BF0C09D4F8B35A5D0E8 /* PublicSuffix.debug.xcconfig */;
@@ -1623,7 +1709,7 @@
 		};
 		5E015DDAE413105C39E2829BD822586B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4F9CE1B86DF96A8F5A7B6EB17F4F0B6 /* Pods-ShiftyHelper.debug.xcconfig */;
+			baseConfigurationReference = 9316D5165665228583BA48FAF6B3AC65 /* Pods-ShiftyHelper.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
@@ -1796,7 +1882,7 @@
 		};
 		6E7FE7946667E8EE310E0071DFF03AEE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B96E46C63FCF289F8E370F8BC68508D8 /* Pods-ShiftyHelper.release.xcconfig */;
+			baseConfigurationReference = 561DFBFFF1CC236F5152E4A29DED27FB /* Pods-ShiftyHelper.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
@@ -1884,9 +1970,33 @@
 			};
 			name = Release;
 		};
+		A198CA923269BEDABD13EB4F83BFF0A0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B14106B31B198351A1AD5404B58CA5F /* Pods-ShiftyTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				ENABLE_MODULE_VERIFIER = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				EXECUTABLE_PREFIX = lib;
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
 		A5074CB5FC852182D017F952DC6D3A37 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 062E9F6D980364C7E87669A6679DE99B /* Pods-Shifty.debug.xcconfig */;
+			baseConfigurationReference = 40067296CA0E79C090355CFA0AFEC8E7 /* Pods-Shifty.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
@@ -2292,6 +2402,15 @@
 			buildConfigurations = (
 				D4C45120E0DC1B2B258746D5113A0DF0 /* Debug */,
 				877A614197CE347E370464FAC0225D3C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A2E4C6CBDBE3315386C03BE0440B7B5F /* Build configuration list for PBXNativeTarget "Pods-ShiftyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A198CA923269BEDABD13EB4F83BFF0A0 /* Debug */,
+				411C328115178B6F7982BD60EB6050C9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
