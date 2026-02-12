@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class OnlyIntValueFormatter: NumberFormatter {
+class OnlyIntValueFormatter: NumberFormatter, @unchecked Sendable {
     override func isPartialStringValid(_ partialString: String, newEditingString newString: AutoreleasingUnsafeMutablePointer<NSString?>?, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
         if partialString.isEmpty {
             return true
