@@ -59,15 +59,5 @@
 
 
 
-"analytics.includes_list_title" = "Какие данные собираются?";
-"analytics.includes_list_1" = "Информация о том, почему приложение сломалось";
-"analytics.includes_list_2" = "Данные об использовании разных функций в Shifty";
-"analytics.includes_list_3" = "Полезная информация о случаях, которые не приводят к поломке приложения";
 
-"analytics.doesnt_include_list_title" = "Какие данные не собираются?";
-"analytics.doesnt_include_list_1" = "Деликатные данные, к которым Shifty получает доступ (например сайты, для которых Вы переключаете режим)";
-"analytics.doesnt_include_list_2" = "Любые серийные номера или персональная информация";
 
-"analytics.data_usage_list_title" = "Что происходит с данными?";
-"analytics.data_usage_list_1" = "Ничто из этих данных не будет передано третьей стороне (да никому они и не интересны в любом случае)";
-"analytics.data_usage_list_2" = "Помогает решать проблемы и делать Shifty лучше";

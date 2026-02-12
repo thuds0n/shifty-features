@@ -10,7 +10,6 @@ import Cocoa
 import ServiceManagement
 import AXSwift
 import Sparkle
-import LetsMove
 import SwiftLog
 
 enum Keys {
@@ -20,7 +19,6 @@ enum Keys {
     static let isDarkModeSyncEnabled = "isDarkModeSyncEnabled"
     static let isWebsiteControlEnabled = "isWebsiteControlEnabled"
     static let trueToneControl = "trueToneControl"
-    static let analyticsPermission = "analyticsPermission"
     static let currentAppDisableRules = "disabledApps"
     static let runningAppDisableRules = "disabledRunningApps"
     static let browserRules = "browserRules"
@@ -62,7 +60,6 @@ class PrefManager {
             Keys.isDarkModeSyncEnabled: NSNumber(value: false),
             Keys.isWebsiteControlEnabled: NSNumber(value: false),
             Keys.trueToneControl: NSNumber(value: false),
-            Keys.analyticsPermission: NSNumber(value: false),
             Keys.currentAppDisableRules: NSData(),
             Keys.runningAppDisableRules: NSData(),
             Keys.browserRules: NSData(),
@@ -74,22 +71,6 @@ class PrefManager {
         userDefaults.register(defaults: factoryDefaults)
     }
 
-}
-
-protocol TelemetryReporting {
-    func start()
-    func track(eventName: String, properties: [String: String]?)
-}
-
-final class DisabledTelemetryReporter: TelemetryReporting {
-    func start() {
-        logw("Telemetry provider disabled")
-    }
-
-    func track(eventName: String, properties: [String: String]?) {
-        _ = eventName
-        _ = properties
-    }
 }
 
 protocol UpdateChecking {
@@ -192,27 +173,15 @@ final class SystemPermissionProvider: PermissionProviding {
     }
 }
 
-protocol AppInstallControlling {
-    func moveToApplicationsFolderIfNecessary()
-}
-
-final class LetsMoveController: AppInstallControlling {
-    func moveToApplicationsFolderIfNecessary() {
-        PFMoveToApplicationsFolderIfNecessary()
-    }
-}
-
 final class SystemIntegration {
     static let shared = SystemIntegration()
 
-    let telemetry: TelemetryReporting
     let updater: UpdateChecking
     let loginItem: LoginItemControlling
     let appearance: DisplayAppearanceControlling
     let trueTone: TrueToneControlling
     let permissions: PermissionProviding
     let nightShiftSystem: NightShiftSystemControlling
-    let appInstall: AppInstallControlling
     let circadianTransition: CircadianTransitioning
     let activityOverride: ActivityOverrideManaging
     let displayCalibration: DisplayCalibrationStoring
@@ -220,28 +189,24 @@ final class SystemIntegration {
     let cliBridge: CLIBridgeControlling
 
     init(
-        telemetry: TelemetryReporting = DisabledTelemetryReporter(),
         updater: UpdateChecking = SparkleUpdateClient(),
         loginItem: LoginItemControlling = AppServiceLoginItemController(),
         appearance: DisplayAppearanceControlling = SystemDisplayAppearanceController(),
         trueTone: TrueToneControlling = CoreBrightnessTrueToneController(),
         permissions: PermissionProviding = SystemPermissionProvider(),
         nightShiftSystem: NightShiftSystemControlling = CoreBrightnessNightShiftClient.shared,
-        appInstall: AppInstallControlling = LetsMoveController(),
         circadianTransition: CircadianTransitioning = CircadianTransitionEngine(),
         activityOverride: ActivityOverrideManaging = ActivityOverrideManager(),
         displayCalibration: DisplayCalibrationStoring = UserDefaultsDisplayCalibrationStore(),
         automationBridge: CircadianAutomationBridging = DisabledCircadianAutomationBridge(),
         cliBridge: CLIBridgeControlling = DistributedNotificationCLIBridge()
     ) {
-        self.telemetry = telemetry
         self.updater = updater
         self.loginItem = loginItem
         self.appearance = appearance
         self.trueTone = trueTone
         self.permissions = permissions
         self.nightShiftSystem = nightShiftSystem
-        self.appInstall = appInstall
         self.circadianTransition = circadianTransition
         self.activityOverride = activityOverride
         self.displayCalibration = displayCalibration

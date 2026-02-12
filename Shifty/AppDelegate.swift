@@ -39,17 +39,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         _ = PrefManager.shared
 
-        #if !DEBUG
-        integrations.appInstall.moveToApplicationsFolderIfNecessary()
-        #endif
-        
         UserDefaults.standard.register(defaults: ["NSApplicationCrashOnExceptions": true])
         
         let userDefaults = UserDefaults.standard
-        
-        if userDefaults.bool(forKey: Keys.analyticsPermission) {
-            integrations.telemetry.start()
-        }
         
         // Initialize Sparkle
         integrations.updater.initialize()

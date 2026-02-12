@@ -61,16 +61,6 @@
 
 
 
-"analytics.includes_list_title" = "What data is collected?";
-"analytics.includes_list_1" = "Information about what caused a crash";
-"analytics.includes_list_2" = "Data about the usage of various features in Shifty";
-"analytics.includes_list_3" = "Useful information about issues that don’t cause the app to crash";
 
-"analytics.doesnt_include_list_title" = "What data isn't collected?";
-"analytics.doesnt_include_list_1" = "Sensitive data Shifty is granted permission to access (e.g. web addresses used for Website Shifting)";
-"analytics.doesnt_include_list_2" = "Any device IDs or personally identifiable information";
 
-"analytics.data_usage_list_title" = "What happens to the data?";
-"analytics.data_usage_list_1" = "None of this data is sold to anyone (and nobody would want to buy it anyways)";
-"analytics.data_usage_list_2" = "Helps to resolve problems and make Shifty better";
 

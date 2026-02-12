@@ -183,10 +183,6 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
         }
     }
     
-    @IBAction func analyticsDetailClicked(_ sender: Any) {
-        self.presentAsSheet(AnalyticsDetailViewController())
-    }
-
     @objc private func setShowKelvinInMenuSlider(_ sender: NSButton) {
         UserDefaults.standard.set(sender.state == .on, forKey: Keys.showKelvinInMenuSlider)
     }
@@ -228,8 +224,6 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
 
         NSLayoutConstraint.activate([
             checkbox.leadingAnchor.constraint(equalTo: darkModeSyncButton.leadingAnchor),
-            checkbox.topAnchor.constraint(greaterThanOrEqualTo: schedulePopup.bottomAnchor, constant: 48),
-            checkbox.topAnchor.constraint(greaterThanOrEqualTo: customTimeStackView.bottomAnchor, constant: 16),
             checkbox.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20)
         ])
 

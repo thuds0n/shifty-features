@@ -208,16 +208,6 @@
                                 <real value="3.4028234663852886e+38"/>
                             </customSpacing>
                         </stackView>
-                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vCD-tW-pVS">
-                            <rect key="frame" x="-2" y="-2" width="285" height="18"/>
-                            <buttonCell key="cell" type="check" title="Share anonymous crash data and analytics" bezelStyle="regularSquare" imagePosition="left" inset="2" id="ar0-8I-WmN">
-                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <binding destination="HAt-Ds-MVV" name="value" keyPath="values.analyticsPermission" id="xsS-fj-boS"/>
-                            </connections>
-                        </button>
                     </subviews>
                     <visibilityPriorities>
                         <real value="1000"/>
@@ -417,29 +407,15 @@
                         </constraints>
                     </view>
                 </box>
-                <button horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="X5z-4y-ROF">
-                    <rect key="frame" x="303" y="105" width="32" height="31"/>
-                    <buttonCell key="cell" type="round" title="i" bezelStyle="circular" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jjX-rt-8G1">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" size="13" name="TimesNewRomanPS-ItalicMT"/>
-                    </buttonCell>
-                    <color key="contentTintColor" name="linkColor" catalog="System" colorSpace="catalog"/>
-                    <connections>
-                        <action selector="analyticsDetailClicked:" target="-2" id="FUc-7r-fUH"/>
-                    </connections>
-                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="Xwu-c8-3l2" firstAttribute="top" secondItem="lTA-eh-l51" secondAttribute="bottom" constant="20" id="Bel-4D-0AY"/>
                 <constraint firstItem="Xwu-c8-3l2" firstAttribute="leading" secondItem="bXz-rK-jao" secondAttribute="leading" constant="20" id="VVT-dH-Cyz"/>
-                <constraint firstItem="X5z-4y-ROF" firstAttribute="centerY" secondItem="vCD-tW-pVS" secondAttribute="centerY" id="Ynw-2s-0mY"/>
                 <constraint firstItem="lTA-eh-l51" firstAttribute="top" secondItem="bXz-rK-jao" secondAttribute="top" constant="20" id="aiM-ll-xhb"/>
                 <constraint firstAttribute="bottom" secondItem="Xwu-c8-3l2" secondAttribute="bottom" constant="20" id="cf8-be-FiO"/>
-                <constraint firstAttribute="trailing" secondItem="X5z-4y-ROF" secondAttribute="trailing" constant="20" id="leq-Or-NBO"/>
                 <constraint firstAttribute="trailing" secondItem="Xwu-c8-3l2" secondAttribute="trailing" constant="20" id="pSc-DN-Jsj"/>
                 <constraint firstAttribute="trailing" secondItem="lTA-eh-l51" secondAttribute="trailing" constant="20" id="vx1-ly-2M1"/>
                 <constraint firstItem="lTA-eh-l51" firstAttribute="leading" secondItem="bXz-rK-jao" secondAttribute="leading" constant="20" id="xW7-lw-kiK"/>
-                <constraint firstItem="X5z-4y-ROF" firstAttribute="leading" secondItem="vCD-tW-pVS" secondAttribute="trailing" constant="8" id="xam-fl-RIf"/>
             </constraints>
             <point key="canvasLocation" x="-86.5" y="-212"/>
         </view>

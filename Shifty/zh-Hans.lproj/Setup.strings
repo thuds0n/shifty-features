@@ -34,7 +34,6 @@
 /* Class = "NSTextFieldCell"; title = "Vivaldi"; ObjectID = "cXQ-bL-QlF"; */
 "cXQ-bL-QlF.title" = "Vivaldi";
 
-/* Class = "NSButtonCell"; title = "Share anonymous crash data and analytics with developer"; ObjectID = "fkJ-8D-Xr2"; */
 "fkJ-8D-Xr2.title" = "匿名向开发者分享崩溃数据和诊断信息";
 
 /* Class = "NSButtonCell"; title = "Yes"; ObjectID = "hNr-Ak-j8a"; */

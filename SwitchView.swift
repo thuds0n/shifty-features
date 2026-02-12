@@ -8,9 +8,8 @@
 import Cocoa
 
 class SwitchView: NSView {
-    private var toggleSwitch = NSSwitch()
+    private let toggleSwitch = NSSwitch()
     private let titleLabel = NSTextField()
-    private let switchBackgroundView = NSView()
     private var onSwitchToggle: (Bool) -> Void
     
     var switchState: Bool {
@@ -31,23 +30,11 @@ class SwitchView: NSView {
         titleLabel.isBezeled = false
         titleLabel.backgroundColor = .clear
 
-        switchBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-        switchBackgroundView.wantsLayer = true
-        switchBackgroundView.layer?.cornerRadius = 8
-
         toggleSwitch.target = self
         toggleSwitch.action = #selector(switchToggled)
         toggleSwitch.translatesAutoresizingMaskIntoConstraints = false
 
-        switchBackgroundView.addSubview(toggleSwitch)
-        NSLayoutConstraint.activate([
-            toggleSwitch.leadingAnchor.constraint(equalTo: switchBackgroundView.leadingAnchor, constant: 2),
-            toggleSwitch.trailingAnchor.constraint(equalTo: switchBackgroundView.trailingAnchor, constant: -2),
-            toggleSwitch.topAnchor.constraint(equalTo: switchBackgroundView.topAnchor, constant: 2),
-            toggleSwitch.bottomAnchor.constraint(equalTo: switchBackgroundView.bottomAnchor, constant: -2)
-        ])
-
-        let stackView = NSStackView(views: [titleLabel, switchBackgroundView])
+        let stackView = NSStackView(views: [titleLabel, toggleSwitch])
         stackView.orientation = .horizontal
         stackView.distribution = .fill
         stackView.alignment = .centerY
@@ -55,9 +42,7 @@ class SwitchView: NSView {
         self.addSubviewAndConstrainToEqualSize(
             stackView,
             withInsets: NSEdgeInsets(top: 5, left: 12, bottom: 5, right: 12))
-        switchBackgroundView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        switchBackgroundView.widthAnchor.constraint(equalToConstant: 52).isActive = true
-        switchBackgroundView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        toggleSwitch.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         wantsLayer = true
         layer?.cornerRadius = 6
         applyVisualState()
@@ -67,17 +52,15 @@ class SwitchView: NSView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc func switchToggled() {
-        let isOn = (toggleSwitch.state == .on)
+    @objc
+    private func switchToggled() {
+        let isOn = toggleSwitch.state == .on
         switchState = isOn
         onSwitchToggle(isOn)
     }
 
     private func applyVisualState() {
         titleLabel.textColor = .labelColor
-        switchBackgroundView.layer?.backgroundColor = switchState
-            ? NSColor.systemBlue.withAlphaComponent(0.35).cgColor
-            : NSColor.clear.cgColor
         layer?.backgroundColor = NSColor.clear.cgColor
     }
 }

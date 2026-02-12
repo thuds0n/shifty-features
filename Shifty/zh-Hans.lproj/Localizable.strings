@@ -59,15 +59,5 @@
 
 
 
-"analytics.includes_list_title" = "哪些数据会被收集？";
-"analytics.includes_list_1" = "包含崩溃原因的诊断信息";
-"analytics.includes_list_2" = "Shifty 夜览管家中各个功能的用量数据";
-"analytics.includes_list_3" = "不导致应用程序崩溃的其他问题的相关信息";
 
-"analytics.doesnt_include_list_title" = "哪些数据不会被收集？";
-"analytics.doesnt_include_list_1" = "您授权 Shifty 夜览管家访问的敏感信息（例如网站色温调节的相应网址）";
-"analytics.doesnt_include_list_2" = "设备 ID 等一系列能被用于回溯个人身份的信息";
 
-"analytics.data_usage_list_title" = "收集的数据将有哪些用途？";
-"analytics.data_usage_list_1" = "任何数据都不会被出售至第三方（况且也不会有第三方想要购买）";
-"analytics.data_usage_list_2" = "帮助解决问题并完善 Shifty 夜览管家";
