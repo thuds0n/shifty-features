@@ -59,15 +59,5 @@
 
 
 
-"analytics.includes_list_title" = "Welche Daten werden erfasst?";
-"analytics.includes_list_1" = "Informationen über die Ursachen eines Programmabsturzes";
-"analytics.includes_list_2" = "Daten über die Nutzung verschiedener Funktionen in Shifty";
-"analytics.includes_list_3" = "Nützliche Informationen über Probleme, die die App nicht zum Absturz gebracht haben";
 
-"analytics.doesnt_include_list_title" = "Welche Daten erfassen wir nicht?";
-"analytics.doesnt_include_list_1" = "Sensible Daten, auf die Shifty Zugriff hat (z.B. für welche Webseiten das Shiften gesetzt wurde)";
-"analytics.doesnt_include_list_2" = "Geräte-IDs oder persönlich identifizierbare Informationen";
 
-"analytics.data_usage_list_title" = "Was geschieht mit den Daten?";
-"analytics.data_usage_list_1" = "Keine dieser Daten wird an Dritte verkauft (und niemand würde sie sowieso kaufen wollen)";
-"analytics.data_usage_list_2" = "Hilft, Probleme zu lösen und Shifty besser machen";

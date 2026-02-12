@@ -135,21 +135,6 @@ class AccessibilityViewController: NSViewController {
 
 
 class FinalViewController: NSViewController {
-    @IBOutlet weak var analyticsPermissionButton: NSButton!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let isTelemetryEnabled = UserDefaults.standard.bool(forKey: Keys.analyticsPermission)
-        analyticsPermissionButton.state = isTelemetryEnabled ? .on : .off
-    }
-    
-    @IBAction func analyticsDetailClicked(_ sender: Any) {
-        presentAsSheet(AnalyticsDetailViewController())
-    }
-    
-    override func viewWillDisappear() {
-        UserDefaults.standard.set(analyticsPermissionButton.state == .on, forKey: Keys.analyticsPermission)
-    }
 }
 
 

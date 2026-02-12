@@ -46,9 +46,7 @@ enum Event {
 extension Event {
 
     func record() {
-        if UserDefaults.standard.bool(forKey: Keys.analyticsPermission) {
-            SystemIntegration.shared.telemetry.track(eventName: eventName, properties: customAttributes)
-        }
+        // Telemetry collection removed.
     }
 
     private var eventName: String {

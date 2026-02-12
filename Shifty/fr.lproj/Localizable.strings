@@ -59,15 +59,5 @@
 
 
 
-"analytics.includes_list_title" = "Quelles données recueillons-nous ?";
-"analytics.includes_list_1" = "Données sur les causes d'un crash";
-"analytics.includes_list_2" = "Données sur l'utilisation de diverses fonctionnalités de Shifty";
-"analytics.includes_list_3" = "Informations utiles sur ce qui ne provoque pas le crash de l'app";
 
-"analytics.doesnt_include_list_title" = "Quelles données ne recueillons-nous pas ?";
-"analytics.doesnt_include_list_1" = "Données sensibles auxquelles Shifty a la permission d'accéder (par ex. les adresses web utilisées pour la permutation des sites web)";
-"analytics.doesnt_include_list_2" = "Identifiants de matériel ou données permettant de vous identifier";
 
-"analytics.data_usage_list_title" = "Qu'arrive-t-il aux données ?";
-"analytics.data_usage_list_1" = "Aucune de ces données n'est vendue (et personne ne voudrait les acheter de toute façon)";
-"analytics.data_usage_list_2" = "Aide à résoudre les problème et à améliorer Shifty";
