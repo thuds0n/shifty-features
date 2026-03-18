@@ -32,7 +32,6 @@ target 'Shifty' do
   use_frameworks!
 
   pod 'AXSwift'
-  pod 'MASPreferences+Shifty'
   pod 'PublicSuffix'
   pod 'Sparkle'
   pod 'SwiftLog'

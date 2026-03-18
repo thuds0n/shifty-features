@@ -1,13 +1,11 @@
 PODS:
   - AXSwift (0.3.1)
-  - "MASPreferences+Shifty (1.3.4)"
   - PublicSuffix (0.1)
   - Sparkle (1.26.0)
   - SwiftLog (1.0.0)
 
 DEPENDENCIES:
   - AXSwift
-  - "MASPreferences+Shifty"
   - PublicSuffix
   - Sparkle
   - SwiftLog
@@ -15,18 +13,16 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AXSwift
-    - "MASPreferences+Shifty"
     - PublicSuffix
     - Sparkle
     - SwiftLog
 
 SPEC CHECKSUMS:
   AXSwift: 24508e48dd103399d5e495201a8157a663029b92
-  "MASPreferences+Shifty": 0270936bfce4fc7c1857eea8b14aaeae568b377a
   PublicSuffix: fb6147cd2400ff7a04f4173df07b73e55af29b65
   Sparkle: d56d028f4b0c123577825f5d1004f6140d77f90e
   SwiftLog: f6c4f9a4ade06263555ab34b2c0f72025ffcda9e
 
-PODFILE CHECKSUM: 30e95eedb3635cf2d2e89388d182ee7686be1525
+PODFILE CHECKSUM: b9ab5240b5916b2805000325ea5819d36423acde
 
 COCOAPODS: 1.16.2

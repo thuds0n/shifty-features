@@ -8,7 +8,7 @@
 
 import Cocoa
 import ServiceManagement
-import AXSwift
+import ApplicationServices
 import Sparkle
 import SwiftLog
 
@@ -165,7 +165,8 @@ protocol PermissionProviding {
 
 final class SystemPermissionProvider: PermissionProviding {
     func isAccessibilityTrusted(prompt: Bool) -> Bool {
-        UIElement.isProcessTrusted(withPrompt: prompt)
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: prompt] as CFDictionary
+        return AXIsProcessTrustedWithOptions(options)
     }
 
     func automationConsent(forBundleIdentifier bundleIdentifier: String) -> PrivacyConsentState {

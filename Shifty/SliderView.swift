@@ -47,7 +47,6 @@ class SliderView: NSView {
             refreshKelvinLabel()
             
             sender.superview?.enclosingMenuItem?.menu?.cancelTracking()
-            Event.sliderMoved(value: sender.floatValue).record()
             logw("Slider set to \(sender.floatValue)")
         } else {
             NightShiftManager.shared.previewColorTemperature(sender.floatValue / 100)
@@ -63,7 +62,6 @@ class SliderView: NSView {
         
         shiftSlider.isEnabled = true
         refreshKelvinLabel()
-        Event.enableSlider.record()
         logw("Enable slider button clicked")
     }
 

@@ -6,10 +6,9 @@
 //
 
 import Cocoa
-import MASPreferences_Shifty
 
 @objcMembers
-class PrefAboutViewController: NSViewController, MASPreferencesViewController {
+class PrefAboutViewController: NSViewController, PreferencesPane {
     let integrations = SystemIntegration.shared
 
     override var nibName: NSNib.Name {
@@ -47,43 +46,36 @@ class PrefAboutViewController: NSViewController, MASPreferencesViewController {
 
     @IBAction func checkUpdateClicked(_ sender: NSButton) {
         integrations.updater.checkForUpdates(sender)
-        Event.checkForUpdatesClicked.record()
     }
 
     @IBAction func visitWebsiteClicked(_ sender: NSButton) {
         guard let url = URL(string: "https://shifty.natethompson.io") else { return }
         NSWorkspace.shared.open(url)
-        Event.websiteButtonClicked.record()
     }
 
     @IBAction func submitFeedbackClicked(_ sender: NSButton) {
         guard let url = URL(string: "mailto:feedback@natethompson.io?subject=Shifty%20Feedback") else { return }
         NSWorkspace.shared.open(url)
-        Event.feedbackButtonClicked.record()
     }
     
     @IBAction func twitterButtonClicked(_ sender: Any) {
         guard let url = URL(string: "https://natethompson.io/twitter") else { return }
         NSWorkspace.shared.open(url)
-        Event.twitterButtonClicked.record()
     }
     
     @IBAction func translateButtonClicked(_ sender: NSButton) {
         guard let url = URL(string: "https://shifty.natethompson.io/translate") else { return }
         NSWorkspace.shared.open(url)
-        Event.translateButtonClicked.record()
     }
 
     @IBAction func donateButtonClicked(_ sender: NSButton) {
         guard let url = URL(string: "https://shifty.natethompson.io/donate") else { return }
         NSWorkspace.shared.open(url)
-        Event.donateButtonClicked.record()
     }
 
     @IBAction func creditsButtonClicked(_ sender: Any) {
         guard let path = Bundle.main.path(forResource: "credits", ofType: "rtfd") else { return }
         NSWorkspace.shared.open(URL(fileURLWithPath: path))
-        Event.creditsClicked.record()
     }
 }
 

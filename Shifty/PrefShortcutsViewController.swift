@@ -6,11 +6,10 @@
 //
 
 import Cocoa
-import MASPreferences_Shifty
 import Carbon
 
 @objcMembers
-class PrefShortcutsViewController: NSViewController, MASPreferencesViewController {
+class PrefShortcutsViewController: NSViewController, PreferencesPane {
     let integrations = SystemIntegration.shared
 
     let statusMenuController = (NSApplication.shared.delegate as? AppDelegate)?.statusMenu.delegate as? StatusMenuController
@@ -105,19 +104,6 @@ class PrefShortcutsViewController: NSViewController, MASPreferencesViewControlle
             with: shortcutDefaultsTransformer)
 
         applyLayoutPolishForShortcutRows()
-    }
-
-    override func viewWillDisappear() {
-        Event.shortcuts(toggleNightShift: toggleNightShiftShortcut.shortcutValue != nil,
-                        increaseColorTemp: incrementColorTempShortcut.shortcutValue != nil,
-                        decreaseColorTemp: decrementColorTempShortcut.shortcutValue != nil,
-                        disableApp: disableAppShortcut.shortcutValue != nil,
-                        disableDomain: disableDomainShortcut.shortcutValue != nil,
-                        disableSubdomain: disableSubdomainShortcut.shortcutValue != nil,
-                        disableHour: disableHourShortcut.shortcutValue != nil,
-                        disableCustom: disableCustomShortcut.shortcutValue != nil,
-                        toggleTrueTone: toggleTrueToneShortcut.shortcutValue != nil,
-                        toggleDarkMode: toggleDarkModeShortcut.shortcutValue != nil).record()
     }
 
     func bindShortcuts() {

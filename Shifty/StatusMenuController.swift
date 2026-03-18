@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import AXSwift
 import SwiftLog
 
 class StatusMenuController: NSObject, NSMenuDelegate {
@@ -49,7 +48,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     }
 
     var preferencesWindow: NSWindowController!
-    var prefGeneral: PrefGeneralViewController!
     var prefShortcuts: PrefShortcutsViewController!
     var customTimeWindow: CustomTimeWindow!
     
@@ -79,13 +77,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         
         
 
-        let prefWindow = (NSApplication.shared.delegate as? AppDelegate)?.preferenceWindowController
-        prefGeneral = prefWindow?.viewControllers.compactMap { childViewController in
-            return childViewController as? PrefGeneralViewController
-        }.first
-        prefShortcuts = prefWindow?.viewControllers.compactMap { childViewController in
-            return childViewController as? PrefShortcutsViewController
-        }.first
+        prefShortcuts = PrefShortcutsViewController()
         
         descriptionMenuItem.isEnabled = false
         sliderMenuItem.view = sliderView
@@ -152,7 +144,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         assignKeyboardShortcutToMenuItem(disableForCustomMenuItem, userDefaultsKey: Keys.disableCustomShortcut)
         assignKeyboardShortcutToMenuItem(trueToneMenuItem, userDefaultsKey: Keys.toggleTrueToneShortcut)
 
-        Event.menuOpened.record()
     }
     
     
@@ -565,7 +556,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         } else {
             RuleManager.shared.addCurrentAppDisableRule(forApp: currentApp)
         }
-        Event.disableForCurrentApp(state: (sender as? NSMenuItem)?.state == .on).record()
     }
     
     @IBAction func disableForRunningApp(_ sender: Any) {
@@ -675,7 +665,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         NSApp.activate(ignoringOtherApps: true)
         (NSApp.delegate as? AppDelegate)?.preferenceWindowController.showWindow(sender)
 
-        Event.preferencesWindowOpened.record()
     }
     
     
@@ -684,7 +673,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         NightShiftManager.shared.respond(to: .nightShiftDisableTimerEnded)
         NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
 
-        Event.quitShifty.record()
         NotificationCenter.default.post(name: .terminateApp, object: self)
         
         NSApp.terminate(self)

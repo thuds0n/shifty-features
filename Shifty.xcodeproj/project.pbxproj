@@ -43,7 +43,6 @@
 		43CA44ED26DB53ED00537DED /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 43CA44EB26DB53ED00537DED /* Intents.intentdefinition */; };
 		43CA44EE26DB53ED00537DED /* IntentHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CA44EC26DB53ED00537DED /* IntentHandlers.swift */; };
 		43CA44F026DB53FB00537DED /* DateTime+Shifty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CA44EF26DB53FB00537DED /* DateTime+Shifty.swift */; };
-		43CE525A20379A16002EBF61 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CE525920379A16002EBF61 /* Event.swift */; };
 		43CE525C2037B720002EBF61 /* ScriptingBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CE525B2037B720002EBF61 /* ScriptingBridge.swift */; };
 		43D5C2161FC2CA1300AF88E0 /* PrefGeneralViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C2181FC2CA1300AF88E0 /* PrefGeneralViewController.xib */; };
 		43D5C21B1FC2CAC300AF88E0 /* PrefShortcutsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C21D1FC2CAC300AF88E0 /* PrefShortcutsViewController.xib */; };
@@ -169,7 +168,6 @@
 		43CA44EC26DB53ED00537DED /* IntentHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = IntentHandlers.swift; path = Shifty/IntentHandlers.swift; sourceTree = "<group>"; };
 		43CA44EF26DB53FB00537DED /* DateTime+Shifty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DateTime+Shifty.swift"; path = "Shifty/DateTime+Shifty.swift"; sourceTree = "<group>"; };
 		43CC9E431EBAB19300983528 /* Shifty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shifty.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		43CE525920379A16002EBF61 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Event.swift; path = Shifty/Event.swift; sourceTree = "<group>"; };
 		43CE525B2037B720002EBF61 /* ScriptingBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScriptingBridge.swift; path = Shifty/ScriptingBridge.swift; sourceTree = "<group>"; };
 		43D5C2171FC2CA1300AF88E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefGeneralViewController.xib; sourceTree = "<group>"; };
 		43D5C21C1FC2CAC300AF88E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefShortcutsViewController.xib; sourceTree = "<group>"; };
@@ -290,7 +288,6 @@
 				43F974E62213D9D200224CF4 /* AppleEventsManager.m */,
 				497B2393200B576700669DDE /* NotificationName+Shifty.swift */,
 				43CA44EF26DB53FB00537DED /* DateTime+Shifty.swift */,
-				43CE525920379A16002EBF61 /* Event.swift */,
 				437556B51FF746BD001951AB /* SlideSegue.swift */,
 				43CE525B2037B720002EBF61 /* ScriptingBridge.swift */,
 				43CA44EB26DB53ED00537DED /* Intents.intentdefinition */,
@@ -615,7 +612,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Shifty/Pods-Shifty-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AXSwift/AXSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/MASPreferences+Shifty/MASPreferences_Shifty.framework",
 				"${BUILT_PRODUCTS_DIR}/PublicSuffix/PublicSuffix.framework",
 				"${PODS_ROOT}/Sparkle/Sparkle.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftLog/SwiftLog.framework",
@@ -623,7 +619,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AXSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MASPreferences_Shifty.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PublicSuffix.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftLog.framework",
@@ -663,7 +658,6 @@
 				43CE525C2037B720002EBF61 /* ScriptingBridge.swift in Sources */,
 				437556B41FF745A6001951AB /* Setup.swift in Sources */,
 				4394DDAD1EBE376F00F22908 /* StatusMenuController.swift in Sources */,
-				43CE525A20379A16002EBF61 /* Event.swift in Sources */,
 				43B9DE1B1FB592AE002C4C29 /* PrefAboutViewController.swift in Sources */,
 				437B7179273E0889006AD485 /* SwitchView.swift in Sources */,
 				43F974E72213D9D200224CF4 /* AppleEventsManager.m in Sources */,

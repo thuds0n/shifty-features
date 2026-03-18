@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import MASPreferences_Shifty
 import SwiftLog
 import Intents
 
@@ -51,8 +50,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         userDefaults.set(versionObject as? String ?? "", forKey: Keys.lastInstalledShiftyVersion)
         
         
-        Event.appLaunched(preferredLocalization: Bundle.main.preferredLocalizations.first ?? "").record()
-
         logw("")
         logw("App launched")
         logw("macOS \(ProcessInfo().operatingSystemVersionString)")
@@ -74,7 +71,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled)
             && !integrations.permissions.isAccessibilityTrusted(prompt: false)
         {
-            Event.accessibilityRevokedAlertShown.record()
             logw("Accessibility permissions revoked while app was not running")
             showAccessibilityDeniedAlert()
             UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
@@ -113,7 +109,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func verifySupportsNightShift() {
         if !integrations.nightShiftSystem.supportsNightShift {
-            Event.unsupportedHardware.record()
             logw("System does not support Night Shift")
             NSApplication.shared.activate(ignoringOtherApps: true)
             

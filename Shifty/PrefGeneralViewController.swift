@@ -6,12 +6,16 @@
 //
 
 import Cocoa
-import MASPreferences_Shifty
 import SwiftLog
 
+protocol PreferencesPane: AnyObject {
+    var viewIdentifier: String { get }
+    var toolbarItemImage: NSImage? { get }
+    var toolbarItemLabel: String? { get }
+}
 
 @objcMembers
-class PrefGeneralViewController: NSViewController, MASPreferencesViewController {
+class PrefGeneralViewController: NSViewController, PreferencesPane {
     let integrations = SystemIntegration.shared
     let launcherAppIdentifier = "io.natethompson.ShiftyHelper"
 
@@ -54,17 +58,11 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
     @IBOutlet weak var toLabel: NSTextField!
     @IBOutlet weak var customTimeStackView: NSStackView!
 
-    var appDelegate: AppDelegate!
-    var prefWindow: NSWindow!
-    
     var defaultDarkModeState: Bool!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        appDelegate = NSApplication.shared.delegate as? AppDelegate
-        prefWindow = appDelegate.preferenceWindowController.window
-        
         NightShiftManager.shared.onNightShiftChange {
             self.updateSchedule()
         }
@@ -86,7 +84,7 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
         kelvinDisplayButton?.state = UserDefaults.standard.bool(forKey: Keys.showKelvinInMenuSlider) ? .on : .off
         updateSchedule()
 
-        if let window = prefWindow {
+        if let window = view.window {
             let targetSize = NSSize(width: 700, height: 560)
             if window.frame.size.width < targetSize.width || window.frame.size.height < targetSize.height {
                 window.setContentSize(targetSize)
@@ -206,16 +204,6 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
         NightShiftManager.shared.schedule = .custom(start: fromTime, end: toTime)
     }
 
-    override func viewWillDisappear() {
-        Event.preferences(autoLaunch: autoLaunchButton.state == .on,
-                          quickToggle: quickToggleButton.state == .on,
-                          iconSwitching: iconSwitchingButton.state == .on,
-                          syncDarkMode: darkModeSyncButton.state == .on,
-                          websiteShifting: websiteShiftingButton.state == .on,
-                          trueToneControl: trueToneControlButton.state == .on,
-                          schedule: NightShiftManager.shared.schedule).record()
-    }
-
     private func configureKelvinDisplayCheckbox() {
         let checkbox = NSButton(checkboxWithTitle: "Show Kelvin values in menu slider", target: self, action: #selector(setShowKelvinInMenuSlider(_:)))
         checkbox.translatesAutoresizingMaskIntoConstraints = false
@@ -232,7 +220,7 @@ class PrefGeneralViewController: NSViewController, MASPreferencesViewController 
 }
 
 @objcMembers
-class PrefWhitelistViewController: NSViewController, MASPreferencesViewController {
+class PrefWhitelistViewController: NSViewController, PreferencesPane {
     override var nibName: NSNib.Name? { nil }
 
     var viewIdentifier: String = "PrefWhitelistViewController"
@@ -334,17 +322,57 @@ class PrefWhitelistViewController: NSViewController, MASPreferencesViewControlle
 }
 
 
-class PrefWindowController: MASPreferencesWindowController {
+private final class PreferencesTabViewController: NSTabViewController {
+    init(panes: [NSViewController & PreferencesPane]) {
+        super.init(nibName: nil, bundle: nil)
+        tabStyle = .toolbar
+
+        for pane in panes {
+            pane.title = pane.toolbarItemLabel ?? ""
+            addChild(pane)
+            if let item = tabViewItems.last {
+                item.label = pane.toolbarItemLabel ?? ""
+                item.image = pane.toolbarItemImage
+                item.identifier = pane.viewIdentifier
+            }
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class PrefWindowController: NSWindowController {
+    private let paneViewControllers: [NSViewController & PreferencesPane]
+    private let preferencesTitle: String
+    private let tabController: PreferencesTabViewController
+    var viewControllers: [NSViewController] { paneViewControllers }
+
+    init(viewControllers: [NSViewController & PreferencesPane], title: String) {
+        self.paneViewControllers = viewControllers
+        self.preferencesTitle = title
+        self.tabController = PreferencesTabViewController(panes: viewControllers)
+
+        let initialSize = NSSize(width: 700, height: 560)
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: initialSize),
+            styleMask: [.titled, .closable, .miniaturizable],
+            backing: .buffered,
+            defer: false)
+        window.contentViewController = tabController
+        super.init(window: window)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func windowDidLoad() {
         super.windowDidLoad()
-        window?.styleMask = [.titled, .closable]
-        window?.toolbarStyle = .preference
-    }
-    
-    
-    override func keyDown(with event: NSEvent) {
-        if event.keyCode == 13 && event.modifierFlags.contains(.command) {
-            window?.close()
-        }
+        guard let window else { return }
+        window.title = preferencesTitle
+        window.toolbarStyle = .preference
+        window.isReleasedWhenClosed = false
     }
 }
