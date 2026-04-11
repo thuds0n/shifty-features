@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SwiftLog
 import Intents
 
 @NSApplicationMain
@@ -23,12 +22,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var cliCommandObserver: NSObjectProtocol?
 
     lazy var preferenceWindowController: PrefWindowController = {
+        let general = HostedPreferencePane(
+            identifier: "general",
+            image: NSImage(systemSymbolName: "gearshape", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.general", comment: "General"),
+            size: NSSize(width: 520, height: 510),
+            rootView: PrefGeneralView())
+
+        let shortcuts = HostedPreferencePane(
+            identifier: "shortcuts",
+            image: NSImage(systemSymbolName: "command", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.shortcuts", comment: "Shortcuts"),
+            size: NSSize(width: 520, height: 450),
+            rootView: PrefShortcutsView())
+
+        let whitelist = HostedPreferencePane(
+            identifier: "whitelist",
+            image: NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.whitelist", comment: "Whitelist"),
+            size: NSSize(width: 520, height: 460),
+            rootView: PrefWhitelistView())
+
+        let about = HostedPreferencePane(
+            identifier: "about",
+            image: NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.about", comment: "About"),
+            size: NSSize(width: 420, height: 440),
+            rootView: PrefAboutView())
+
         return PrefWindowController(
-            viewControllers: [
-                PrefGeneralViewController(),
-                PrefShortcutsViewController(),
-                PrefWhitelistViewController(),
-                PrefAboutViewController()],
+            viewControllers: [general, shortcuts, whitelist, about],
             title: NSLocalizedString("prefs.title", comment: "Preferences"))
     }()
 

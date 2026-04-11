@@ -5,10 +5,10 @@
 //  Created by Enrico Ghirardi on 25/11/2017.
 //
 
+import Cocoa
 import ScriptingBridge
 import AXSwift
-import PublicSuffix
-import SwiftLog
+import DomainParser
 
 
 typealias BundleIdentifier = String
@@ -50,11 +50,13 @@ enum SupportedBrowserID: BundleIdentifier {
 class BrowserManager {
     static var shared = BrowserManager()
     let integrations = SystemIntegration.shared
-    
+
+    private let domainParser = try? DomainParser()
+
     private var browserObserver: Observer?
     private var observedApp: Application?
     private var focusedWindow: UIElement?
-    
+
     private var cachedBrowsers: [SupportedBrowserID: BrowserProtocol] = [:]
     
     
@@ -81,7 +83,8 @@ class BrowserManager {
     
     
     var currentDomain: String? {
-        return currentURL?.registeredDomain
+        guard let host = currentURL?.host else { return nil }
+        return domainParser?.parse(host: host)?.domain
     }
     
     var currentSubdomain: String? {

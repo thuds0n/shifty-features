@@ -7,108 +7,95 @@
 
 import Cocoa
 import Carbon
+import SwiftUI
 
-@objcMembers
-class PrefShortcutsViewController: NSViewController, PreferencesPane {
+// MARK: - PrefShortcutsView
+
+struct PrefShortcutsView: View {
+    private let integrations = SystemIntegration.shared
+
+    var body: some View {
+        Form {
+            Section("Night Shift") {
+                ShortcutRow("Toggle Night Shift", key: Keys.toggleNightShiftShortcut)
+                ShortcutRow("Warmer", key: Keys.incrementColorTempShortcut)
+                ShortcutRow("Cooler", key: Keys.decrementColorTempShortcut)
+            }
+
+            Section("Disable Rules") {
+                ShortcutRow("Disable for App", key: Keys.disableAppShortcut)
+                ShortcutRow("Disable for Domain", key: Keys.disableDomainShortcut)
+                ShortcutRow("Disable for Subdomain", key: Keys.disableSubdomainShortcut)
+                ShortcutRow("Disable for One Hour", key: Keys.disableHourShortcut)
+                ShortcutRow("Disable for Custom Time", key: Keys.disableCustomShortcut)
+            }
+
+            if integrations.trueTone.state != .unsupported {
+                Section("True Tone") {
+                    ShortcutRow("Toggle True Tone", key: Keys.toggleTrueToneShortcut)
+                }
+            }
+
+            Section("Dark Mode") {
+                ShortcutRow("Toggle Dark Mode", key: Keys.toggleDarkModeShortcut)
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+// MARK: - ShortcutRow
+
+private struct ShortcutRow: View {
+    let label: String
+    let key: String
+
+    init(_ label: String, key: String) {
+        self.label = label
+        self.key = key
+    }
+
+    var body: some View {
+        LabeledContent(label) {
+            ShortcutRecorderView(defaultsKey: key)
+                .frame(width: 160, height: 26)
+        }
+    }
+}
+
+// MARK: - ShortcutRecorderView (NSViewRepresentable)
+
+struct ShortcutRecorderView: NSViewRepresentable {
+    let defaultsKey: String
+
+    func makeNSView(context: Context) -> MASShortcutView {
+        let view = MASShortcutView()
+        view.setAssociatedUserDefaultsKey(defaultsKey, with: MASDictionaryTransformer())
+        return view
+    }
+
+    func updateNSView(_ nsView: MASShortcutView, context: Context) {}
+
+    func sizeThatFits(_ proposal: ProposedViewSize, nsView: MASShortcutView, context: Context) -> CGSize? {
+        CGSize(width: proposal.width ?? 160, height: 26)
+    }
+}
+
+// MARK: - PrefShortcutsViewController (shortcut binding manager, not a VC)
+
+/// Manages global hotkey bindings for all shortcuts. Instantiated at launch by StatusMenuController.
+final class PrefShortcutsViewController {
     let integrations = SystemIntegration.shared
 
-    let statusMenuController = (NSApplication.shared.delegate as? AppDelegate)?.statusMenu.delegate as? StatusMenuController
-
-    override var nibName: NSNib.Name {
-        return "PrefShortcutsViewController"
-    }
-
-    var viewIdentifier: String = "PrefShortcutsViewController"
-
-    var toolbarItemImage: NSImage? {
-        NSImage(systemSymbolName: "command", accessibilityDescription: nil)
-    }
-
-    var toolbarItemLabel: String? {
-        view.layoutSubtreeIfNeeded()
-        return NSLocalizedString("prefs.shortcuts", comment: "Shortcuts")
-    }
-
-    var hasResizableWidth = false
-    var hasResizableHeight = false
-    
-    @IBOutlet weak var toggleTrueToneLabel: NSTextField!
-    
-    @IBOutlet weak var toggleNightShiftShortcut: MASShortcutView!
-    @IBOutlet weak var incrementColorTempShortcut: MASShortcutView!
-    @IBOutlet weak var decrementColorTempShortcut: MASShortcutView!
-    @IBOutlet weak var disableAppShortcut: MASShortcutView!
-    @IBOutlet weak var disableDomainShortcut: MASShortcutView!
-    @IBOutlet weak var disableSubdomainShortcut: MASShortcutView!
-    @IBOutlet weak var disableHourShortcut: MASShortcutView!
-    @IBOutlet weak var disableCustomShortcut: MASShortcutView!
-    @IBOutlet weak var toggleTrueToneShortcut: MASShortcutView!
-    @IBOutlet weak var toggleDarkModeShortcut: MASShortcutView!
-
-    private var shortcutKeys: [String] {
-        [
-            Keys.toggleNightShiftShortcut,
-            Keys.incrementColorTempShortcut,
-            Keys.decrementColorTempShortcut,
-            Keys.disableAppShortcut,
-            Keys.disableDomainShortcut,
-            Keys.disableSubdomainShortcut,
-            Keys.disableHourShortcut,
-            Keys.disableCustomShortcut,
-            Keys.toggleTrueToneShortcut,
-            Keys.toggleDarkModeShortcut
-        ]
-    }
-
-    private let shortcutDefaultsTransformer = MASDictionaryTransformer()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //Hide True Tone settings on unsupported computers
-        let trueToneUnsupported = integrations.trueTone.state == .unsupported
-        toggleTrueToneLabel.isHidden = trueToneUnsupported
-        toggleTrueToneShortcut.isHidden = trueToneUnsupported
-
-        migrateLegacyShortcutDefaultsIfNeeded()
-
-        toggleNightShiftShortcut.setAssociatedUserDefaultsKey(
-            Keys.toggleNightShiftShortcut,
-            with: shortcutDefaultsTransformer)
-        incrementColorTempShortcut.setAssociatedUserDefaultsKey(
-            Keys.incrementColorTempShortcut,
-            with: shortcutDefaultsTransformer)
-        decrementColorTempShortcut.setAssociatedUserDefaultsKey(
-            Keys.decrementColorTempShortcut,
-            with: shortcutDefaultsTransformer)
-        disableAppShortcut.setAssociatedUserDefaultsKey(
-            Keys.disableAppShortcut,
-            with: shortcutDefaultsTransformer)
-        disableDomainShortcut.setAssociatedUserDefaultsKey(
-            Keys.disableDomainShortcut,
-            with: shortcutDefaultsTransformer)
-        disableSubdomainShortcut.setAssociatedUserDefaultsKey(
-            Keys.disableSubdomainShortcut,
-            with: shortcutDefaultsTransformer)
-        disableHourShortcut.setAssociatedUserDefaultsKey(
-            Keys.disableHourShortcut,
-            with: shortcutDefaultsTransformer)
-        disableCustomShortcut.setAssociatedUserDefaultsKey(
-            Keys.disableCustomShortcut,
-            with: shortcutDefaultsTransformer)
-        toggleTrueToneShortcut.setAssociatedUserDefaultsKey(
-            Keys.toggleTrueToneShortcut,
-            with: shortcutDefaultsTransformer)
-        toggleDarkModeShortcut.setAssociatedUserDefaultsKey(
-            Keys.toggleDarkModeShortcut,
-            with: shortcutDefaultsTransformer)
-
-        applyLayoutPolishForShortcutRows()
+    var statusMenuController: StatusMenuController? {
+        (NSApplication.shared.delegate as? AppDelegate)?.statusMenu.delegate as? StatusMenuController
     }
 
     func bindShortcuts() {
+        migrateLegacyShortcutDefaultsIfNeeded()
+
         MASShortcutBinder.shared().bindingOptions = [
-            NSBindingOption.valueTransformer: shortcutDefaultsTransformer
+            NSBindingOption.valueTransformer: MASDictionaryTransformer()
         ]
 
         MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.toggleNightShiftShortcut) {
@@ -187,7 +174,7 @@ class PrefShortcutsViewController: NSViewController, PreferencesPane {
                 NSSound.beep()
             }
         }
-        
+
         MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.toggleTrueToneShortcut) {
             guard let menu = self.statusMenuController else { return }
             if !menu.trueToneMenuItem.isHidden && menu.trueToneMenuItem.isEnabled {
@@ -196,11 +183,26 @@ class PrefShortcutsViewController: NSViewController, PreferencesPane {
                 NSSound.beep()
             }
         }
-        
-        MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.toggleDarkModeShortcut, toAction: {
-            let currentState = self.integrations.appearance.darkModeEnabled
-            self.integrations.appearance.darkModeEnabled = !currentState
-        })
+
+        MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.toggleDarkModeShortcut) {
+            let current = self.integrations.appearance.darkModeEnabled
+            self.integrations.appearance.darkModeEnabled = !current
+        }
+    }
+
+    private var shortcutKeys: [String] {
+        [
+            Keys.toggleNightShiftShortcut,
+            Keys.incrementColorTempShortcut,
+            Keys.decrementColorTempShortcut,
+            Keys.disableAppShortcut,
+            Keys.disableDomainShortcut,
+            Keys.disableSubdomainShortcut,
+            Keys.disableHourShortcut,
+            Keys.disableCustomShortcut,
+            Keys.toggleTrueToneShortcut,
+            Keys.toggleDarkModeShortcut
+        ]
     }
 
     private func migrateLegacyShortcutDefaultsIfNeeded() {
@@ -220,19 +222,9 @@ class PrefShortcutsViewController: NSViewController, PreferencesPane {
             defaults.set(dictionary, forKey: key)
         }
     }
-
-    private func applyLayoutPolishForShortcutRows() {
-        // Prevent localized labels from visually colliding with shortcut recorders.
-        for subview in view.subviews {
-            guard let label = subview as? NSTextField else { continue }
-            guard !label.isEditable else { continue }
-            label.maximumNumberOfLines = 1
-            label.lineBreakMode = .byTruncatingTail
-            label.cell?.truncatesLastVisibleLine = true
-            label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        }
-    }
 }
+
+// MARK: - MASShortcut
 
 @objc(MASShortcut)
 final class MASShortcut: NSObject, NSSecureCoding {
@@ -279,12 +271,12 @@ final class MASShortcut: NSObject, NSSecureCoding {
         if modifierFlags.contains(.control) { parts.append("⌃") }
         if modifierFlags.contains(.shift) { parts.append("⇧") }
         let key = keyCodeString
-        if !key.isEmpty {
-            parts.append(key.uppercased())
-        }
+        if !key.isEmpty { parts.append(key.uppercased()) }
         return parts.joined()
     }
 }
+
+// MARK: - MASDictionaryTransformer
 
 @objc(MASDictionaryTransformer)
 final class MASDictionaryTransformer: ValueTransformer {
@@ -316,6 +308,8 @@ final class MASDictionaryTransformer: ValueTransformer {
     }
 }
 
+// MARK: - MASShortcutView
+
 @objc(MASShortcutView)
 final class MASShortcutView: NSView {
     var shortcutValue: MASShortcut? {
@@ -328,7 +322,7 @@ final class MASShortcutView: NSView {
     private var defaultsKey: String?
     private var transformer: ValueTransformer?
     private let label = NSTextField(labelWithString: "")
-    private let clearButton = NSButton(title: "x", target: nil, action: nil)
+    private let clearButton = NSButton(title: "✕", target: nil, action: nil)
     private var localMonitor: Any?
     private var recording = false {
         didSet { updateDisplay() }
@@ -375,7 +369,7 @@ final class MASShortcutView: NSView {
 
         clearButton.translatesAutoresizingMaskIntoConstraints = false
         clearButton.isBordered = false
-        clearButton.font = NSFont.systemFont(ofSize: 12, weight: .semibold)
+        clearButton.font = NSFont.systemFont(ofSize: 10, weight: .semibold)
         clearButton.contentTintColor = .secondaryLabelColor
         clearButton.target = self
         clearButton.action = #selector(clearShortcut)
@@ -383,10 +377,10 @@ final class MASShortcutView: NSView {
         addSubview(clearButton)
 
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             label.trailingAnchor.constraint(equalTo: clearButton.leadingAnchor, constant: -4),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),
-            clearButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
+            clearButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             clearButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             clearButton.widthAnchor.constraint(equalToConstant: 14),
             clearButton.heightAnchor.constraint(equalToConstant: 14)
@@ -395,8 +389,7 @@ final class MASShortcutView: NSView {
         updateDisplay()
     }
 
-    @objc
-    private func clearShortcut() {
+    @objc private func clearShortcut() {
         shortcutValue = nil
         stopRecording()
     }
@@ -437,57 +430,61 @@ final class MASShortcutView: NSView {
 
     private func loadShortcut() {
         guard let defaultsKey else { return }
-        let defaults = UserDefaults.standard
-        let value = defaults.object(forKey: defaultsKey)
+        let value = UserDefaults.standard.object(forKey: defaultsKey)
 
-        if let dictionary = value as? [String: Any], let transformed = transformer?.transformedValue(dictionary) as? MASShortcut {
+        if let dictionary = value as? [String: Any],
+           let transformed = transformer?.transformedValue(dictionary) as? MASShortcut {
             shortcutValue = transformed
             return
         }
-
-        if let data = value as? Data, let shortcut = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data) {
+        if let data = value as? Data,
+           let shortcut = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data) {
             shortcutValue = shortcut
             return
         }
-
         shortcutValue = nil
     }
 
     private func saveShortcut() {
         guard let defaultsKey else { return }
-        let defaults = UserDefaults.standard
         if let shortcutValue, let dictionary = transformer?.reverseTransformedValue(shortcutValue) {
-            defaults.set(dictionary, forKey: defaultsKey)
+            UserDefaults.standard.set(dictionary, forKey: defaultsKey)
         } else {
-            defaults.removeObject(forKey: defaultsKey)
+            UserDefaults.standard.removeObject(forKey: defaultsKey)
         }
     }
 
     private func updateDisplay() {
         if recording {
-            label.stringValue = "Type Shortcut..."
+            label.stringValue = "Type Shortcut…"
+            label.textColor = .labelColor
             layer?.borderColor = NSColor.systemBlue.cgColor
+            layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.15).cgColor
             clearButton.isHidden = true
             return
         }
 
         layer?.borderColor = NSColor.separatorColor.cgColor
+        layer?.backgroundColor = NSColor.controlBackgroundColor.cgColor
+
         if let shortcutValue {
             label.stringValue = shortcutValue.displayString
+            label.textColor = .labelColor
             clearButton.isHidden = false
         } else {
             label.stringValue = "Record Shortcut"
+            label.textColor = .placeholderTextColor
             clearButton.isHidden = true
         }
     }
 }
 
+// MARK: - MASShortcutBinder
+
 final class MASShortcutBinder {
     static let sharedBinder = MASShortcutBinder()
 
-    class func shared() -> MASShortcutBinder {
-        sharedBinder
-    }
+    class func shared() -> MASShortcutBinder { sharedBinder }
 
     var bindingOptions: [NSBindingOption: Any] = [:]
 
@@ -550,19 +547,15 @@ final class MASShortcutBinder {
             nil,
             &hotKeyID
         )
-
-        guard status == noErr, let defaultsKey = idToDefaultsKey[hotKeyID.id], let action = actions[defaultsKey] else {
-            return OSStatus(noErr)
-        }
-
+        guard status == noErr,
+              let defaultsKey = idToDefaultsKey[hotKeyID.id],
+              let action = actions[defaultsKey] else { return OSStatus(noErr) }
         DispatchQueue.main.async(execute: action)
         return OSStatus(noErr)
     }
 
     private func reloadAll() {
-        for key in actions.keys {
-            registerHotKey(for: key)
-        }
+        for key in actions.keys { registerHotKey(for: key) }
     }
 
     private func registerHotKey(for defaultsKey: String) {
@@ -608,6 +601,8 @@ final class MASShortcutBinder {
         return nil
     }
 }
+
+// MARK: - NSEvent.ModifierFlags + Carbon
 
 private extension NSEvent.ModifierFlags {
     var carbonFlags: UInt32 {

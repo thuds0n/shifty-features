@@ -22,20 +22,6 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>Fabric</key>
-	<dict>
-		<key>APIKey</key>
-		<string>57ca2a767468cd93801f5cea46dd15311882575b</string>
-		<key>Kits</key>
-		<array>
-			<dict>
-				<key>KitInfo</key>
-				<dict/>
-				<key>KitName</key>
-				<string>Crashlytics</string>
-			</dict>
-		</array>
-	</dict>
 	<key>INIntentsSupported</key>
 	<array>
 		<string>GetColorTemperatureIntent</string>
@@ -57,7 +43,7 @@
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Shifty needs access to your current web address to let you disable Night Shift for the sites you choose.</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2017-2021 Nate Thompson. GPLv3 License.</string>
+	<string>© 2017-2026 Nate Thompson. GPLv3 License.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

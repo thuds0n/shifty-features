@@ -6,86 +6,107 @@
 //
 
 import Cocoa
+import SwiftUI
 
-@objcMembers
-class PrefAboutViewController: NSViewController, PreferencesPane {
-    let integrations = SystemIntegration.shared
+// MARK: - PrefAboutView
 
-    override var nibName: NSNib.Name {
-        get { return "PrefAboutViewController" }
+struct PrefAboutView: View {
+    private let integrations = SystemIntegration.shared
+
+    private var appName: String {
+        Bundle.main.localizedInfoDictionary?["CFBundleDisplayName"] as? String
+            ?? Bundle.main.infoDictionary?["CFBundleName"] as? String
+            ?? "Shifty"
     }
 
-    var viewIdentifier: String = "PrefAboutViewController"
-
-    var toolbarItemImage: NSImage? {
-        NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil)
+    private var versionString: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 
-    var toolbarItemLabel: String? {
-        get {
-            view.layoutSubtreeIfNeeded()
-            return NSLocalizedString("prefs.about", comment: "About")
+    var body: some View {
+        VStack(spacing: 0) {
+            // MARK: Identity
+            VStack(spacing: 14) {
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 80, height: 80)
+                    .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
+
+                VStack(spacing: 4) {
+                    Text(appName)
+                        .font(.title2.bold())
+                    Text("Version \(versionString)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.top, 44)
+            .padding(.bottom, 36)
+
+            // MARK: Actions
+            VStack(spacing: 10) {
+                HStack(spacing: 10) {
+                    AboutButton("Check for Updates", systemImage: "arrow.down.circle") {
+                        integrations.updater.checkForUpdates(NSNull())
+                    }
+                    AboutButton("Visit Website", systemImage: "safari") {
+                        NSWorkspace.shared.open(URL(string: "https://shifty.natethompson.io")!)
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    AboutButton("Send Feedback", systemImage: "envelope") {
+                        NSWorkspace.shared.open(URL(string: "mailto:feedback@natethompson.io?subject=Shifty%20Feedback")!)
+                    }
+                    AboutButton("Donate", systemImage: "heart") {
+                        NSWorkspace.shared.open(URL(string: "https://shifty.natethompson.io/donate")!)
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    AboutButton("Help Translate", systemImage: "character.bubble") {
+                        NSWorkspace.shared.open(URL(string: "https://shifty.natethompson.io/translate")!)
+                    }
+                    AboutButton("Credits", systemImage: "list.bullet.rectangle") {
+                        if let path = Bundle.main.path(forResource: "credits", ofType: "rtfd") {
+                            NSWorkspace.shared.open(URL(fileURLWithPath: path))
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 44)
+
+            Spacer()
+
+            Text("© 2017–2026 Nate Thompson · GPLv3 License")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+                .padding(.bottom, 24)
         }
-    }
-
-    var hasResizableWidth = false
-    var hasResizableHeight = false
-
-    @IBOutlet weak var nameLabel: NSTextField!
-    @IBOutlet weak var versionLabel: NSTextField!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        let bundleDisplayName = Bundle.main.localizedInfoDictionary?["CFBundleDisplayName"]
-        nameLabel.stringValue = bundleDisplayName as? String ?? ""
-
-        let versionObject = Bundle.main.infoDictionary?["CFBundleShortVersionString"]
-        versionLabel.stringValue = versionObject as? String ?? ""
-    }
-
-    @IBAction func checkUpdateClicked(_ sender: NSButton) {
-        integrations.updater.checkForUpdates(sender)
-    }
-
-    @IBAction func visitWebsiteClicked(_ sender: NSButton) {
-        guard let url = URL(string: "https://shifty.natethompson.io") else { return }
-        NSWorkspace.shared.open(url)
-    }
-
-    @IBAction func submitFeedbackClicked(_ sender: NSButton) {
-        guard let url = URL(string: "mailto:feedback@natethompson.io?subject=Shifty%20Feedback") else { return }
-        NSWorkspace.shared.open(url)
-    }
-    
-    @IBAction func twitterButtonClicked(_ sender: Any) {
-        guard let url = URL(string: "https://natethompson.io/twitter") else { return }
-        NSWorkspace.shared.open(url)
-    }
-    
-    @IBAction func translateButtonClicked(_ sender: NSButton) {
-        guard let url = URL(string: "https://shifty.natethompson.io/translate") else { return }
-        NSWorkspace.shared.open(url)
-    }
-
-    @IBAction func donateButtonClicked(_ sender: NSButton) {
-        guard let url = URL(string: "https://shifty.natethompson.io/donate") else { return }
-        NSWorkspace.shared.open(url)
-    }
-
-    @IBAction func creditsButtonClicked(_ sender: Any) {
-        guard let path = Bundle.main.path(forResource: "credits", ofType: "rtfd") else { return }
-        NSWorkspace.shared.open(URL(fileURLWithPath: path))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
+// MARK: - AboutButton
 
-class LinkButton: NSButton {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+private struct AboutButton: View {
+    let label: String
+    let systemImage: String
+    let action: () -> Void
+
+    init(_ label: String, systemImage: String, action: @escaping () -> Void) {
+        self.label = label
+        self.systemImage = systemImage
+        self.action = action
     }
 
-    override func resetCursorRects() {
-        addCursorRect(self.bounds, cursor: .pointingHand)
+    var body: some View {
+        Button(action: action) {
+            Label(label, systemImage: systemImage)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+        .frame(maxWidth: .infinity)
     }
 }

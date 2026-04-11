@@ -10,7 +10,6 @@ import Cocoa
 import ServiceManagement
 import ApplicationServices
 import Sparkle
-import SwiftLog
 
 enum Keys {
     static let isStatusToggleEnabled = "isStatusToggleEnabled"
@@ -79,12 +78,22 @@ protocol UpdateChecking {
 }
 
 final class SparkleUpdateClient: UpdateChecking {
+    private let controller = SPUStandardUpdaterController(
+        startingUpdater: false,
+        updaterDelegate: nil,
+        userDriverDelegate: nil
+    )
+
     func initialize() {
-        _ = SUUpdater.shared()
+        do {
+            try controller.updater.start()
+        } catch {
+            logw("Sparkle updater failed to start: \(error)")
+        }
     }
 
     func checkForUpdates(_ sender: Any) {
-        SUUpdater.shared().checkForUpdates(sender)
+        controller.checkForUpdates(sender)
     }
 }
 
@@ -134,13 +143,13 @@ final class SystemDisplayAppearanceController: DisplayAppearanceControlling {
 }
 
 protocol TrueToneControlling: AnyObject {
-    var state: State { get }
+    var state: TrueToneState { get }
     var isEnabled: Bool { get set }
     var isSupportedAndAvailable: Bool { get }
 }
 
 final class CoreBrightnessTrueToneController: TrueToneControlling {
-    var state: State {
+    var state: TrueToneState {
         CBTrueToneClient.shared.state
     }
 

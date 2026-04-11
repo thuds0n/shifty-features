@@ -1,12 +1,14 @@
 //
-//  GeneralPreferencesViewController.swift
+//  PrefGeneralViewController.swift
 //  Shifty
 //
 //  Created by Nate Thompson on 11/10/17.
 //
 
 import Cocoa
-import SwiftLog
+import SwiftUI
+
+// MARK: - PreferencesPane protocol
 
 protocol PreferencesPane: AnyObject {
     var viewIdentifier: String { get }
@@ -14,313 +16,40 @@ protocol PreferencesPane: AnyObject {
     var toolbarItemLabel: String? { get }
 }
 
-@objcMembers
-class PrefGeneralViewController: NSViewController, PreferencesPane {
-    let integrations = SystemIntegration.shared
-    let launcherAppIdentifier = "io.natethompson.ShiftyHelper"
+// MARK: - HostedPreferencePane
 
-    override var nibName: NSNib.Name {
-        return "PrefGeneralViewController"
+/// Wraps a SwiftUI view as a preferences pane tab, conforming to PreferencesPane.
+final class HostedPreferencePane<Content: View>: NSHostingController<Content>, PreferencesPane {
+    let viewIdentifier: String
+    let toolbarItemImage: NSImage?
+    let toolbarItemLabel: String?
+    private let contentSize: NSSize
+
+    init(
+        identifier: String,
+        image: NSImage?,
+        label: String,
+        size: NSSize,
+        rootView: Content
+    ) {
+        self.viewIdentifier = identifier
+        self.toolbarItemImage = image
+        self.toolbarItemLabel = label
+        self.contentSize = size
+        super.init(rootView: rootView)
     }
 
-    var viewIdentifier: String = "PrefGeneralViewController"
-
-    var toolbarItemImage: NSImage? {
-        NSImage(systemSymbolName: "gearshape", accessibilityDescription: nil)
-    }
-
-    var toolbarItemLabel: String? {
-        view.layoutSubtreeIfNeeded()
-        return NSLocalizedString("prefs.general", comment: "General")
-    }
-
-    var hasResizableWidth = false
-    var hasResizableHeight = false
-
-    @IBOutlet weak var autoLaunchButton: NSButton!
-    @IBOutlet weak var quickToggleButton: NSButton!
-    @IBOutlet weak var iconSwitchingButton: NSButton!
-    @IBOutlet weak var darkModeSyncButton: NSButton!
-    @IBOutlet weak var websiteShiftingButton: NSButton!
-    @IBOutlet weak var trueToneControlButton: NSButton!
-    private var kelvinDisplayButton: NSButton?
-    
-    @IBOutlet weak var trueToneStackView: NSStackView!
-    
-    @IBOutlet weak var schedulePopup: NSPopUpButton!
-    @IBOutlet weak var offMenuItem: NSMenuItem!
-    @IBOutlet weak var customMenuItem: NSMenuItem!
-    @IBOutlet weak var sunMenuItem: NSMenuItem!
-
-    @IBOutlet weak var fromTimePicker: NSDatePicker!
-    @IBOutlet weak var toTimePicker: NSDatePicker!
-    @IBOutlet weak var fromLabel: NSTextField!
-    @IBOutlet weak var toLabel: NSTextField!
-    @IBOutlet weak var customTimeStackView: NSStackView!
-
-    var defaultDarkModeState: Bool!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        NightShiftManager.shared.onNightShiftChange {
-            self.updateSchedule()
-        }
-
-        //Hide True Tone settings on unsupported computers
-        trueToneStackView.isHidden = integrations.trueTone.state == .unsupported
-        
-        defaultDarkModeState = integrations.appearance.darkModeEnabled
-
-        configureKelvinDisplayCheckbox()
+    @MainActor required dynamic init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewWillAppear() {
         super.viewWillAppear()
-
-        let loginItemEnabled = integrations.loginItem.isEnabled(helperBundleIdentifier: launcherAppIdentifier)
-        autoLaunchButton.state = loginItemEnabled ? .on : .off
-        UserDefaults.standard.set(loginItemEnabled, forKey: Keys.isAutoLaunchEnabled)
-        kelvinDisplayButton?.state = UserDefaults.standard.bool(forKey: Keys.showKelvinInMenuSlider) ? .on : .off
-        updateSchedule()
-
-        if let window = view.window {
-            let targetSize = NSSize(width: 700, height: 560)
-            if window.frame.size.width < targetSize.width || window.frame.size.height < targetSize.height {
-                window.setContentSize(targetSize)
-            }
-        }
-    }
-    
-    func updateSchedule() {
-        switch NightShiftManager.shared.schedule {
-        case .off:
-            self.schedulePopup.select(self.offMenuItem)
-            self.customTimeStackView.isHidden = true
-        case .custom(start: let startTime, end: let endTime):
-            self.schedulePopup.select(self.customMenuItem)
-            let startDate = Date(startTime)
-            let endDate = Date(endTime)
-            
-            self.fromTimePicker.dateValue = startDate
-            self.toTimePicker.dateValue = endDate
-            self.customTimeStackView.isHidden = false
-        case .solar:
-            self.schedulePopup.select(self.sunMenuItem)
-            self.customTimeStackView.isHidden = true
-        }
-    }
-
-    //MARK: IBActions
-
-    @IBAction func setAutoLaunch(_ sender: NSButtonCell) {
-        let shouldEnable = sender.state == .on
-        let didSet = integrations.loginItem.setEnabled(shouldEnable, helperBundleIdentifier: launcherAppIdentifier)
-        let actualEnabled = didSet
-            ? shouldEnable
-            : integrations.loginItem.isEnabled(helperBundleIdentifier: launcherAppIdentifier)
-
-        sender.state = actualEnabled ? .on : .off
-        UserDefaults.standard.set(actualEnabled, forKey: Keys.isAutoLaunchEnabled)
-
-        if !didSet {
-            NSSound.beep()
-            logw("Failed to set auto launch on login state")
-        } else {
-            logw("Auto launch on login set to \(sender.state.rawValue)")
-        }
-    }
-
-    @IBAction func quickToggle(_ sender: NSButtonCell) {
-        let appDelegate = NSApplication.shared.delegate as! AppDelegate
-        appDelegate.setStatusToggle()
-        logw("Quick Toggle set to \(sender.state.rawValue)")
-    }
-
-    @IBAction func setIconSwitching(_ sender: NSButtonCell) {
-        let appDelegate = NSApplication.shared.delegate as! AppDelegate
-        appDelegate.updateMenuBarIcon()
-        logw("Icon switching set to \(sender.state.rawValue)")
-    }
-
-    @IBAction func syncDarkMode(_ sender: NSButtonCell) {
-        if sender.state == .on {
-            defaultDarkModeState = integrations.appearance.darkModeEnabled
-            NightShiftManager.shared.updateDarkMode()
-        } else {
-            integrations.appearance.darkModeEnabled = defaultDarkModeState
-        }
-        logw("Dark mode sync preference set to \(sender.state.rawValue)")
-    }
-
-    @IBAction func setWebsiteControl(_ sender: NSButtonCell) {
-        logw("Website control preference clicked")
-        if sender.state == .on {
-            if !integrations.permissions.isAccessibilityTrusted(prompt: false) {
-                logw("Accessibility permissions alert shown")
-
-                UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
-                NSApp.runModal(for: AccessibilityWindow().window!)
-            }
-        } else {
-            BrowserManager.shared.stopBrowserWatcher()
-            logw("Website control disabled")
-        }
-    }
-    
-    @IBAction func setTrueToneControl(_ sender: NSButtonCell) {
-        if integrations.trueTone.state != .unsupported {
-            if sender.state == .on {
-                if NightShiftManager.shared.isDisableRuleActive {
-                    integrations.trueTone.isEnabled = false
-                }
-            } else {
-                integrations.trueTone.isEnabled = true
-            }
-            logw("True Tone control set to \(sender.state.rawValue)")
-        }
-    }
-    
-    @objc private func setShowKelvinInMenuSlider(_ sender: NSButton) {
-        UserDefaults.standard.set(sender.state == .on, forKey: Keys.showKelvinInMenuSlider)
-    }
-    
-    @IBAction func schedulePopup(_ sender: NSPopUpButton) {
-        if schedulePopup.selectedItem == offMenuItem {
-            NightShiftManager.shared.schedule = .off
-            customTimeStackView.isHidden = true
-        } else if schedulePopup.selectedItem == customMenuItem {
-            scheduleTimePickers(self)
-            customTimeStackView.isHidden = false
-        } else if schedulePopup.selectedItem == sunMenuItem {
-            NightShiftManager.shared.schedule = .solar
-            customTimeStackView.isHidden = true
-        }
-    }
-
-    @IBAction func scheduleTimePickers(_ sender: Any) {
-        let fromTime = Time(fromTimePicker.dateValue)
-        let toTime = Time(toTimePicker.dateValue)
-        NightShiftManager.shared.schedule = .custom(start: fromTime, end: toTime)
-    }
-
-    private func configureKelvinDisplayCheckbox() {
-        let checkbox = NSButton(checkboxWithTitle: "Show Kelvin values in menu slider", target: self, action: #selector(setShowKelvinInMenuSlider(_:)))
-        checkbox.translatesAutoresizingMaskIntoConstraints = false
-        checkbox.state = UserDefaults.standard.bool(forKey: Keys.showKelvinInMenuSlider) ? .on : .off
-        view.addSubview(checkbox)
-
-        NSLayoutConstraint.activate([
-            checkbox.leadingAnchor.constraint(equalTo: darkModeSyncButton.leadingAnchor),
-            checkbox.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20)
-        ])
-
-        kelvinDisplayButton = checkbox
+        preferredContentSize = contentSize
     }
 }
 
-@objcMembers
-class PrefWhitelistViewController: NSViewController, PreferencesPane {
-    override var nibName: NSNib.Name? { nil }
-
-    var viewIdentifier: String = "PrefWhitelistViewController"
-
-    var toolbarItemImage: NSImage? {
-        NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil)
-    }
-
-    var toolbarItemLabel: String? {
-        "Whitelist"
-    }
-
-    var hasResizableWidth = false
-    var hasResizableHeight = false
-
-    private let textView = NSTextView()
-    private let minimumVisibleRows = 10
-
-    override func loadView() {
-        view = NSView(frame: NSRect(x: 0, y: 0, width: 700, height: 560))
-        preferredContentSize = NSSize(width: 700, height: 560)
-
-        let title = NSTextField(labelWithString: "Apps and websites currently excluded from shifting")
-        title.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
-        title.translatesAutoresizingMaskIntoConstraints = false
-
-        let scroll = NSScrollView()
-        scroll.translatesAutoresizingMaskIntoConstraints = false
-        scroll.borderType = .bezelBorder
-        scroll.hasVerticalScroller = true
-        scroll.documentView = textView
-
-        textView.isEditable = false
-        textView.isVerticallyResizable = true
-        textView.isHorizontallyResizable = false
-        textView.minSize = NSSize(width: 0, height: 0)
-        textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
-        textView.textContainer?.containerSize = NSSize(width: 0, height: CGFloat.greatestFiniteMagnitude)
-        textView.textContainer?.widthTracksTextView = true
-        textView.string = ""
-
-        view.addSubview(title)
-        view.addSubview(scroll)
-
-        NSLayoutConstraint.activate([
-            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 18),
-
-            scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            scroll.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 10),
-            scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20)
-        ])
-    }
-
-    override func viewWillAppear() {
-        super.viewWillAppear()
-        if let window = view.window {
-            let targetSize = NSSize(width: 700, height: 560)
-            if window.frame.size.width < targetSize.width || window.frame.size.height < targetSize.height {
-                window.setContentSize(targetSize)
-            }
-        }
-        refreshWhitelistText()
-    }
-
-    private func refreshWhitelistText() {
-        let manager = RuleManager.shared
-        var lines = [String]()
-
-        lines.append("Applications")
-        let appRules = manager.currentAppDisableRuleSnapshot
-        let appLines = appRules.map { "- \($0.bundleIdentifier)" }
-        lines.append(contentsOf: appLines)
-        if appLines.count < minimumVisibleRows {
-            lines.append(contentsOf: Array(repeating: "-", count: minimumVisibleRows - appLines.count))
-        }
-
-        lines.append("")
-        lines.append("When Running")
-        let runningRules = manager.runningAppDisableRuleSnapshot
-        let runningLines = runningRules.map { "- \($0.bundleIdentifier)" }
-        lines.append(contentsOf: runningLines)
-        if runningLines.count < minimumVisibleRows {
-            lines.append(contentsOf: Array(repeating: "-", count: minimumVisibleRows - runningLines.count))
-        }
-
-        lines.append("")
-        lines.append("Websites")
-        let browserRules = manager.browserRuleSnapshot
-        let browserLines = browserRules.map { "- \($0.type.rawValue): \($0.host)" }
-        lines.append(contentsOf: browserLines)
-        if browserLines.count < minimumVisibleRows {
-            lines.append(contentsOf: Array(repeating: "-", count: minimumVisibleRows - browserLines.count))
-        }
-
-        textView.string = lines.joined(separator: "\n")
-    }
-}
-
+// MARK: - PreferencesTabViewController
 
 private final class PreferencesTabViewController: NSTabViewController {
     init(panes: [NSViewController & PreferencesPane]) {
@@ -343,6 +72,8 @@ private final class PreferencesTabViewController: NSTabViewController {
     }
 }
 
+// MARK: - PrefWindowController
+
 class PrefWindowController: NSWindowController {
     private let paneViewControllers: [NSViewController & PreferencesPane]
     private let preferencesTitle: String
@@ -354,9 +85,8 @@ class PrefWindowController: NSWindowController {
         self.preferencesTitle = title
         self.tabController = PreferencesTabViewController(panes: viewControllers)
 
-        let initialSize = NSSize(width: 700, height: 560)
         let window = NSWindow(
-            contentRect: NSRect(origin: .zero, size: initialSize),
+            contentRect: NSRect(origin: .zero, size: NSSize(width: 520, height: 490)),
             styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered,
             defer: false)
@@ -374,5 +104,344 @@ class PrefWindowController: NSWindowController {
         window.title = preferencesTitle
         window.toolbarStyle = .preference
         window.isReleasedWhenClosed = false
+    }
+}
+
+// MARK: - PrefGeneralView
+
+struct PrefGeneralView: View {
+    private let integrations = SystemIntegration.shared
+    private let launcherAppIdentifier = "io.natethompson.ShiftyHelper"
+
+    @AppStorage(Keys.isStatusToggleEnabled) private var quickToggle = false
+    @AppStorage(Keys.isIconSwitchingEnabled) private var iconSwitching = false
+    @AppStorage(Keys.isDarkModeSyncEnabled) private var darkModeSync = false
+    @AppStorage(Keys.trueToneControl) private var trueToneControl = false
+    @AppStorage(Keys.showKelvinInMenuSlider) private var showKelvin = false
+
+    @State private var autoLaunch = false
+    @State private var websiteControl = false
+    @State private var trueToneAvailable = false
+    @State private var scheduleMode: ScheduleMode = .off
+    @State private var fromTime = Date()
+    @State private var toTime = Date()
+
+    var body: some View {
+        Form {
+            // MARK: Application
+            Section("Application") {
+                Toggle("Launch at Login", isOn: $autoLaunch)
+                    .onChange(of: autoLaunch) { _, newValue in
+                        handleAutoLaunchChange(newValue)
+                    }
+                Toggle("Click Status Icon to Toggle Night Shift", isOn: $quickToggle)
+                    .onChange(of: quickToggle) { _, _ in
+                        (NSApp.delegate as? AppDelegate)?.setStatusToggle()
+                    }
+                Toggle("Switch Menu Bar Icon when Disabled", isOn: $iconSwitching)
+                    .onChange(of: iconSwitching) { _, _ in
+                        (NSApp.delegate as? AppDelegate)?.updateMenuBarIcon()
+                    }
+            }
+
+            // MARK: Display
+            Section("Display") {
+                Toggle("Sync Dark Mode with Night Shift", isOn: $darkModeSync)
+                    .onChange(of: darkModeSync) { _, newValue in
+                        handleDarkModeSyncChange(newValue)
+                    }
+                Toggle("Show Kelvin Values in Menu Slider", isOn: $showKelvin)
+            }
+
+            // MARK: Website Shifting
+            Section {
+                Toggle("Enable Website Shifting", isOn: $websiteControl)
+                    .onChange(of: websiteControl) { _, newValue in
+                        handleWebsiteControlChange(newValue)
+                    }
+            } header: {
+                Text("Website Shifting")
+            } footer: {
+                Text("Monitors your browser to disable Night Shift per website. Requires Accessibility access.")
+            }
+
+            // MARK: True Tone (conditional)
+            if trueToneAvailable {
+                Section {
+                    Toggle("Disable True Tone with Night Shift Rules", isOn: $trueToneControl)
+                        .onChange(of: trueToneControl) { _, newValue in
+                            handleTrueToneControlChange(newValue)
+                        }
+                } header: {
+                    Text("True Tone")
+                } footer: {
+                    Text("True Tone turns off when Night Shift is disabled by an app or website rule.")
+                }
+            }
+
+            // MARK: Night Shift Schedule
+            Section("Night Shift Schedule") {
+                Picker("Schedule", selection: $scheduleMode) {
+                    Text("Off").tag(ScheduleMode.off)
+                    Text("Sunset to Sunrise").tag(ScheduleMode.solar)
+                    Text("Custom").tag(ScheduleMode.custom)
+                }
+                .pickerStyle(.menu)
+                .onChange(of: scheduleMode) { _, _ in applySchedule() }
+
+                if scheduleMode == .custom {
+                    DatePicker("From", selection: $fromTime, displayedComponents: .hourAndMinute)
+                        .onChange(of: fromTime) { _, _ in applySchedule() }
+                    DatePicker("To", selection: $toTime, displayedComponents: .hourAndMinute)
+                        .onChange(of: toTime) { _, _ in applySchedule() }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .onAppear(perform: loadState)
+    }
+
+    // MARK: State loading
+
+    private func loadState() {
+        let loginItemEnabled = integrations.loginItem.isEnabled(helperBundleIdentifier: launcherAppIdentifier)
+        autoLaunch = loginItemEnabled
+        UserDefaults.standard.set(loginItemEnabled, forKey: Keys.isAutoLaunchEnabled)
+
+        websiteControl = UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled)
+        trueToneAvailable = integrations.trueTone.state != .unsupported
+
+        switch NightShiftManager.shared.schedule {
+        case .off:
+            scheduleMode = .off
+        case .solar:
+            scheduleMode = .solar
+        case .custom(let start, let end):
+            scheduleMode = .custom
+            fromTime = Date(start)
+            toTime = Date(end)
+        }
+    }
+
+    // MARK: Action handlers
+
+    private func handleAutoLaunchChange(_ enabled: Bool) {
+        let didSet = integrations.loginItem.setEnabled(enabled, helperBundleIdentifier: launcherAppIdentifier)
+        let actual = didSet ? enabled : integrations.loginItem.isEnabled(helperBundleIdentifier: launcherAppIdentifier)
+        if actual != enabled {
+            autoLaunch = actual
+            NSSound.beep()
+        }
+        UserDefaults.standard.set(actual, forKey: Keys.isAutoLaunchEnabled)
+        logw("Auto launch on login set to \(actual)")
+    }
+
+    private func handleDarkModeSyncChange(_ enabled: Bool) {
+        if enabled {
+            NightShiftManager.shared.updateDarkMode()
+        } else {
+            integrations.appearance.darkModeEnabled = false
+        }
+        logw("Dark mode sync set to \(enabled)")
+    }
+
+    private func handleWebsiteControlChange(_ enabled: Bool) {
+        if enabled {
+            if !integrations.permissions.isAccessibilityTrusted(prompt: false) {
+                websiteControl = false
+                UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
+                logw("Accessibility permissions alert shown")
+                NSApp.runModal(for: AccessibilityWindow().window!)
+            } else {
+                UserDefaults.standard.set(true, forKey: Keys.isWebsiteControlEnabled)
+                logw("Website control enabled")
+            }
+        } else {
+            UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
+            BrowserManager.shared.stopBrowserWatcher()
+            logw("Website control disabled")
+        }
+    }
+
+    private func handleTrueToneControlChange(_ enabled: Bool) {
+        guard integrations.trueTone.state != .unsupported else { return }
+        if enabled {
+            if NightShiftManager.shared.isDisableRuleActive {
+                integrations.trueTone.isEnabled = false
+            }
+        } else {
+            integrations.trueTone.isEnabled = true
+        }
+        logw("True Tone control set to \(enabled)")
+    }
+
+    private func applySchedule() {
+        switch scheduleMode {
+        case .off:
+            NightShiftManager.shared.schedule = .off
+        case .solar:
+            NightShiftManager.shared.schedule = .solar
+        case .custom:
+            NightShiftManager.shared.schedule = .custom(start: Time(fromTime), end: Time(toTime))
+        }
+    }
+}
+
+private enum ScheduleMode: Hashable {
+    case off, solar, custom
+}
+
+// MARK: - PrefWhitelistView
+
+struct PrefWhitelistView: View {
+    @State private var currentAppRules: [AppRule] = []
+    @State private var runningAppRules: [AppRule] = []
+    @State private var browserRules: [BrowserRule] = []
+
+    var body: some View {
+        List {
+            ruleSection(
+                header: Label("Active App", systemImage: "macwindow"),
+                rules: currentAppRules
+            )
+            ruleSection(
+                header: Label("When Running", systemImage: "app.badge"),
+                rules: runningAppRules
+            )
+
+            Section {
+                if browserRules.isEmpty {
+                    emptyLabel()
+                } else {
+                    ForEach(browserRules, id: \.host) { rule in
+                        browserRuleRow(rule)
+                    }
+                }
+            } header: {
+                Label("Websites", systemImage: "globe")
+            }
+        }
+        .listStyle(.inset)
+        .onAppear(perform: loadRules)
+    }
+
+    @ViewBuilder
+    private func ruleSection(header: some View, rules: [AppRule]) -> some View {
+        Section {
+            if rules.isEmpty {
+                emptyLabel()
+            } else {
+                ForEach(rules, id: \.bundleIdentifier) { rule in
+                    appRuleRow(rule)
+                }
+            }
+        } header: {
+            header
+        }
+    }
+
+    @ViewBuilder
+    private func appRuleRow(_ rule: AppRule) -> some View {
+        HStack(spacing: 10) {
+            appIconView(for: rule.bundleIdentifier)
+                .frame(width: 22, height: 22)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(displayName(for: rule.bundleIdentifier))
+                    .fontWeight(.medium)
+                Text(rule.bundleIdentifier)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    @ViewBuilder
+    private func browserRuleRow(_ rule: BrowserRule) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: iconName(for: rule.type))
+                .foregroundStyle(tint(for: rule.type))
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(rule.host)
+                    .fontWeight(.medium)
+                Text(ruleDescription(for: rule.type))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    @ViewBuilder
+    private func appIconView(for bundleIdentifier: String) -> some View {
+        if let icon = resolveIcon(for: bundleIdentifier) {
+            Image(nsImage: icon)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "app.dashed")
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private func emptyLabel() -> some View {
+        Text("No rules")
+            .foregroundStyle(.tertiary)
+            .italic()
+    }
+
+    private func loadRules() {
+        currentAppRules = RuleManager.shared.currentAppDisableRuleSnapshot
+        runningAppRules = RuleManager.shared.runningAppDisableRuleSnapshot
+        browserRules = RuleManager.shared.browserRuleSnapshot
+    }
+
+    private func resolveIcon(for bundleIdentifier: String) -> NSImage? {
+        if let running = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleIdentifier }) {
+            return running.icon
+        }
+        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
+            return NSWorkspace.shared.icon(forFile: url.path)
+        }
+        return nil
+    }
+
+    private func displayName(for bundleIdentifier: String) -> String {
+        if let running = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleIdentifier }),
+           let name = running.localizedName {
+            return name
+        }
+        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
+            return url.deletingPathExtension().lastPathComponent
+        }
+        return bundleIdentifier
+    }
+
+    private func iconName(for type: RuleType) -> String {
+        switch type {
+        case .domain: return "minus.circle.fill"
+        case .subdomainDisabled: return "minus.circle"
+        case .subdomainEnabled: return "checkmark.circle.fill"
+        }
+    }
+
+    private func tint(for type: RuleType) -> Color {
+        switch type {
+        case .domain: return .red
+        case .subdomainDisabled: return .orange
+        case .subdomainEnabled: return .green
+        }
+    }
+
+    private func ruleDescription(for type: RuleType) -> String {
+        switch type {
+        case .domain: return "Domain disabled"
+        case .subdomainDisabled: return "Subdomain disabled"
+        case .subdomainEnabled: return "Subdomain enabled"
+        }
     }
 }

@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SwiftLog
 
 class SliderView: NSView {
 

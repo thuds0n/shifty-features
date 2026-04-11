@@ -6,7 +6,6 @@
 //
 
 import Cocoa
-import SwiftLog
 import ScriptingBridge
 
 
@@ -316,19 +315,15 @@ enum RuleType: String, Codable {
     case subdomainEnabled
 }
 
-
-
 enum SubdomainRuleType: String, Codable {
     case none
     case disabled
     case enabled
 }
 
-
-
 struct AppRule: CustomStringConvertible, Hashable, Codable {
     var bundleIdentifier: BundleIdentifier
-    // Currently unused
+    /// Retained for Codable compatibility with persisted rules. Not evaluated in rule logic.
     var fullScreenOnly: Bool
     
     var description: String {
@@ -340,8 +335,6 @@ struct AppRule: CustomStringConvertible, Hashable, Codable {
             && lhs.fullScreenOnly == rhs.fullScreenOnly
     }
 }
-
-
 
 struct BrowserRule: CustomStringConvertible, Hashable, Codable {
     var type: RuleType

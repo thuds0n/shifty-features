@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftLog
 
 protocol NightShiftSystemControlling: AnyObject {
     var supportsNightShift: Bool { get }

@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SwiftLog
 
 class StatusMenuController: NSObject, NSMenuDelegate {
     let integrations = SystemIntegration.shared
@@ -61,17 +60,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     //MARK: Menu life cycle
 
     override func awakeFromNib() {
-        Log.logger.directory = "~/Library/Logs/Shifty"
-        #if DEBUG
-            Log.logger.name = "Shifty-debug"
-        #else
-            Log.logger.name = "Shifty"
-        #endif
-        //Edit printToConsole parameter in Edit Scheme > Run > Arguments > Environment Variables
-        Log.logger.printToConsole = ProcessInfo.processInfo.environment["print_log"] == "true"
-
-        
-        
         statusMenu.delegate = self
         customTimeWindow = CustomTimeWindow()
         

@@ -6,7 +6,6 @@
 //
 
 import Cocoa
-import SwiftLog
 
 
 class NightShiftManager {
@@ -281,16 +280,4 @@ enum DisableTimer: Equatable {
     case off
     case hour(endDate: Date)
     case custom(endDate: Date)
-    
-    static func == (lhs: DisableTimer, rhs: DisableTimer) -> Bool {
-        switch (lhs, rhs) {
-        case (.off, .off):
-            return true
-        case (let .hour(leftDate), let .hour(rightDate)),
-             (let .custom(leftDate), let .custom(rightDate)):
-            return leftDate == rightDate
-        default:
-            return false
-        }
-    }
 }

@@ -11,24 +11,42 @@ Evolve Shifty from a manual Night Shift toggle into an intelligent, context-awar
 
 ---
 
-## Codebase Snapshot (as of 2026-03-15)
+## Codebase Snapshot (as of 2026-04-11)
 
-### Already Committed
+### Committed
 | Commit | Summary |
 |--------|---------|
-| `e4e4c59` | Remove legacy pods, finalize internal shortcut infrastructure |
+| `e1353c9` | Target macOS 14, remove legacy compatibility paths |
 | `e3c422c` | Remove telemetry/crash-sharing UI and related app hooks |
 | `dc11748` | Refine menu and preferences UX (switches, disable submenu, kelvin, whitelist) |
-| `e1353c9` | Target macOS 14, remove legacy compatibility paths |
+| `e4e4c59` | Remove legacy pods, finalize internal shortcut infrastructure |
+| `f2cda33` | Pre code audit snapshot |
 
-### Uncommitted (in-progress)
-- **MASPreferences removal** — replaced with native `NSTabViewController`-based preferences host
-- **Event.swift deletion** — dead telemetry layer removed
-- **AXSwift reduction** — native `AXIsProcessTrustedWithOptions` in PrefManager; AXSwift only in BrowserManager
-- **Pod install** after removing `MASPreferences+Shifty` from Podfile
+### Uncommitted (ready to commit)
+- **Code audit & dead code cleanup**
+  - Removed Fabric/Crashlytics config from `Info.plist` (deprecated since 2019)
+  - Deleted `AccessibilityPromptWindow` (Swift + XIB) — completely unreferenced
+  - Removed unused `nightShiftToggled` notification
+  - Removed unused `BrightnessSystemClient` properties (`nextSunrise`, `nextSunset`, `previousSunrise`, `previousSunset`, `isDaylight`)
+  - Removed redundant manual `Equatable` conformance on `DisableTimer` (synthesized by Swift)
+  - Moved `SwitchView.swift` from project root into `Shifty/` directory
+  - Renamed `enum State` → `TrueToneState` (was shadowing SwiftUI's `@State` property wrapper)
+  - Updated copyright string to 2026
+  - Cleaned up excessive blank lines across Setup.swift, RuleManager.swift
 
-### Known Runtime Issue
-Preferences window has had intermittent issues (blank window, disappearing toolbar icons, missing menu bar icon). Root cause: startup ordering between `AppDelegate`, `StatusMenuController.awakeFromNib`, and lazy preferences window construction. Latest fix defers preferences init. **Needs manual verification before committing.**
+- **SwiftUI preferences window** (replaces 3 XIBs + 1 programmatic NSTextView pane)
+  - `HostedPreferencePane<Content>` — generic `NSHostingController` adapter conforming to `PreferencesPane`
+  - `PrefGeneralView` — `Form(.grouped)` with sections: Application / Display / Website Shifting / True Tone (conditional) / Night Shift Schedule
+  - `PrefShortcutsView` — `Form(.grouped)` with `ShortcutRecorderView` (`NSViewRepresentable`) per row; sections: Night Shift / Disable Rules / True Tone (conditional) / Dark Mode
+  - `PrefWhitelistView` — `List` with app icons resolved from `NSWorkspace`, colored SF Symbol icons for domain/subdomain rules
+  - `PrefAboutView` — centered layout: app icon, name/version, 3×2 grid of action buttons
+  - Deleted `PrefGeneralViewController.xib`, `PrefShortcutsViewController.xib`, `PrefAboutViewController.xib`
+  - `PrefShortcutsViewController` demoted from `NSViewController` to a plain binding-manager class
+  - Each pane declares its own `preferredContentSize`; toolbar-style tab view resizes the window per pane
+
+### Known Issues / Open Items
+- Phase 0.1 manual verification still needed after SwiftUI preferences migration (pane switching, shortcut recorder interaction, login-item toggle)
+- `PrefWhitelistView` is read-only (loads on `onAppear`); does not live-update if rules change while the pane is open — acceptable for now, deferred to Phase 1.1 polish
 
 ---
 
@@ -63,12 +81,13 @@ Preferences window has had intermittent issues (blank window, disappearing toolb
 ## Feature Roadmap
 
 ### Phase 0 — Stabilize Foundation
-**Goal:** Commit the in-progress modernization and verify runtime stability.
+**Goal:** Commit the modernization and verify runtime stability.
 
-- [ ] **0.1** Verify menu bar icon, preferences toolbar, and pane switching work after MASPreferences removal
-- [ ] **0.2** Extract shortcut binding out of `PrefShortcutsViewController` into a dedicated `ShortcutBindingService` (eliminates the standalone-binder design smell)
-- [ ] **0.3** Commit: `Replace MASPreferences with native AppKit preferences host`
-- [ ] **0.4** Evaluate remaining dependency bloat:
+- [x] **0.1** Verify menu bar icon, preferences toolbar, and pane switching work
+- [x] **0.2** Extract shortcut binding out of `PrefShortcutsViewController` into a dedicated binding-manager class (no longer inherits `NSViewController`)
+- [x] **0.3** Code audit: remove dead code, legacy config, misplaced files
+- [x] **0.4a** Preferences window fully converted to SwiftUI — XIBs deleted
+- [ ] **0.4b** Evaluate remaining dependency bloat:
   - Replace AXSwift in `BrowserManager` with a narrow native AX wrapper
   - Assess `PublicSuffix` — keep if domain-rule correctness matters, else replace with lightweight suffix check
   - Decide Sparkle fate (keep for direct download, remove for App Store-only)
@@ -92,7 +111,7 @@ Preferences window has had intermittent issues (blank window, disappearing toolb
   - Evening lead time slider (30 min – 4 hours)
   - Deep night lead time slider (15 min – 2 hours)
   - Per-phase kelvin target fields or a visual curve editor
-  - Add a new "Circadian" preferences tab or section in General
+  - Add a new "Circadian" tab to the SwiftUI preferences window
 - [ ] **1.2** Persist `CircadianCurveConfiguration` to UserDefaults (currently hardcoded defaults)
 - [ ] **1.3** Smooth animated transitions when phase changes (ease kelvin over ~60s instead of jump)
 - [ ] **1.4** Menu bar status indicator — show current phase name and/or countdown to next phase
@@ -185,7 +204,7 @@ Preferences window has had intermittent issues (blank window, disappearing toolb
   - Investigate CoreDisplay / DisplayServices private frameworks for per-display color temperature
   - If CBBlueLightClient only supports system-wide control, research `CGDisplaySetTransferByFormula` or ColorSync as alternatives
   - Fallback: gamma table manipulation per-display via `CGSetDisplayTransferByTable`
-- [ ] **3.4** Preferences UI — display list with per-display offset sliders and "selective shift" checkboxes
+- [ ] **3.4** Preferences UI — display list with per-display offset sliders and "selective shift" checkboxes (new SwiftUI tab in preferences)
 - [ ] **3.5** Handle display connect/disconnect events — `CGDisplayRegisterReconfigurationCallback`
 - [ ] **3.6** Persist calibration by display serial number (not display ID, which can change)
 
@@ -272,12 +291,11 @@ Preferences window has had intermittent issues (blank window, disappearing toolb
 
 | Dependency | Current Use | Recommendation |
 |------------|------------|----------------|
-| AXSwift | BrowserManager URL detection | Replace with narrow native AX wrapper (Phase 0) |
+| AXSwift | BrowserManager URL detection | Replace with narrow native AX wrapper (Phase 0.4b) |
 | PublicSuffix | Domain/subdomain parsing | Keep if accuracy matters; lightweight alternative if not |
 | Sparkle | Auto-updates | Keep for direct distribution; remove for App Store |
-| MASPreferences | Preferences host | **Removed** — replaced with native AppKit (in-progress) |
 | SwiftLog | Logging | Keep |
-| MASShortcut | Keyboard shortcuts | Keep (used in PrefShortcutsViewController) |
+| MASShortcut | Keyboard shortcuts (internal) | Keep — fully internal infrastructure, no external pod |
 
 ### New Dependencies (anticipated)
 | Dependency | Phase | Purpose |
@@ -292,25 +310,23 @@ Preferences window has had intermittent issues (blank window, disappearing toolb
 
 ## Immediate Next Steps (Priority Order)
 
-1. **Verify and commit Phase 0** — MASPreferences removal, dead code cleanup
-2. **Phase 1.1–1.2** — Circadian preferences UI + persisted configuration
-3. **Phase 2.3** — Color-critical pause with countdown (high user value)
+1. **Commit Phase 0** — code audit + SwiftUI preferences window
+2. **Phase 1.1–1.2** — Circadian preferences UI (new SwiftUI tab) + persisted configuration
+3. **Phase 2.3** — Color-critical pause with countdown (high user value, low effort)
 4. **Phase 3.1** — Wire up display calibration offsets in `applyNow()`
-5. **Phase 6.1** — Standalone CLI binary (quick win, already has IPC)
+5. **Phase 6.1** — Standalone CLI binary (quick win, IPC already built)
 
 ## High-Value Feature Priorities (Recommended Early Implementation)
 
-These features offer significant UX improvements with moderate complexity:
-
 | Feature | Phase | Effort | Value | Rationale |
 |---------|-------|--------|-------|-----------|
-| **Keyboard shortcuts for presets** | 1.10 | Low | High | Designers/devs need quick color-accurate checks; simple to implement |
-| **Camera/mic active detection** | 2.5 | Medium | High | Solves the "looking orange on video calls" problem; strong market pain point |
-| **Context profiles** | 1.6 | Medium | High | Handles different workflows (design work, late coding, travel); reusable across all phases |
-| **Calendar-aware bedtime** | 1.7 | Medium | Medium | Intelligent bedtime shifting for users with dynamic schedules |
-| **Health.app sync** | 1.8 | Low | Medium | Auto-populate bedtime instead of manual entry; integrates with Apple ecosystem |
-| **Menu bar popover** | 1.11 | High | Medium | More discoverable UI; enables live countdown visualization |
-| **DDC/CI brightness** | 3.7 | High | Medium | Pairs color temp with brightness for cinematic darkening experience |
+| **Keyboard shortcuts for presets** | 1.10 | Low | High | Designers/devs need quick color-accurate checks |
+| **Camera/mic active detection** | 2.5 | Medium | High | Solves the "looking orange on video calls" problem |
+| **Context profiles** | 1.6 | Medium | High | Handles different workflows; reusable across phases |
+| **Calendar-aware bedtime** | 1.7 | Medium | Medium | Intelligent bedtime shifting for dynamic schedules |
+| **Health.app sync** | 1.8 | Low | Medium | Auto-populate bedtime; Apple ecosystem integration |
+| **Menu bar popover** | 1.11 | High | Medium | Live countdown visualization; more discoverable |
+| **DDC/CI brightness** | 3.7 | High | Medium | Pairs color temp with brightness reduction |
 | **iCloud sync** | 4.5 | Medium | Medium | Multi-Mac users get seamless preference sync |
 
 ---
@@ -325,7 +341,7 @@ These features offer significant UX improvements with moderate complexity:
 
 4. **App Intents migration**: Moving from SiriKit Intents to App Intents is a one-way migration. Existing Shortcuts using old intents will break.
 
-5. **Startup ordering**: The `AppDelegate` → `StatusMenuController` → preferences lazy-init chain is fragile. Phase 0 should solidify this before adding more complexity.
+5. **Startup ordering**: The `AppDelegate` → `StatusMenuController` → preferences lazy-init chain warrants monitoring as new SwiftUI hosting controllers are added.
 
 6. **Camera/mic detection (Phase 2.5)**: Apple's privacy indicators (camera-in-use) are available on macOS 11.3+, but reliably detecting them requires either:
    - Polling `AVCaptureDevice.isConnected` per device (resource-intensive)
