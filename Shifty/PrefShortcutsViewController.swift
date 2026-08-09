@@ -16,28 +16,28 @@ struct PrefShortcutsView: View {
 
     var body: some View {
         Form {
-            Section("Night Shift") {
-                ShortcutRow("Toggle Night Shift", key: Keys.toggleNightShiftShortcut)
-                ShortcutRow("Warmer", key: Keys.incrementColorTempShortcut)
-                ShortcutRow("Cooler", key: Keys.decrementColorTempShortcut)
+            Section("prefs.shortcuts.section.night_shift") {
+                ShortcutRow("prefs.shortcuts.toggle_night_shift", key: Keys.toggleNightShiftShortcut)
+                ShortcutRow("prefs.shortcuts.warmer", key: Keys.incrementColorTempShortcut)
+                ShortcutRow("prefs.shortcuts.cooler", key: Keys.decrementColorTempShortcut)
             }
 
-            Section("Disable Rules") {
-                ShortcutRow("Disable for App", key: Keys.disableAppShortcut)
-                ShortcutRow("Disable for Domain", key: Keys.disableDomainShortcut)
-                ShortcutRow("Disable for Subdomain", key: Keys.disableSubdomainShortcut)
-                ShortcutRow("Disable for One Hour", key: Keys.disableHourShortcut)
-                ShortcutRow("Disable for Custom Time", key: Keys.disableCustomShortcut)
+            Section("prefs.shortcuts.section.disable_rules") {
+                ShortcutRow("prefs.shortcuts.disable_app", key: Keys.disableAppShortcut)
+                ShortcutRow("prefs.shortcuts.disable_domain", key: Keys.disableDomainShortcut)
+                ShortcutRow("prefs.shortcuts.disable_subdomain", key: Keys.disableSubdomainShortcut)
+                ShortcutRow("prefs.shortcuts.disable_hour", key: Keys.disableHourShortcut)
+                ShortcutRow("prefs.shortcuts.disable_custom", key: Keys.disableCustomShortcut)
             }
 
             if integrations.trueTone.state != .unsupported {
-                Section("True Tone") {
-                    ShortcutRow("Toggle True Tone", key: Keys.toggleTrueToneShortcut)
+                Section("prefs.shortcuts.section.true_tone") {
+                    ShortcutRow("prefs.shortcuts.toggle_true_tone", key: Keys.toggleTrueToneShortcut)
                 }
             }
 
-            Section("Dark Mode") {
-                ShortcutRow("Toggle Dark Mode", key: Keys.toggleDarkModeShortcut)
+            Section("prefs.shortcuts.section.dark_mode") {
+                ShortcutRow("prefs.shortcuts.toggle_dark_mode", key: Keys.toggleDarkModeShortcut)
             }
         }
         .formStyle(.grouped)
@@ -47,18 +47,23 @@ struct PrefShortcutsView: View {
 // MARK: - ShortcutRow
 
 private struct ShortcutRow: View {
-    let label: String
+    let labelKey: String
     let key: String
 
-    init(_ label: String, key: String) {
-        self.label = label
+    init(_ labelKey: String, key: String) {
+        self.labelKey = labelKey
         self.key = key
     }
 
     var body: some View {
-        LabeledContent(label) {
-            ShortcutRecorderView(defaultsKey: key)
+        LabeledContent {
+            ShortcutRecorderView(
+                defaultsKey: key,
+                accessibilityLabel: NSLocalizedString(labelKey, comment: "Shortcut action")
+            )
                 .frame(width: 160, height: 26)
+        } label: {
+            Text(LocalizedStringKey(labelKey))
         }
     }
 }
@@ -67,14 +72,18 @@ private struct ShortcutRow: View {
 
 struct ShortcutRecorderView: NSViewRepresentable {
     let defaultsKey: String
+    let accessibilityLabel: String
 
     func makeNSView(context: Context) -> MASShortcutView {
         let view = MASShortcutView()
+        view.accessibilityLabelText = accessibilityLabel
         view.setAssociatedUserDefaultsKey(defaultsKey, with: MASDictionaryTransformer())
         return view
     }
 
-    func updateNSView(_ nsView: MASShortcutView, context: Context) {}
+    func updateNSView(_ nsView: MASShortcutView, context: Context) {
+        nsView.accessibilityLabelText = accessibilityLabel
+    }
 
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: MASShortcutView, context: Context) -> CGSize? {
         CGSize(width: proposal.width ?? 160, height: 26)
@@ -312,6 +321,10 @@ final class MASDictionaryTransformer: ValueTransformer {
 
 @objc(MASShortcutView)
 final class MASShortcutView: NSView {
+    var accessibilityLabelText = "" {
+        didSet { updateAccessibility() }
+    }
+
     var shortcutValue: MASShortcut? {
         didSet {
             updateDisplay()
@@ -323,10 +336,13 @@ final class MASShortcutView: NSView {
     private var transformer: ValueTransformer?
     private let label = NSTextField(labelWithString: "")
     private let clearButton = NSButton(title: "✕", target: nil, action: nil)
-    private var localMonitor: Any?
     private var recording = false {
         didSet { updateDisplay() }
     }
+
+    override var acceptsFirstResponder: Bool { true }
+
+    override var focusRingMaskBounds: NSRect { bounds }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -338,10 +354,8 @@ final class MASShortcutView: NSView {
         configure()
     }
 
-    deinit {
-        if let localMonitor {
-            NSEvent.removeMonitor(localMonitor)
-        }
+    override func drawFocusRingMask() {
+        NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 1), xRadius: 6, yRadius: 6).fill()
     }
 
     func setAssociatedUserDefaultsKey(_ key: String, with transformer: Any?) {
@@ -352,7 +366,43 @@ final class MASShortcutView: NSView {
 
     override func mouseDown(with event: NSEvent) {
         _ = event
+        window?.makeFirstResponder(self)
         startRecording()
+    }
+
+    override func keyDown(with event: NSEvent) {
+        if recording {
+            handleRecordingKey(event)
+            return
+        }
+
+        switch Int(event.keyCode) {
+        case kVK_Space, kVK_Return, kVK_ANSI_KeypadEnter:
+            startRecording()
+        case kVK_Delete, kVK_ForwardDelete:
+            clearShortcut()
+        default:
+            super.keyDown(with: event)
+        }
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        let becameFirstResponder = super.becomeFirstResponder()
+        needsDisplay = true
+        return becameFirstResponder
+    }
+
+    override func resignFirstResponder() -> Bool {
+        stopRecording()
+        let resigned = super.resignFirstResponder()
+        needsDisplay = true
+        return resigned
+    }
+
+    override func accessibilityPerformPress() -> Bool {
+        window?.makeFirstResponder(self)
+        startRecording()
+        return true
     }
 
     private func configure() {
@@ -361,6 +411,9 @@ final class MASShortcutView: NSView {
         layer?.borderWidth = 1
         layer?.borderColor = NSColor.separatorColor.cgColor
         layer?.backgroundColor = NSColor.controlBackgroundColor.cgColor
+        focusRingType = .exterior
+        setAccessibilityElement(true)
+        setAccessibilityRole(.button)
 
         label.translatesAutoresizingMaskIntoConstraints = false
         label.alignment = .center
@@ -373,7 +426,12 @@ final class MASShortcutView: NSView {
         clearButton.contentTintColor = .secondaryLabelColor
         clearButton.target = self
         clearButton.action = #selector(clearShortcut)
-        clearButton.focusRingType = .none
+        clearButton.focusRingType = .default
+        clearButton.toolTip = NSLocalizedString(
+            "prefs.shortcuts.recorder.clear",
+            comment: "Clear the recorded shortcut"
+        )
+        clearButton.setAccessibilityLabel(clearButton.toolTip)
         addSubview(clearButton)
 
         NSLayoutConstraint.activate([
@@ -396,36 +454,31 @@ final class MASShortcutView: NSView {
 
     private func startRecording() {
         recording = true
-        if let localMonitor {
-            NSEvent.removeMonitor(localMonitor)
-        }
-        localMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard let self else { return event }
-            let modifiers = event.modifierFlags.intersection([.command, .option, .control, .shift])
-
-            if event.keyCode == UInt16(kVK_Escape) {
-                self.shortcutValue = nil
-                self.stopRecording()
-                return nil
-            }
-
-            guard !modifiers.isEmpty else {
-                NSSound.beep()
-                return nil
-            }
-
-            self.shortcutValue = MASShortcut(keyCode: Int(event.keyCode), modifierFlags: modifiers)
-            self.stopRecording()
-            return nil
-        }
     }
 
     private func stopRecording() {
         recording = false
-        if let localMonitor {
-            NSEvent.removeMonitor(localMonitor)
-            self.localMonitor = nil
+    }
+
+    private func handleRecordingKey(_ event: NSEvent) {
+        if event.keyCode == UInt16(kVK_Escape) {
+            stopRecording()
+            return
         }
+
+        if event.keyCode == UInt16(kVK_Delete) || event.keyCode == UInt16(kVK_ForwardDelete) {
+            clearShortcut()
+            return
+        }
+
+        let modifiers = event.modifierFlags.intersection([.command, .option, .control, .shift])
+        guard !modifiers.isEmpty else {
+            NSSound.beep()
+            return
+        }
+
+        shortcutValue = MASShortcut(keyCode: Int(event.keyCode), modifierFlags: modifiers)
+        stopRecording()
     }
 
     private func loadShortcut() {
@@ -456,11 +509,15 @@ final class MASShortcutView: NSView {
 
     private func updateDisplay() {
         if recording {
-            label.stringValue = "Type Shortcut…"
+            label.stringValue = NSLocalizedString(
+                "prefs.shortcuts.recorder.type_shortcut",
+                comment: "Prompt shown while recording a shortcut"
+            )
             label.textColor = .labelColor
             layer?.borderColor = NSColor.systemBlue.cgColor
             layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.15).cgColor
             clearButton.isHidden = true
+            updateAccessibility()
             return
         }
 
@@ -472,9 +529,37 @@ final class MASShortcutView: NSView {
             label.textColor = .labelColor
             clearButton.isHidden = false
         } else {
-            label.stringValue = "Record Shortcut"
+            label.stringValue = NSLocalizedString(
+                "prefs.shortcuts.recorder.record",
+                comment: "Prompt to record a shortcut"
+            )
             label.textColor = .placeholderTextColor
             clearButton.isHidden = true
+        }
+        updateAccessibility()
+    }
+
+    private func updateAccessibility() {
+        setAccessibilityLabel(accessibilityLabelText)
+
+        let helpFormat = NSLocalizedString(
+            "prefs.shortcuts.recorder.help_format",
+            comment: "Accessibility help for a shortcut recorder"
+        )
+        setAccessibilityHelp(String.localizedStringWithFormat(helpFormat, accessibilityLabelText))
+
+        if recording {
+            setAccessibilityValue(NSLocalizedString(
+                "prefs.shortcuts.recorder.recording",
+                comment: "Shortcut recorder is listening"
+            ))
+        } else if let shortcutValue {
+            setAccessibilityValue(shortcutValue.displayString)
+        } else {
+            setAccessibilityValue(NSLocalizedString(
+                "prefs.shortcuts.recorder.not_set",
+                comment: "No shortcut is assigned"
+            ))
         }
     }
 }

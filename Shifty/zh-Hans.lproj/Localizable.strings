@@ -44,6 +44,66 @@
 "prefs.general" = "通用";
 "prefs.shortcuts" = "快捷键";
 "prefs.about" = "关于";
+"prefs.whitelist" = "例外规则";
+
+"prefs.general.section.application" = "应用程序";
+"prefs.general.launch_at_login" = "登录时启动 Shifty 夜览管家";
+"prefs.general.quick_toggle" = "单击状态图标以切换“夜览”模式";
+"prefs.general.switch_icon" = "停用时切换菜单栏图标";
+"prefs.general.section.display" = "显示";
+"prefs.general.sync_dark_mode" = "将深色模式与“夜览”同步";
+"prefs.general.show_kelvin" = "在菜单滑块中显示开尔文值";
+"prefs.general.section.website_shifting" = "网站色温调节";
+"prefs.general.enable_website_shifting" = "启用网站色温调节";
+"prefs.general.website_shifting_footer" = "监控浏览器，以便按网站停用“夜览”模式。需要辅助功能访问权限。";
+"prefs.general.section.true_tone" = "原彩显示";
+"prefs.general.disable_true_tone" = "根据“夜览”规则停用“原彩显示”";
+"prefs.general.true_tone_footer" = "当应用程序或网站规则停用“夜览”时，也会关闭“原彩显示”。";
+"prefs.general.section.night_shift_schedule" = "“夜览”设定时间";
+"prefs.general.schedule" = "设定时间";
+"prefs.general.schedule.off" = "关闭";
+"prefs.general.schedule.solar" = "日落到日出";
+"prefs.general.schedule.custom" = "自定义";
+"prefs.general.schedule.from" = "从";
+"prefs.general.schedule.to" = "到";
+
+"prefs.whitelist.active_app" = "当前应用程序";
+"prefs.whitelist.when_running" = "运行时";
+"prefs.whitelist.websites" = "网站";
+"prefs.whitelist.no_rules" = "没有规则";
+"prefs.whitelist.domain_disabled" = "已停用域名";
+"prefs.whitelist.subdomain_disabled" = "已停用子域名";
+"prefs.whitelist.subdomain_enabled" = "已启用子域名";
+
+"prefs.shortcuts.section.night_shift" = "夜览";
+"prefs.shortcuts.toggle_night_shift" = "切换“夜览”模式";
+"prefs.shortcuts.warmer" = "更暖";
+"prefs.shortcuts.cooler" = "更冷";
+"prefs.shortcuts.section.disable_rules" = "停用规则";
+"prefs.shortcuts.disable_app" = "为应用程序停用";
+"prefs.shortcuts.disable_domain" = "为域名停用";
+"prefs.shortcuts.disable_subdomain" = "为子域名停用";
+"prefs.shortcuts.disable_hour" = "停用一小时";
+"prefs.shortcuts.disable_custom" = "在自定义时间内停用";
+"prefs.shortcuts.section.true_tone" = "原彩显示";
+"prefs.shortcuts.toggle_true_tone" = "切换“原彩显示”";
+"prefs.shortcuts.section.dark_mode" = "深色模式";
+"prefs.shortcuts.toggle_dark_mode" = "切换深色模式";
+"prefs.shortcuts.recorder.record" = "录制快捷键";
+"prefs.shortcuts.recorder.type_shortcut" = "键入快捷键…";
+"prefs.shortcuts.recorder.recording" = "正在录制";
+"prefs.shortcuts.recorder.not_set" = "未设置";
+"prefs.shortcuts.recorder.clear" = "清除快捷键";
+"prefs.shortcuts.recorder.help_format" = "%@：按空格键或 Return 键开始录制。按 Delete 键清除。";
+
+"prefs.about.version_format" = "版本 %@";
+"prefs.about.check_updates" = "检查更新";
+"prefs.about.visit_website" = "访问网站";
+"prefs.about.send_feedback" = "发送反馈";
+"prefs.about.donate" = "捐赠";
+"prefs.about.help_translate" = "协助翻译";
+"prefs.about.credits" = "致谢名单";
+"prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3 许可证";
 
 
 "alert.hardware_message" = "你的 Mac 不支持“夜览”模式。";
@@ -56,7 +116,6 @@
 "alert.open_preferences" = "打开系统偏好设置";
 "alert.not_now" = "以后再说";
 "alert.close" = "关闭";
-
 
 
 

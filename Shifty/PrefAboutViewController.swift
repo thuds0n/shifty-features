@@ -35,7 +35,10 @@ struct PrefAboutView: View {
                 VStack(spacing: 4) {
                     Text(appName)
                         .font(.title2.bold())
-                    Text("Version \(versionString)")
+                    Text(String.localizedStringWithFormat(
+                        NSLocalizedString("prefs.about.version_format", comment: "App version"),
+                        versionString
+                    ))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -46,28 +49,28 @@ struct PrefAboutView: View {
             // MARK: Actions
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
-                    AboutButton("Check for Updates", systemImage: "arrow.down.circle") {
+                    AboutButton("prefs.about.check_updates", systemImage: "arrow.down.circle") {
                         integrations.updater.checkForUpdates(NSNull())
                     }
-                    AboutButton("Visit Website", systemImage: "safari") {
+                    AboutButton("prefs.about.visit_website", systemImage: "safari") {
                         NSWorkspace.shared.open(URL(string: "https://shifty.natethompson.io")!)
                     }
                 }
 
                 HStack(spacing: 10) {
-                    AboutButton("Send Feedback", systemImage: "envelope") {
+                    AboutButton("prefs.about.send_feedback", systemImage: "envelope") {
                         NSWorkspace.shared.open(URL(string: "mailto:feedback@natethompson.io?subject=Shifty%20Feedback")!)
                     }
-                    AboutButton("Donate", systemImage: "heart") {
+                    AboutButton("prefs.about.donate", systemImage: "heart") {
                         NSWorkspace.shared.open(URL(string: "https://shifty.natethompson.io/donate")!)
                     }
                 }
 
                 HStack(spacing: 10) {
-                    AboutButton("Help Translate", systemImage: "character.bubble") {
+                    AboutButton("prefs.about.help_translate", systemImage: "character.bubble") {
                         NSWorkspace.shared.open(URL(string: "https://shifty.natethompson.io/translate")!)
                     }
-                    AboutButton("Credits", systemImage: "list.bullet.rectangle") {
+                    AboutButton("prefs.about.credits", systemImage: "list.bullet.rectangle") {
                         if let path = Bundle.main.path(forResource: "credits", ofType: "rtfd") {
                             NSWorkspace.shared.open(URL(fileURLWithPath: path))
                         }
@@ -78,7 +81,7 @@ struct PrefAboutView: View {
 
             Spacer()
 
-            Text("© 2017–2026 Nate Thompson · GPLv3 License")
+            Text("prefs.about.copyright")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
                 .padding(.bottom, 24)
@@ -90,19 +93,19 @@ struct PrefAboutView: View {
 // MARK: - AboutButton
 
 private struct AboutButton: View {
-    let label: String
+    let labelKey: LocalizedStringKey
     let systemImage: String
     let action: () -> Void
 
-    init(_ label: String, systemImage: String, action: @escaping () -> Void) {
-        self.label = label
+    init(_ labelKey: LocalizedStringKey, systemImage: String, action: @escaping () -> Void) {
+        self.labelKey = labelKey
         self.systemImage = systemImage
         self.action = action
     }
 
     var body: some View {
         Button(action: action) {
-            Label(label, systemImage: systemImage)
+            Label(labelKey, systemImage: systemImage)
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.bordered)

@@ -44,6 +44,66 @@
 "prefs.general" = "Général";
 "prefs.shortcuts" = "Raccourcis";
 "prefs.about" = "À propos";
+"prefs.whitelist" = "Liste d’exceptions";
+
+"prefs.general.section.application" = "Application";
+"prefs.general.launch_at_login" = "Lancer Shifty à l’ouverture de session";
+"prefs.general.quick_toggle" = "Cliquer sur l’icône d’état pour basculer Night Shift";
+"prefs.general.switch_icon" = "Changer l’icône de la barre des menus si désactivé";
+"prefs.general.section.display" = "Affichage";
+"prefs.general.sync_dark_mode" = "Synchroniser le mode sombre avec Night Shift";
+"prefs.general.show_kelvin" = "Afficher les valeurs Kelvin dans le curseur du menu";
+"prefs.general.section.website_shifting" = "Permutation des sites web";
+"prefs.general.enable_website_shifting" = "Activer la permutation des sites web";
+"prefs.general.website_shifting_footer" = "Surveille le navigateur afin de désactiver Night Shift selon le site. Nécessite l’accès aux fonctionnalités d’accessibilité.";
+"prefs.general.section.true_tone" = "True Tone";
+"prefs.general.disable_true_tone" = "Désactiver True Tone avec les règles Night Shift";
+"prefs.general.true_tone_footer" = "True Tone se désactive lorsque Night Shift est désactivé par une règle d’application ou de site web.";
+"prefs.general.section.night_shift_schedule" = "Programmation Night Shift";
+"prefs.general.schedule" = "Programmation";
+"prefs.general.schedule.off" = "Désactivé";
+"prefs.general.schedule.solar" = "Du coucher au lever du soleil";
+"prefs.general.schedule.custom" = "Personnalisé";
+"prefs.general.schedule.from" = "De";
+"prefs.general.schedule.to" = "À";
+
+"prefs.whitelist.active_app" = "Application active";
+"prefs.whitelist.when_running" = "Lors de l’exécution";
+"prefs.whitelist.websites" = "Sites web";
+"prefs.whitelist.no_rules" = "Aucune règle";
+"prefs.whitelist.domain_disabled" = "Domaine désactivé";
+"prefs.whitelist.subdomain_disabled" = "Sous-domaine désactivé";
+"prefs.whitelist.subdomain_enabled" = "Sous-domaine activé";
+
+"prefs.shortcuts.section.night_shift" = "Night Shift";
+"prefs.shortcuts.toggle_night_shift" = "Activer ou désactiver Night Shift";
+"prefs.shortcuts.warmer" = "Plus chaud";
+"prefs.shortcuts.cooler" = "Plus froid";
+"prefs.shortcuts.section.disable_rules" = "Règles de désactivation";
+"prefs.shortcuts.disable_app" = "Désactiver pour l’application";
+"prefs.shortcuts.disable_domain" = "Désactiver pour le domaine";
+"prefs.shortcuts.disable_subdomain" = "Désactiver pour le sous-domaine";
+"prefs.shortcuts.disable_hour" = "Désactiver pendant une heure";
+"prefs.shortcuts.disable_custom" = "Personnaliser la désactivation";
+"prefs.shortcuts.section.true_tone" = "True Tone";
+"prefs.shortcuts.toggle_true_tone" = "Activer ou désactiver True Tone";
+"prefs.shortcuts.section.dark_mode" = "Mode sombre";
+"prefs.shortcuts.toggle_dark_mode" = "Activer ou désactiver le mode sombre";
+"prefs.shortcuts.recorder.record" = "Enregistrer le raccourci";
+"prefs.shortcuts.recorder.type_shortcut" = "Saisissez le raccourci…";
+"prefs.shortcuts.recorder.recording" = "Enregistrement";
+"prefs.shortcuts.recorder.not_set" = "Non défini";
+"prefs.shortcuts.recorder.clear" = "Effacer le raccourci";
+"prefs.shortcuts.recorder.help_format" = "%@ : appuyez sur Espace ou Retour pour enregistrer. Appuyez sur Supprimer pour effacer.";
+
+"prefs.about.version_format" = "Version %@";
+"prefs.about.check_updates" = "Rechercher les mises à jour";
+"prefs.about.visit_website" = "Visiter le site web";
+"prefs.about.send_feedback" = "Envoyer des commentaires";
+"prefs.about.donate" = "Faire un don";
+"prefs.about.help_translate" = "Aider à traduire";
+"prefs.about.credits" = "Crédits";
+"prefs.about.copyright" = "© 2017–2026 Nate Thompson · Licence GPLv3";
 
 
 "alert.hardware_message" = "Votre Mac ne supporte pas Night Shift";
@@ -56,7 +116,6 @@
 "alert.open_preferences" = "Ouvrir les Préférences Système";
 "alert.not_now" = "Plus tard";
 "alert.close" = "Fermer";
-
 
 
 

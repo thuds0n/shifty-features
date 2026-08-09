@@ -46,6 +46,66 @@
 "prefs.general" = "General";
 "prefs.shortcuts" = "Shortcuts";
 "prefs.about" = "About";
+"prefs.whitelist" = "Whitelist";
+
+"prefs.general.section.application" = "Application";
+"prefs.general.launch_at_login" = "Launch at Login";
+"prefs.general.quick_toggle" = "Click Status Icon to Toggle Night Shift";
+"prefs.general.switch_icon" = "Switch Menu Bar Icon when Disabled";
+"prefs.general.section.display" = "Display";
+"prefs.general.sync_dark_mode" = "Sync Dark Mode with Night Shift";
+"prefs.general.show_kelvin" = "Show Kelvin Values in Menu Slider";
+"prefs.general.section.website_shifting" = "Website Shifting";
+"prefs.general.enable_website_shifting" = "Enable Website Shifting";
+"prefs.general.website_shifting_footer" = "Monitors your browser to disable Night Shift per website. Requires Accessibility access.";
+"prefs.general.section.true_tone" = "True Tone";
+"prefs.general.disable_true_tone" = "Disable True Tone with Night Shift Rules";
+"prefs.general.true_tone_footer" = "True Tone turns off when Night Shift is disabled by an app or website rule.";
+"prefs.general.section.night_shift_schedule" = "Night Shift Schedule";
+"prefs.general.schedule" = "Schedule";
+"prefs.general.schedule.off" = "Off";
+"prefs.general.schedule.solar" = "Sunset to Sunrise";
+"prefs.general.schedule.custom" = "Custom";
+"prefs.general.schedule.from" = "From";
+"prefs.general.schedule.to" = "To";
+
+"prefs.whitelist.active_app" = "Active App";
+"prefs.whitelist.when_running" = "When Running";
+"prefs.whitelist.websites" = "Websites";
+"prefs.whitelist.no_rules" = "No rules";
+"prefs.whitelist.domain_disabled" = "Domain disabled";
+"prefs.whitelist.subdomain_disabled" = "Subdomain disabled";
+"prefs.whitelist.subdomain_enabled" = "Subdomain enabled";
+
+"prefs.shortcuts.section.night_shift" = "Night Shift";
+"prefs.shortcuts.toggle_night_shift" = "Toggle Night Shift";
+"prefs.shortcuts.warmer" = "Warmer";
+"prefs.shortcuts.cooler" = "Cooler";
+"prefs.shortcuts.section.disable_rules" = "Disable Rules";
+"prefs.shortcuts.disable_app" = "Disable for App";
+"prefs.shortcuts.disable_domain" = "Disable for Domain";
+"prefs.shortcuts.disable_subdomain" = "Disable for Subdomain";
+"prefs.shortcuts.disable_hour" = "Disable for One Hour";
+"prefs.shortcuts.disable_custom" = "Disable for Custom Time";
+"prefs.shortcuts.section.true_tone" = "True Tone";
+"prefs.shortcuts.toggle_true_tone" = "Toggle True Tone";
+"prefs.shortcuts.section.dark_mode" = "Dark Mode";
+"prefs.shortcuts.toggle_dark_mode" = "Toggle Dark Mode";
+"prefs.shortcuts.recorder.record" = "Record Shortcut";
+"prefs.shortcuts.recorder.type_shortcut" = "Type Shortcut…";
+"prefs.shortcuts.recorder.recording" = "Recording";
+"prefs.shortcuts.recorder.not_set" = "Not set";
+"prefs.shortcuts.recorder.clear" = "Clear shortcut";
+"prefs.shortcuts.recorder.help_format" = "%@: Press Space or Return to record. Press Delete to clear.";
+
+"prefs.about.version_format" = "Version %@";
+"prefs.about.check_updates" = "Check for Updates";
+"prefs.about.visit_website" = "Visit Website";
+"prefs.about.send_feedback" = "Send Feedback";
+"prefs.about.donate" = "Donate";
+"prefs.about.help_translate" = "Help Translate";
+"prefs.about.credits" = "Credits";
+"prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3 Licence";
 
 
 "alert.hardware_message" = "Your Mac does not support Night Shift";
@@ -58,7 +118,6 @@
 "alert.open_preferences" = "Open System Preferences";
 "alert.not_now" = "Not now";
 "alert.close" = "Close";
-
 
 
 

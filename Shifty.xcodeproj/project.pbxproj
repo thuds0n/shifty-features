@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */; };
 		A19F00012A8A000100000001 /* CircadianWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */; };
+		A19F00032A8A000100000003 /* PreferenceAccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */; };
 		43041CC5207DB9FF0076E75C /* CoreBrightness.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43041CC4207DB9FF0076E75C /* CoreBrightness.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		431B7B5D2167C8740039D085 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A934002164019300AFB708 /* Security.framework */; };
 		433AD3011F2CED1F0003FBCD /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 433AD3001F2CED1F0003FBCD /* dsa_pub.pem */; };
@@ -86,6 +87,7 @@
 /* Begin PBXFileReference section */
 		3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightShiftManagerTests.swift; sourceTree = "<group>"; };
 		A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianWorkspaceTests.swift; sourceTree = "<group>"; };
+		A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceAccessibilityTests.swift; sourceTree = "<group>"; };
 		43041CB3207DB3440076E75C /* SkyLight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SkyLight.framework; sourceTree = "<group>"; };
 		43041CC4207DB9FF0076E75C /* CoreBrightness.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBrightness.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/PrivateFrameworks/CoreBrightness.framework; sourceTree = DEVELOPER_DIR; };
 		43099BA81FC67B5000A0720B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/CustomTimeWindow.strings"; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 			children = (
 				6D67B7B95C7943A624FA6BC6 /* Info.plist */,
 				A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */,
+				A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */,
 				3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */,
 				B7F689588C441301528A1021 /* RuleManagerTests.swift */,
 			);
@@ -583,6 +586,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A19F00012A8A000100000001 /* CircadianWorkspaceTests.swift in Sources */,
+				A19F00032A8A000100000003 /* PreferenceAccessibilityTests.swift in Sources */,
 				2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */,
 				8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */,
 			);

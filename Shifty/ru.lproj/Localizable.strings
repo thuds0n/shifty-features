@@ -44,6 +44,66 @@
 "prefs.general" = "Главное";
 "prefs.shortcuts" = "Сокращения";
 "prefs.about" = "О программе";
+"prefs.whitelist" = "Исключения";
+
+"prefs.general.section.application" = "Приложение";
+"prefs.general.launch_at_login" = "Запускать Shifty при входе";
+"prefs.general.quick_toggle" = "Нажмите значок состояния, чтобы переключить Night Shift";
+"prefs.general.switch_icon" = "Менять значок в строке меню при отключении";
+"prefs.general.section.display" = "Дисплей";
+"prefs.general.sync_dark_mode" = "Синхронизировать тёмный режим с Night Shift";
+"prefs.general.show_kelvin" = "Показывать значения в кельвинах в ползунке меню";
+"prefs.general.section.website_shifting" = "Переключение на сайтах";
+"prefs.general.enable_website_shifting" = "Включить переключение на сайтах";
+"prefs.general.website_shifting_footer" = "Отслеживает браузер, чтобы отключать Night Shift для отдельных сайтов. Требуется доступ к Универсальному доступу.";
+"prefs.general.section.true_tone" = "True Tone";
+"prefs.general.disable_true_tone" = "Отключать True Tone по правилам Night Shift";
+"prefs.general.true_tone_footer" = "True Tone выключается, когда Night Shift отключён правилом приложения или сайта.";
+"prefs.general.section.night_shift_schedule" = "Расписание Night Shift";
+"prefs.general.schedule" = "Расписание";
+"prefs.general.schedule.off" = "Выключено";
+"prefs.general.schedule.solar" = "От заката до рассвета";
+"prefs.general.schedule.custom" = "Пользовательское";
+"prefs.general.schedule.from" = "С";
+"prefs.general.schedule.to" = "До";
+
+"prefs.whitelist.active_app" = "Активное приложение";
+"prefs.whitelist.when_running" = "Во время работы";
+"prefs.whitelist.websites" = "Сайты";
+"prefs.whitelist.no_rules" = "Нет правил";
+"prefs.whitelist.domain_disabled" = "Домен отключён";
+"prefs.whitelist.subdomain_disabled" = "Субдомен отключён";
+"prefs.whitelist.subdomain_enabled" = "Субдомен включён";
+
+"prefs.shortcuts.section.night_shift" = "Night Shift";
+"prefs.shortcuts.toggle_night_shift" = "Переключить Night Shift";
+"prefs.shortcuts.warmer" = "Теплее";
+"prefs.shortcuts.cooler" = "Холоднее";
+"prefs.shortcuts.section.disable_rules" = "Правила отключения";
+"prefs.shortcuts.disable_app" = "Отключить для приложения";
+"prefs.shortcuts.disable_domain" = "Отключить для домена";
+"prefs.shortcuts.disable_subdomain" = "Отключить для субдомена";
+"prefs.shortcuts.disable_hour" = "Отключить на один час";
+"prefs.shortcuts.disable_custom" = "Отключить на выбранное время";
+"prefs.shortcuts.section.true_tone" = "True Tone";
+"prefs.shortcuts.toggle_true_tone" = "Переключить True Tone";
+"prefs.shortcuts.section.dark_mode" = "Тёмный режим";
+"prefs.shortcuts.toggle_dark_mode" = "Переключить тёмный режим";
+"prefs.shortcuts.recorder.record" = "Записать сочетание клавиш";
+"prefs.shortcuts.recorder.type_shortcut" = "Введите сочетание клавиш…";
+"prefs.shortcuts.recorder.recording" = "Запись";
+"prefs.shortcuts.recorder.not_set" = "Не задано";
+"prefs.shortcuts.recorder.clear" = "Очистить сочетание клавиш";
+"prefs.shortcuts.recorder.help_format" = "%@: нажмите Пробел или Return для записи. Нажмите Delete для очистки.";
+
+"prefs.about.version_format" = "Версия %@";
+"prefs.about.check_updates" = "Проверить обновления";
+"prefs.about.visit_website" = "Открыть сайт";
+"prefs.about.send_feedback" = "Отправить отзыв";
+"prefs.about.donate" = "Поддержать";
+"prefs.about.help_translate" = "Помочь с переводом";
+"prefs.about.credits" = "Сведения об авторах";
+"prefs.about.copyright" = "© 2017–2026 Нэйт Томпсон · Лицензия GPLv3";
 
 
 "alert.hardware_message" = "Ваш Мак не поддерживает Night Shift";
@@ -56,7 +116,6 @@
 "alert.open_preferences" = "Откройте Системные настройки";
 "alert.not_now" = "Не сейчас";
 "alert.close" = "Закрыть";
-
 
 
 

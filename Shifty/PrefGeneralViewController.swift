@@ -129,70 +129,70 @@ struct PrefGeneralView: View {
     var body: some View {
         Form {
             // MARK: Application
-            Section("Application") {
-                Toggle("Launch at Login", isOn: $autoLaunch)
+            Section("prefs.general.section.application") {
+                Toggle("prefs.general.launch_at_login", isOn: $autoLaunch)
                     .onChange(of: autoLaunch) { _, newValue in
                         handleAutoLaunchChange(newValue)
                     }
-                Toggle("Click Status Icon to Toggle Night Shift", isOn: $quickToggle)
+                Toggle("prefs.general.quick_toggle", isOn: $quickToggle)
                     .onChange(of: quickToggle) { _, _ in
                         (NSApp.delegate as? AppDelegate)?.setStatusToggle()
                     }
-                Toggle("Switch Menu Bar Icon when Disabled", isOn: $iconSwitching)
+                Toggle("prefs.general.switch_icon", isOn: $iconSwitching)
                     .onChange(of: iconSwitching) { _, _ in
                         (NSApp.delegate as? AppDelegate)?.updateMenuBarIcon()
                     }
             }
 
             // MARK: Display
-            Section("Display") {
-                Toggle("Sync Dark Mode with Night Shift", isOn: $darkModeSync)
+            Section("prefs.general.section.display") {
+                Toggle("prefs.general.sync_dark_mode", isOn: $darkModeSync)
                     .onChange(of: darkModeSync) { _, newValue in
                         handleDarkModeSyncChange(newValue)
                     }
-                Toggle("Show Kelvin Values in Menu Slider", isOn: $showKelvin)
+                Toggle("prefs.general.show_kelvin", isOn: $showKelvin)
             }
 
             // MARK: Website Shifting
             Section {
-                Toggle("Enable Website Shifting", isOn: $websiteControl)
+                Toggle("prefs.general.enable_website_shifting", isOn: $websiteControl)
                     .onChange(of: websiteControl) { _, newValue in
                         handleWebsiteControlChange(newValue)
                     }
             } header: {
-                Text("Website Shifting")
+                Text("prefs.general.section.website_shifting")
             } footer: {
-                Text("Monitors your browser to disable Night Shift per website. Requires Accessibility access.")
+                Text("prefs.general.website_shifting_footer")
             }
 
             // MARK: True Tone (conditional)
             if trueToneAvailable {
                 Section {
-                    Toggle("Disable True Tone with Night Shift Rules", isOn: $trueToneControl)
+                    Toggle("prefs.general.disable_true_tone", isOn: $trueToneControl)
                         .onChange(of: trueToneControl) { _, newValue in
                             handleTrueToneControlChange(newValue)
                         }
                 } header: {
-                    Text("True Tone")
+                    Text("prefs.general.section.true_tone")
                 } footer: {
-                    Text("True Tone turns off when Night Shift is disabled by an app or website rule.")
+                    Text("prefs.general.true_tone_footer")
                 }
             }
 
             // MARK: Night Shift Schedule
-            Section("Night Shift Schedule") {
-                Picker("Schedule", selection: $scheduleMode) {
-                    Text("Off").tag(ScheduleMode.off)
-                    Text("Sunset to Sunrise").tag(ScheduleMode.solar)
-                    Text("Custom").tag(ScheduleMode.custom)
+            Section("prefs.general.section.night_shift_schedule") {
+                Picker("prefs.general.schedule", selection: $scheduleMode) {
+                    Text("prefs.general.schedule.off").tag(ScheduleMode.off)
+                    Text("prefs.general.schedule.solar").tag(ScheduleMode.solar)
+                    Text("prefs.general.schedule.custom").tag(ScheduleMode.custom)
                 }
                 .pickerStyle(.menu)
                 .onChange(of: scheduleMode) { _, _ in applySchedule() }
 
                 if scheduleMode == .custom {
-                    DatePicker("From", selection: $fromTime, displayedComponents: .hourAndMinute)
+                    DatePicker("prefs.general.schedule.from", selection: $fromTime, displayedComponents: .hourAndMinute)
                         .onChange(of: fromTime) { _, _ in applySchedule() }
-                    DatePicker("To", selection: $toTime, displayedComponents: .hourAndMinute)
+                    DatePicker("prefs.general.schedule.to", selection: $toTime, displayedComponents: .hourAndMinute)
                         .onChange(of: toTime) { _, _ in applySchedule() }
                 }
             }
@@ -301,11 +301,11 @@ struct PrefWhitelistView: View {
     var body: some View {
         List {
             ruleSection(
-                header: Label("Active App", systemImage: "macwindow"),
+                header: Label("prefs.whitelist.active_app", systemImage: "macwindow"),
                 rules: currentAppRules
             )
             ruleSection(
-                header: Label("When Running", systemImage: "app.badge"),
+                header: Label("prefs.whitelist.when_running", systemImage: "app.badge"),
                 rules: runningAppRules
             )
 
@@ -318,7 +318,7 @@ struct PrefWhitelistView: View {
                     }
                 }
             } header: {
-                Label("Websites", systemImage: "globe")
+                Label("prefs.whitelist.websites", systemImage: "globe")
             }
         }
         .listStyle(.inset)
@@ -389,7 +389,7 @@ struct PrefWhitelistView: View {
 
     @ViewBuilder
     private func emptyLabel() -> some View {
-        Text("No rules")
+        Text("prefs.whitelist.no_rules")
             .foregroundStyle(.tertiary)
             .italic()
     }
@@ -439,9 +439,12 @@ struct PrefWhitelistView: View {
 
     private func ruleDescription(for type: RuleType) -> String {
         switch type {
-        case .domain: return "Domain disabled"
-        case .subdomainDisabled: return "Subdomain disabled"
-        case .subdomainEnabled: return "Subdomain enabled"
+        case .domain:
+            return NSLocalizedString("prefs.whitelist.domain_disabled", comment: "Domain rule is disabled")
+        case .subdomainDisabled:
+            return NSLocalizedString("prefs.whitelist.subdomain_disabled", comment: "Subdomain rule is disabled")
+        case .subdomainEnabled:
+            return NSLocalizedString("prefs.whitelist.subdomain_enabled", comment: "Subdomain rule is enabled")
         }
     }
 }

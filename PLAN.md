@@ -22,11 +22,11 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 20 tests pass: 13 circadian/workspace, 4 `NightShiftManager` and 3 `RuleManager` tests |
+| Unit tests | Implemented, growing | 22 tests pass: 13 circadian/workspace, 4 `NightShiftManager`, 3 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
-| Visual regression pass | Unverified | Required Screen Recording and Accessibility permissions were unavailable during the audit |
+| Visual regression pass | Partially verified | The menu and all four English preference panes render correctly with Screen Recording and Accessibility granted; full interaction and every localisation remain pending |
 | Signed archive, notarisation and Sparkle update | Unverified | Not exercised during this audit |
 | CI | Pending | No CI configuration is present |
 
@@ -43,6 +43,8 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 - Global keyboard shortcuts.
 - SwiftUI-hosted General, Shortcuts, Whitelist and About preference panes.
 - Legacy SiriKit intent-definition handlers.
+- Localised SwiftUI preference panes in English, German, French, Russian and Simplified Chinese.
+- A keyboard-operable shortcut recorder with VoiceOver role, label, value, help and an explicit clear action.
 - SPM dependencies for AXSwift, Sparkle and SwiftDomainParser.
 - Sparkle updater wiring and a login-item helper.
 - Tested circadian evening/deep-night ramps with an explicit wake boundary, including midnight, daylight-saving and time-zone cases.
@@ -74,16 +76,17 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 - **Foreground-media naming:** the app-level heuristic now reports foreground media rather than claiming fullscreen detection. It continues to hold output; it does not neutralise Night Shift or claim PiP evidence.
 - **Disable-timer ownership:** cancellation invalidates and clears the timer before restoration. A regression test proves the cancelled callback cannot restore a second time.
 - **CLI property-list safety:** idle payloads omit an absent suspend reason and pass property-list validation. The unauthenticated distributed command listener is disabled until a bounded IPC design is approved.
+- **SwiftUI localisation and accessibility:** all preference copy now uses semantic localisation keys across the five supported languages. The Whitelist toolbar label resolves correctly, and the shortcut recorder supports focus, keyboard recording/clearing and explicit accessibility state.
 
-### Remaining P1 — fix before enabling or expanding circadian mode
+### P1 status
 
-1. **The SwiftUI migration regressed localisation and accessibility.** Most new labels are hard-coded in English, and `prefs.whitelist` has no localisation entry, so the key itself can appear in the toolbar. The custom shortcut recorder also needs an accessibility role, label, value and keyboard-operable clear/record actions.
+The P1 findings from the 9 August audit are resolved in the current branch. Phase 0 release validation and the remaining P2 architecture/release risks still block a production release.
 
 ### P2 — foundation and release risks
 
 1. **Swift 6 is not a switch-only upgrade.** AXSwift fails in Swift 6 mode, and complete-concurrency diagnostics identify shared mutable singletons, missing main-actor isolation and non-Sendable callback captures throughout AppKit, timers and shortcuts. Establish a main-actor boundary first, then replace or fork AXSwift.
 
-2. **Domain coverage remains incomplete.** The pure circadian curve, temporary-pause policy, CLI idle payload and timer cancellation now have regression coverage. Coordinator timing, activity-manager lifecycle, display calibration storage, browser parsing/watchers, preference actions, shortcut persistence, timer expiry and wake handling still need tests.
+2. **Domain coverage remains incomplete.** The pure circadian curve, temporary-pause policy, CLI idle payload, timer cancellation, preference localisation and shortcut-recorder keyboard behaviour now have regression coverage. Coordinator timing, activity-manager lifecycle, display calibration storage, browser parsing/watchers, preference actions, shortcut persistence, timer expiry and wake handling still need tests.
 
 3. **Scaffolding is too concentrated.** `PrefManager.swift` contains preferences, service protocols, display/system adapters, circadian domain logic, activity state, calibration storage, automation, CLI transport and coordination. Split these by responsibility before adding more integrations.
 
@@ -149,8 +152,8 @@ All UI-facing state and AppKit integration should be main-actor isolated. Pure s
 ### Phase 0 — stabilise the shipped utility
 
 - [x] Fix timer invalidation and add timer/restore tests.
-- [ ] Fix missing preference localisation, migrate new UI copy to localisation keys and add all supported translations.
-- [ ] Make the shortcut recorder accessible and validate keyboard/VoiceOver operation.
+- [x] Fix missing preference localisation, migrate new UI copy to localisation keys and add all supported translations.
+- [x] Make the shortcut recorder keyboard-operable and expose tested VoiceOver semantics.
 - [ ] Add CI for Debug build, Release build and unit tests using macOS 14+.
 - [ ] Complete a permission-aware visual pass across the menu and all four preference panes.
 - [ ] Refresh hosted requirements and screenshots.
@@ -223,12 +226,12 @@ Per-display warmth remains research, not a committed product capability.
 
 ## Immediate Next Slice
 
-The correctness core is now implemented and covered by regression tests. Continue Phase 0 and the architecture foundation of Phase 1 in this order:
+The correctness and preference-compliance slices are now implemented and covered by tests. Continue Phase 0 and the architecture foundation of Phase 1 in this order:
 
-1. Restore localisation and accessibility in the SwiftUI preferences, including the Whitelist label and shortcut recorder.
-2. Split circadian, activity, display, automation and dormant CLI types out of `PrefManager.swift`.
-3. Establish main-actor ownership for AppKit/UI state and introduce fake clock/backend/activity seams for coordinator tests.
-4. Extend `WorkspacePolicy` precedence across rules, disable timers and manual controls.
-5. Add CI, then complete the permission-aware visual pass and signed Sparkle release validation.
+1. Split circadian, activity, display, automation and dormant CLI types out of `PrefManager.swift`.
+2. Establish main-actor ownership for AppKit/UI state and introduce fake clock/backend/activity seams for coordinator tests.
+3. Extend `WorkspacePolicy` precedence across rules, disable timers and manual controls.
+4. Add CI for Debug, universal Release and the unit-test suite.
+5. Complete full interaction and non-English visual passes, then validate the signed archive and Sparkle update path.
 
 Do not start HomeKit, per-display gamma control, calendar/health integration, widgets or a CLI target until this slice is complete.

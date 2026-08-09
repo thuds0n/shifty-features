@@ -44,6 +44,66 @@
 "prefs.general" = "Allgemein";
 "prefs.shortcuts" = "Tastenkürzel";
 "prefs.about" = "Über";
+"prefs.whitelist" = "Ausnahmen";
+
+"prefs.general.section.application" = "Anwendung";
+"prefs.general.launch_at_login" = "Shifty beim Anmelden starten";
+"prefs.general.quick_toggle" = "Night Shift durch Klick auf das Statussymbol umschalten";
+"prefs.general.switch_icon" = "Menüleistensymbol bei Deaktivierung wechseln";
+"prefs.general.section.display" = "Anzeige";
+"prefs.general.sync_dark_mode" = "Dunkelmodus mit Night Shift synchronisieren";
+"prefs.general.show_kelvin" = "Kelvin-Werte im Menüregler anzeigen";
+"prefs.general.section.website_shifting" = "Webseiten-Shift";
+"prefs.general.enable_website_shifting" = "Webseiten-Shift aktivieren";
+"prefs.general.website_shifting_footer" = "Überwacht den Browser, um Night Shift je nach Webseite zu deaktivieren. Erfordert Zugriff auf die Bedienungshilfen.";
+"prefs.general.section.true_tone" = "True Tone";
+"prefs.general.disable_true_tone" = "True Tone mit Night-Shift-Regeln deaktivieren";
+"prefs.general.true_tone_footer" = "True Tone wird ausgeschaltet, wenn Night Shift durch eine App- oder Webseitenregel deaktiviert wird.";
+"prefs.general.section.night_shift_schedule" = "Night-Shift-Zeitplan";
+"prefs.general.schedule" = "Zeitplan";
+"prefs.general.schedule.off" = "Aus";
+"prefs.general.schedule.solar" = "Sonnenuntergang bis Sonnenaufgang";
+"prefs.general.schedule.custom" = "Eigene";
+"prefs.general.schedule.from" = "Von";
+"prefs.general.schedule.to" = "Bis";
+
+"prefs.whitelist.active_app" = "Aktive App";
+"prefs.whitelist.when_running" = "Während der Ausführung";
+"prefs.whitelist.websites" = "Webseiten";
+"prefs.whitelist.no_rules" = "Keine Regeln";
+"prefs.whitelist.domain_disabled" = "Domain deaktiviert";
+"prefs.whitelist.subdomain_disabled" = "Subdomain deaktiviert";
+"prefs.whitelist.subdomain_enabled" = "Subdomain aktiviert";
+
+"prefs.shortcuts.section.night_shift" = "Night Shift";
+"prefs.shortcuts.toggle_night_shift" = "Night Shift umschalten";
+"prefs.shortcuts.warmer" = "Wärmer";
+"prefs.shortcuts.cooler" = "Kühler";
+"prefs.shortcuts.section.disable_rules" = "Deaktivierungsregeln";
+"prefs.shortcuts.disable_app" = "Für App deaktivieren";
+"prefs.shortcuts.disable_domain" = "Für Domain deaktivieren";
+"prefs.shortcuts.disable_subdomain" = "Für Subdomain deaktivieren";
+"prefs.shortcuts.disable_hour" = "Für eine Stunde deaktivieren";
+"prefs.shortcuts.disable_custom" = "Für bestimmte Zeit deaktivieren";
+"prefs.shortcuts.section.true_tone" = "True Tone";
+"prefs.shortcuts.toggle_true_tone" = "True Tone umschalten";
+"prefs.shortcuts.section.dark_mode" = "Dunkelmodus";
+"prefs.shortcuts.toggle_dark_mode" = "Dunkelmodus umschalten";
+"prefs.shortcuts.recorder.record" = "Tastenkürzel aufnehmen";
+"prefs.shortcuts.recorder.type_shortcut" = "Tastenkürzel eingeben…";
+"prefs.shortcuts.recorder.recording" = "Aufnahme läuft";
+"prefs.shortcuts.recorder.not_set" = "Nicht festgelegt";
+"prefs.shortcuts.recorder.clear" = "Tastenkürzel löschen";
+"prefs.shortcuts.recorder.help_format" = "%@: Leertaste oder Eingabetaste zum Aufnehmen drücken. Löschtaste zum Löschen drücken.";
+
+"prefs.about.version_format" = "Version %@";
+"prefs.about.check_updates" = "Nach Updates suchen";
+"prefs.about.visit_website" = "Webseite besuchen";
+"prefs.about.send_feedback" = "Feedback senden";
+"prefs.about.donate" = "Spenden";
+"prefs.about.help_translate" = "Beim Übersetzen helfen";
+"prefs.about.credits" = "Danksagung";
+"prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3-Lizenz";
 
 
 "alert.hardware_message" = "Dieser Mac unterstützt kein Night Shift";
@@ -56,7 +116,6 @@
 "alert.open_preferences" = "Systemeinstellungen öffnen";
 "alert.not_now" = "Nicht jetzt";
 "alert.close" = "Schließen";
-
 
 
 
