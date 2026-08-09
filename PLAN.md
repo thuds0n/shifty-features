@@ -1,357 +1,234 @@
-# Circadian Workspace Optimizer — Master Plan
+# Shifty Modernisation Plan
 
-## Branch
-- Feature branch: `codex/circadian-workspace-optimizer`
-- Base branch: `master`
+Last audited: 9 August 2026
 
----
+## Product Direction
 
-## Vision
-Evolve Shifty from a manual Night Shift toggle into an intelligent, context-aware **Circadian Workspace Optimizer** — a three-phase color engine with activity sensing, per-display calibration, ecosystem integration, and developer-first CLI tooling.
+Shifty will evolve from a menu-bar extension for Apple's system-wide Night Shift into a contextual circadian workspace optimiser. The core value should come from predictable scheduling, fast colour-critical pauses, app and website rules, and automation that remains understandable when macOS permissions or private display APIs fail.
 
----
+This remains a direct-download macOS utility. Shifty currently depends on undocumented CoreBrightness and SkyLight interfaces, so Mac App Store compatibility and forward compatibility with future macOS releases must not be assumed.
 
-## Codebase Snapshot (as of 2026-04-11)
+## Status Legend
 
-### Committed
-| Commit | Summary |
-|--------|---------|
-| `e1353c9` | Target macOS 14, remove legacy compatibility paths |
-| `e3c422c` | Remove telemetry/crash-sharing UI and related app hooks |
-| `dc11748` | Refine menu and preferences UX (switches, disable submenu, kelvin, whitelist) |
-| `e4e4c59` | Remove legacy pods, finalize internal shortcut infrastructure |
-| `f2cda33` | Pre code audit snapshot |
+- **Implemented**: present in the app and covered by at least basic build verification.
+- **Scaffolding**: types or wiring exist, but behaviour is incomplete, incorrect, or untested.
+- **Pending**: agreed direction with no complete implementation.
+- **Blocked**: no acceptable native macOS implementation is currently known.
+- **Unverified**: requires runtime, hardware, permission, signing, or distribution validation.
 
-### Uncommitted (ready to commit)
-- **Code audit & dead code cleanup**
-  - Removed Fabric/Crashlytics config from `Info.plist` (deprecated since 2019)
-  - Deleted `AccessibilityPromptWindow` (Swift + XIB) — completely unreferenced
-  - Removed unused `nightShiftToggled` notification
-  - Removed unused `BrightnessSystemClient` properties (`nextSunrise`, `nextSunset`, `previousSunrise`, `previousSunset`, `isDaylight`)
-  - Removed redundant manual `Equatable` conformance on `DisableTimer` (synthesized by Swift)
-  - Moved `SwitchView.swift` from project root into `Shifty/` directory
-  - Renamed `enum State` → `TrueToneState` (was shadowing SwiftUI's `@State` property wrapper)
-  - Updated copyright string to 2026
-  - Cleaned up excessive blank lines across Setup.swift, RuleManager.swift
+## Audit Baseline
 
-- **SwiftUI preferences window** (replaces 3 XIBs + 1 programmatic NSTextView pane)
-  - `HostedPreferencePane<Content>` — generic `NSHostingController` adapter conforming to `PreferencesPane`
-  - `PrefGeneralView` — `Form(.grouped)` with sections: Application / Display / Website Shifting / True Tone (conditional) / Night Shift Schedule
-  - `PrefShortcutsView` — `Form(.grouped)` with `ShortcutRecorderView` (`NSViewRepresentable`) per row; sections: Night Shift / Disable Rules / True Tone (conditional) / Dark Mode
-  - `PrefWhitelistView` — `List` with app icons resolved from `NSWorkspace`, colored SF Symbol icons for domain/subdomain rules
-  - `PrefAboutView` — centered layout: app icon, name/version, 3×2 grid of action buttons
-  - Deleted `PrefGeneralViewController.xib`, `PrefShortcutsViewController.xib`, `PrefAboutViewController.xib`
-  - `PrefShortcutsViewController` demoted from `NSViewController` to a plain binding-manager class
-  - Each pane declares its own `preferredContentSize`; toolbar-style tab view resizes the window per pane
+| Check | Status | Evidence from 9 August 2026 |
+|---|---|---|
+| Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
+| Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
+| Unit tests | Implemented, growing | 20 tests pass: 13 circadian/workspace, 4 `NightShiftManager` and 3 `RuleManager` tests |
+| Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
+| Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
+| Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
+| Visual regression pass | Unverified | Required Screen Recording and Accessibility permissions were unavailable during the audit |
+| Signed archive, notarisation and Sparkle update | Unverified | Not exercised during this audit |
+| CI | Pending | No CI configuration is present |
 
-### Known Issues / Open Items
-- Phase 0.1 manual verification still needed after SwiftUI preferences migration (pane switching, shortcut recorder interaction, login-item toggle)
-- `PrefWhitelistView` is read-only (loads on `onAppear`); does not live-update if rules change while the pane is open — acceptable for now, deferred to Phase 1.1 polish
+The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict concurrency is a migration goal, not the current implementation state.
 
----
+## Current Product Map
 
-## Architecture Overview
+### Implemented foundation
 
+- Menu-bar Night Shift toggle, temperature slider and Apple schedule control.
+- Disable timers and app, running-app, domain and subdomain rules.
+- Website URL detection for supported browsers using Apple Events, Accessibility and public-suffix parsing.
+- Dark Mode and True Tone integration.
+- Global keyboard shortcuts.
+- SwiftUI-hosted General, Shortcuts, Whitelist and About preference panes.
+- Legacy SiriKit intent-definition handlers.
+- SPM dependencies for AXSwift, Sparkle and SwiftDomainParser.
+- Sparkle updater wiring and a login-item helper.
+- Tested circadian evening/deep-night ramps with an explicit wake boundary, including midnight, daylight-saving and time-zone cases.
+- Disable-timer cancellation that invalidates timer ownership and cannot emit a later restore event.
+
+### Scaffolding, not production-ready functionality
+
+- `CircadianWorkspaceCoordinator`, a menu toggle and a partial `WorkspacePolicy` boundary.
+- Foreground-media hold state and temporary-pause neutralise/restore behaviour in `ActivityOverrideManager`.
+- UserDefaults-backed display offset and selection storage.
+- A no-op automation bridge.
+- Dormant distributed-notification transport types without an active command listener or standalone CLI target.
+
+### Not implemented
+
+- Persisted circadian preferences or a Circadian preference pane.
+- A fully unified transition/restoration policy shared with manual toggles, disable timers and rules.
+- Real fullscreen or Picture-in-Picture detection.
+- Per-display colour application.
+- App Intents, interactive widgets or a standalone `shifty-cli` executable.
+- Calendar, HealthKit, Focus, smart-home, Game Mode or Xcode-build awareness.
+
+## Audit Findings
+
+### Resolved correctness findings
+
+- **Circadian day boundary:** an explicit wake time now ends Deep Night. Tests cover both ramps, bedtime, after bedtime, midnight, morning, daylight-saving and time-zone behaviour.
+- **Temporary-pause semantics:** a temporary pause now captures the current Night Shift enabled/strength state, neutralises Night Shift without rewriting persistent user intent, and restores the captured output when the pause or circadian mode ends.
+- **Foreground-media naming:** the app-level heuristic now reports foreground media rather than claiming fullscreen detection. It continues to hold output; it does not neutralise Night Shift or claim PiP evidence.
+- **Disable-timer ownership:** cancellation invalidates and clears the timer before restoration. A regression test proves the cancelled callback cannot restore a second time.
+- **CLI property-list safety:** idle payloads omit an absent suspend reason and pass property-list validation. The unauthenticated distributed command listener is disabled until a bounded IPC design is approved.
+
+### Remaining P1 — fix before enabling or expanding circadian mode
+
+1. **The SwiftUI migration regressed localisation and accessibility.** Most new labels are hard-coded in English, and `prefs.whitelist` has no localisation entry, so the key itself can appear in the toolbar. The custom shortcut recorder also needs an accessibility role, label, value and keyboard-operable clear/record actions.
+
+### P2 — foundation and release risks
+
+1. **Swift 6 is not a switch-only upgrade.** AXSwift fails in Swift 6 mode, and complete-concurrency diagnostics identify shared mutable singletons, missing main-actor isolation and non-Sendable callback captures throughout AppKit, timers and shortcuts. Establish a main-actor boundary first, then replace or fork AXSwift.
+
+2. **Domain coverage remains incomplete.** The pure circadian curve, temporary-pause policy, CLI idle payload and timer cancellation now have regression coverage. Coordinator timing, activity-manager lifecycle, display calibration storage, browser parsing/watchers, preference actions, shortcut persistence, timer expiry and wake handling still need tests.
+
+3. **Scaffolding is too concentrated.** `PrefManager.swift` contains preferences, service protocols, display/system adapters, circadian domain logic, activity state, calibration storage, automation, CLI transport and coordination. Split these by responsibility before adding more integrations.
+
+4. **Release metadata is historical.** The app is still version 1.2/build 66, both appcast copies advertise macOS 10.12.4, and update signing uses deprecated DSA metadata. Sparkle 2 recommends an EdDSA migration before a new release.
+
+5. **Public documentation is inconsistent.** The root README says macOS 14 while the hosted English, German and Chinese pages still say macOS 10.12.4. Preference screenshots also predate the SwiftUI migration and require replacement after visual verification.
+
+6. **The repository carries obsolete binary material.** A tracked 12 MB local `SkyLight.framework` is an old Intel/i386 framework, while the project links the system private framework. Confirm it has no archival purpose, then remove it from the repository and history only as a separate, reviewed maintenance decision.
+
+7. **Private API failure is not a first-class state.** CoreBrightness, True Tone and SkyLight calls are abstracted behind protocols, which is a useful seam, but the UI does not expose availability/error state or a safe fallback. Private API failures must never crash launch or silently claim that a change was applied.
+
+### P3 — maintainability issues
+
+- Replace remaining force casts/unwraps in setup, storyboard segue and slider-to-delegate paths with guarded failures.
+- Store and remove long-lived notification observers explicitly; test repeated manager creation and teardown.
+- Make the whitelist reactive or clearly label it as a snapshot; it currently refreshes only on appearance.
+- Clamp shortcut-based colour-temperature mutations rather than relying on the private client.
+- Decide whether direct Sparkle distribution is the sole release channel; this determines updater, sandbox and entitlement work.
+
+## Corrections to the July 2026 Proposal
+
+| Proposal | Audit conclusion |
+|---|---|
+| Swift 6 as the current stack | Incorrect. The project is Swift 5.0 and needs a staged concurrency migration. |
+| Three-phase engine is built | Only scaffolding. The overnight calculation and coordination semantics are not production-ready. |
+| `NSWorkspace`/`NSScreen` can detect other apps' fullscreen/PiP state | Insufficient. AppKit window notifications describe Shifty's own process; cross-process inspection needs Accessibility, ScreenCaptureKit, or heuristics and explicit privacy handling. |
+| Per-display Night Shift | Unproven. CoreBrightness is system-wide. Core Graphics gamma tables are a distinct experimental backend that can conflict with calibration and must restore tables safely. |
+| Direct HomeKit integration | Blocked for the native macOS target: the installed macOS SDK has no HomeKit module. Prefer user-authored Shortcuts/App Intents, a companion Apple-platform app, or a separately chosen smart-home service. |
+| App Intents and widgets | Feasible on macOS 14, but neither is implemented. Migrate legacy SiriKit intents before adding a widget. |
+| Health-based bedtime | Technically feasible with HealthKit on macOS 14, but it requires sensitive-data entitlement, permission, privacy design and robust handling of missing/ambiguous sleep samples. It is not a low-effort feature. |
+| Xcode build/Game Mode awareness | Research only. Do not promise these until a stable public signal and a useful restoration policy are demonstrated. |
+| Camera/microphone privacy-indicator detection | Research only. Do not scrape system privacy indicators or infer call state without a supported API and explicit user consent. |
+
+## Architecture Direction
+
+Keep AppKit for the menu-bar lifecycle and private-system bridges, SwiftUI for preferences and future widgets, and isolate the product state from both.
+
+```text
+AppDelegate / StatusMenuController / App Intents / CLI
+                         |
+              WorkspaceStateController (@MainActor)
+                         |
+       Policy engine: schedule + user override + rules
+                         |
+      NightShiftBackend / ActivitySignals / Automation
+                         |
+       Private CoreBrightness implementation + fakes
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    AppDelegate                          │
-│  - lifecycle, status bar, CLI observer, prefs window    │
-├──────────┬────────────────────────┬─────────────────────┤
-│          │                        │                     │
-│  StatusMenuController    NightShiftManager        CircadianWorkspace │
-│  - menu build/update     - event dispatch         Coordinator        │
-│  - user interaction      - color temp control     - orchestrator     │
-│  - circadian toggle      - disable timers         - 60s refresh      │
-│          │               - dark mode sync         - CLI dispatch     │
-│          │                        │                     │
-├──────────┴────────────────────────┴─────────────────────┤
-│                  SystemIntegration (DI)                  │
-│  nightShiftSystem · trueTone · appearance · permissions  │
-│  circadianTransition · activityOverride · displayCalib   │
-│  automationBridge · cliBridge · updater · loginItem      │
-├─────────────────────────────────────────────────────────┤
-│  RuleManager          BrowserManager      PrefManager   │
-│  - app/domain rules   - URL detection     - UserDefaults│
-│  - rule persistence   - AXSwift bridge    - factory defs│
-└─────────────────────────────────────────────────────────┘
-```
 
----
+Required boundaries:
 
-## Feature Roadmap
+- `CircadianSchedule`: pure, deterministic date-to-target calculation.
+- `WorkspacePolicy`: resolves competing inputs into one desired state and restoration action.
+- `NightShiftBackend`: capability, read, apply, preview, restore and error reporting.
+- `ActivitySignalProvider`: reports evidence, confidence and permission state; it does not decide colour policy.
+- `ConfigurationStore`: versioned `Codable` settings with migration tests.
+- `AutomationTransport`: App Intents and CLI adaptors over the same policy API.
 
-### Phase 0 — Stabilize Foundation
-**Goal:** Commit the modernization and verify runtime stability.
+All UI-facing state and AppKit integration should be main-actor isolated. Pure schedule calculations can remain value types and be tested independently.
 
-- [x] **0.1** Verify menu bar icon, preferences toolbar, and pane switching work
-- [x] **0.2** Extract shortcut binding out of `PrefShortcutsViewController` into a dedicated binding-manager class (no longer inherits `NSViewController`)
-- [x] **0.3** Code audit: remove dead code, legacy config, misplaced files
-- [x] **0.4a** Preferences window fully converted to SwiftUI — XIBs deleted
-- [ ] **0.4b** Evaluate remaining dependency bloat:
-  - Replace AXSwift in `BrowserManager` with a narrow native AX wrapper
-  - Assess `PublicSuffix` — keep if domain-rule correctness matters, else replace with lightweight suffix check
-  - Decide Sparkle fate (keep for direct download, remove for App Store-only)
+## Delivery Plan
 
----
+### Phase 0 — stabilise the shipped utility
 
-### Phase 1 — Multi-Stage Circadian Transition Engine
-**Goal:** Fully productionize the three-phase color curve.
+- [x] Fix timer invalidation and add timer/restore tests.
+- [ ] Fix missing preference localisation, migrate new UI copy to localisation keys and add all supported translations.
+- [ ] Make the shortcut recorder accessible and validate keyboard/VoiceOver operation.
+- [ ] Add CI for Debug build, Release build and unit tests using macOS 14+.
+- [ ] Complete a permission-aware visual pass across the menu and all four preference panes.
+- [ ] Refresh hosted requirements and screenshots.
+- [ ] Decide direct-download distribution, then migrate Sparkle from DSA to EdDSA and validate a signed test update.
+- [ ] Remove obsolete local framework/binary references once their purpose is confirmed.
 
-#### Already Built ✓
-- `CircadianTransitionEngine` — calculates kelvin target from time-until-bedtime
-- `CircadianPhase` enum: `.daylight` (6500K) → `.evening` (4500K) → `.deepNight` (3200K)
-- `CircadianCurveConfiguration` — bedtime, lead times, kelvin targets per phase
-- `CircadianWorkspaceCoordinator` — orchestrates 60s refresh loop, calls `applyNow()`
-- Menu toggle in `StatusMenuController`
-- AppDelegate lifecycle hooks (`start()`/`stop()`)
+Exit criteria: build, tests, CI, visual checklist, signed archive and update path are green; existing utility behaviour has no known P1 defect.
 
-#### Remaining Work
-- [ ] **1.1** Preferences UI for circadian configuration
-  - Bedtime picker (hour:minute)
-  - Evening lead time slider (30 min – 4 hours)
-  - Deep night lead time slider (15 min – 2 hours)
-  - Per-phase kelvin target fields or a visual curve editor
-  - Add a new "Circadian" tab to the SwiftUI preferences window
-- [ ] **1.2** Persist `CircadianCurveConfiguration` to UserDefaults (currently hardcoded defaults)
-- [ ] **1.3** Smooth animated transitions when phase changes (ease kelvin over ~60s instead of jump)
-- [ ] **1.4** Menu bar status indicator — show current phase name and/or countdown to next phase
-- [ ] **1.5** Respect existing disable timers: if user sets a 30-min disable, circadian engine should honor it
+### Phase 1 — make circadian mode correct and configurable
 
-#### Phase 1 Enhancements — Advanced Circadian Features
-- [ ] **1.6** Context profiles (High Value)
-  - Named configurations (e.g., "Design Work," "Late Night Coding," "Travel") with independent curve settings
-  - Each profile: bedtime, evening lead, deep night lead, kelvin targets
-  - Switchable via menu, preferences, or Shortcuts
-  - Persist multiple profiles to UserDefaults
+- [ ] Split circadian, activity, display, automation and CLI code out of `PrefManager.swift`.
+- [x] Add schedule tests: before evening, both ramps, bedtime, after bedtime, midnight, morning, DST and time-zone changes.
+- [x] Define the morning/daylight transition.
+- [ ] Define user-override precedence across all state sources.
+- [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls.
+- [ ] Persist versioned configuration: bedtime/wake time, lead times and bounded Kelvin targets.
+- [ ] Add a compact Circadian preference pane and menu phase/countdown status.
+- [x] Restore the exact prior Night Shift output when a temporary pause ends.
+- [ ] Ramp output smoothly and extend restoration precedence across every override type.
+- [ ] Add coordinator tests with fake clock, fake backend and fake activity provider.
 
-- [ ] **1.7** Calendar-aware bedtime (High Value)
-  - Query `EventKit` for the user's last calendar event of the day
-  - If a late meeting is detected, delay Deep Night phase onset by X minutes (user-configurable)
-  - Runs during the 60s refresh loop — respects live calendar changes
+Exit criteria: circadian mode can run for multiple days without a boundary jump, honours all override types, restores predictably and is fully configurable.
 
-- [ ] **1.8** Health.app bedtime sync (High Value)
-  - Read user's scheduled sleep time from HealthKit (`HKSleepSampleType`)
-  - Auto-populate bedtime picker in preferences instead of manual entry
-  - Optional toggle: "Auto-sync bedtime from Health.app"
+### Phase 2 — automation and fast manual workflows
 
-- [ ] **1.9** Time zone travel mode (Medium Value)
-  - Detect system time zone changes (e.g., via `NSTimeZone` KVO or system notification)
-  - Offer to shift circadian schedule by the UTC offset delta instead of snapping immediately
-  - Helpful for users traveling across time zones — prevents immediate phase shifts
+- [ ] Migrate the legacy intent-definition handlers to App Intents while preserving an explicit compatibility decision for existing shortcuts.
+- [ ] Expose status, enable/disable, pause/resume and set-temperature actions through one policy API.
+- [ ] Build `shifty-cli` only after choosing a bounded IPC contract; prefer authenticated/local XPC over unauthenticated distributed mutation notifications.
+- [ ] Provide stable JSON output, exit codes, timeouts and shell completions.
+- [ ] Add an interactive widget only after App Intents are stable.
+- [ ] Make 5/15/30-minute colour-critical pause the first high-value workflow; reuse the unified override model.
 
-- [ ] **1.10** Keyboard shortcuts for kelvin presets (High Value)
-  - Define preset kelvin levels with keyboard bindings (e.g., Cmd+Shift+1 = "Color Work" 6500K, Cmd+Shift+2 = "Reading" 4000K)
-  - Quick-jump without opening menus
-  - Especially valuable for designers, developers, content creators
-  - Store presets in preferences (name, kelvin value, optional keyboard shortcut)
+### Phase 3 — activity sensing as opt-in evidence
 
-- [ ] **1.11** Menu bar popover UI upgrade (Medium Value)
-  - Replace flat menu with an `NSPopover` containing:
-    - Live Kelvin value and current phase arc visualization
-    - Countdown timer to next phase transition
-    - Quick preset buttons
-    - Toggle circadian mode on/off
-  - More discoverable and interactive than a traditional menu
+- [ ] Start with user-configurable app rules and explicit “pause while this app is frontmost” behaviour.
+- [ ] Prototype fullscreen/PiP evidence with Accessibility and, only if justified, ScreenCaptureKit.
+- [ ] Surface permission and confidence states; never label a foreground-app heuristic as fullscreen.
+- [ ] Test Stage Manager, tiled windows, multiple Spaces, browser video, PiP and app termination.
+- [ ] Keep camera/microphone, Xcode-build and Game Mode signals out of product scope until a supported source is proven.
 
----
+### Phase 4 — display research
 
-### Phase 2 — Intelligent Activity Sensing
-**Goal:** Auto-suspend Night Shift for media and color-critical work.
+- [ ] Enumerate displays and persist stable hardware identity separately from transient display IDs.
+- [ ] Build read-only diagnostics before exposing controls.
+- [ ] Prototype Core Graphics gamma-table output behind an experimental backend with capture/restore, display-reconfiguration handling and crash recovery.
+- [ ] Validate interactions with Night Shift, True Tone, ColorSync profiles, HDR/XDR, sleep/wake and display hot-plugging.
+- [ ] Proceed to per-display controls only if the prototype is stable and visually measurable on representative hardware.
 
-#### Already Built ✓
-- `ActivityOverrideManager` — monitors workspace notifications for media apps
-- Tracks VLC, IINA, QuickTime Player bundle IDs
-- Temporary pause with configurable duration (1–30 min)
-- `ActivitySuspendReason` enum: `.fullscreenMedia`, `.pictureInPicture`, `.temporaryPause`
-- `evaluateMediaContext()` — private detection logic
-- Override snapshot surfaced to coordinator via `onChange` callback
+Per-display warmth remains research, not a committed product capability.
 
-#### Remaining Work
-- [ ] **2.1** Fullscreen detection refinement
-  - Use `NSWindow.StyleMask.fullScreen` notifications or `NSScreen.screensHaveSeparateSpaces`
-  - Handle Stage Manager / tiled fullscreen on macOS 14+
-  - Detect PiP window (`NSWindow.level` or window title heuristics)
-- [ ] **2.2** Expand media app list — make it user-configurable (bundle ID list in preferences)
-- [ ] **2.3** Color-Critical Pause with menu bar countdown
-  - Add "Pause for X minutes" submenu items (5, 10, 15, 30 min)
-  - Show countdown timer in menu bar extra or tooltip
-  - Auto-resume when timer expires (already partially handled by `ActivityOverrideManager`)
-- [ ] **2.4** Integration with existing disable timer system in `NightShiftManager` — unify or clearly delineate circadian pause vs. manual disable
+### Phase 5 — optional contextual integrations
 
-#### Phase 2 Enhancements — Additional Activity Detection
-- [ ] **2.5** Camera/mic active detection (High Value)
-  - Monitor camera & microphone usage (e.g., FaceTime, Zoom, Teams) using privacy indicators
-  - Auto-pause Night Shift when on an active video call — users look orange on camera
-  - Detect via `AVCaptureDevice` active sessions or the system camera-in-use privacy indicator
-  - Auto-resume when call ends
-  - User-configurable toggle in preferences
-
----
-
-### Phase 3 — Per-Display Calibration & Independent Toggling
-**Goal:** Allow per-monitor warmth offsets and selective shifting.
-
-#### Already Built ✓
-- `DisplayCalibrationStoring` protocol + `UserDefaultsDisplayCalibrationStore`
-- `warmthOffset(for:)` / `setWarmthOffset(_:for:)` — stores per-display offsets
-- `selectiveShiftDisplayIDs` — property for which displays get the circadian curve
-- Registered in `SystemIntegration` container
-
-#### Remaining Work
-- [ ] **3.1** Apply offsets in `CircadianWorkspaceCoordinator.applyNow()` — currently offsets are stored but never read during the apply loop
-- [ ] **3.2** Display enumeration — use `CGGetActiveDisplayList` or `NSScreen.screens` to list connected displays with identifiers
-- [ ] **3.3** Per-display Night Shift control
-  - Investigate CoreDisplay / DisplayServices private frameworks for per-display color temperature
-  - If CBBlueLightClient only supports system-wide control, research `CGDisplaySetTransferByFormula` or ColorSync as alternatives
-  - Fallback: gamma table manipulation per-display via `CGSetDisplayTransferByTable`
-- [ ] **3.4** Preferences UI — display list with per-display offset sliders and "selective shift" checkboxes (new SwiftUI tab in preferences)
-- [ ] **3.5** Handle display connect/disconnect events — `CGDisplayRegisterReconfigurationCallback`
-- [ ] **3.6** Persist calibration by display serial number (not display ID, which can change)
-
-#### Phase 3 Enhancements — Display Control & Brightness
-- [ ] **3.7** DDC/CI brightness control (High Value)
-  - For compatible external monitors, pair color temp changes with actual brightness reduction
-  - Use open-source `ddc-macos` library as reference (DDC/CI protocol)
-  - When circadian curve dims (e.g., from 6500K → 3200K), also reduce brightness 100% → 70% (user-configurable)
-  - Complements per-display calibration naturally
-  - Graceful degradation if monitor doesn't support DDC/CI
-
----
-
-### Phase 4 — Smart Home & Ecosystem Integration
-**Goal:** Bridge Shifty's state to HomeKit and Shortcuts.app.
-
-#### Already Built ✓
-- `CircadianAutomationBridging` protocol defined
-- `DisabledCircadianAutomationBridge` — no-op stub registered in SystemIntegration
-- `publish(state:)` and `triggerDeepNightSceneIfNeeded(previous:current:)` method signatures exist
-- Existing `IntentHandlers.swift` — Siri Shortcuts for Night Shift toggle, color temp, disable timer, True Tone
-
-#### Remaining Work
-- [ ] **4.1** HomeKit Bridge implementation
-  - Import HomeKit framework, request home access entitlement
-  - Implement `HMHomeManager` delegate to discover available scenes
-  - Allow user to map circadian phases to HomeKit scenes (e.g., Deep Night → "Dim Office")
-  - Replace `DisabledCircadianAutomationBridge` with `HomeKitCircadianBridge`
-  - Trigger scene on phase transition in coordinator's `applyNow()`
-- [ ] **4.2** App Intents (macOS 14+)
-  - Expose circadian state: `GetCircadianPhaseIntent`, `GetColorTemperatureIntent`
-  - Expose actions: `SetCircadianModeIntent`, `PauseCircadianIntent`, `SetBedtimeIntent`
-  - Register as `AppShortcutsProvider` for Shortcuts.app discovery
-  - Migrate existing `IntentHandlers.swift` from SiriKit Intents to App Intents framework
-- [ ] **4.3** Focus Filter integration — auto-adjust circadian behavior per Focus mode (Sleep, Work, etc.)
-
----
-
-### Phase 4.5 — iCloud Sync for Preferences (Cross-Phase Feature)
-**Goal:** Sync circadian configuration and calibration across multiple Macs.
-
-- [ ] **4.5.1** iCloud KeyValue storage
-  - Adopt `NSUbiquitousKeyValueStore` for preferences sync
-  - Sync data: `CircadianCurveConfiguration`, context profiles, per-display calibration offsets, app-specific rules
-  - Listen for `NSUbiquitousKeyValueStoreDidChangeExternallyNotification`
-  - Fallback gracefully if iCloud is unavailable
-
-- [ ] **4.5.2** Conflict resolution
-  - If user modifies settings on two Macs offline, prefer most recent timestamp
-  - User can choose to "merge" or "overwrite" on sync conflict
-
-- [ ] **4.5.3** Preferences UI
-  - Toggle "Sync preferences with iCloud" in General preferences
-  - Show last-sync timestamp
-
----
-
-### Phase 6 — Developer-Centric CLI (`shifty-cli`)
-**Goal:** Scriptable interface for external automation.
-
-#### Already Built ✓
-- `CLICommand` enum: `.queryState`, `.setTemporaryPause`, `.clearTemporaryPause`, `.toggleEnabled`
-- `DistributedNotificationCLIBridge` — IPC via `DistributedNotificationCenter`
-- Notification names: `io.natethompson.Shifty.cli` / `io.natethompson.Shifty.cli.response`
-- `CircadianWorkspaceCoordinator.handleCLICommand(_:payload:)` dispatches commands
-- `AppDelegate.observeCLICommands()` listens for incoming notifications
-- `currentCLIStatePayload()` serializes state for responses
-
-#### Remaining Work
-- [ ] **6.1** Create standalone `shifty-cli` binary target
-  - Add new Xcode target (command-line tool)
-  - Parse arguments with `ArgumentParser` (Swift package)
-  - Commands: `shifty-cli status`, `shifty-cli pause <minutes>`, `shifty-cli resume`, `shifty-cli toggle`, `shifty-cli set-temp <kelvin>`, `shifty-cli get-phase`
-  - Post distributed notifications to running Shifty.app
-  - Wait for response notification with timeout
-  - Output JSON for scriptability (`--json` flag)
-- [ ] **6.2** Install mechanism — `shifty-cli install` copies binary to `/usr/local/bin` (or preferences option)
-- [ ] **6.3** Shell completions — generate for zsh/bash/fish
-- [ ] **6.4** Man page or `--help` documentation
-
----
+- [ ] EventKit-aware schedule adjustment, with permission and stale-data handling.
+- [ ] HealthKit sleep-sample assistance only after a privacy review; it should suggest a schedule, not silently rewrite it.
+- [ ] Context profiles if real workflows cannot be expressed through the core policy.
+- [ ] Smart-home integration through user-authored Shortcuts or a separately approved companion/service architecture.
+- [ ] iCloud preference sync only after configuration versioning and conflict semantics exist.
 
 ## Dependency Strategy
 
-| Dependency | Current Use | Recommendation |
-|------------|------------|----------------|
-| AXSwift | BrowserManager URL detection | Replace with narrow native AX wrapper (Phase 0.4b) |
-| PublicSuffix | Domain/subdomain parsing | Keep if accuracy matters; lightweight alternative if not |
-| Sparkle | Auto-updates | Keep for direct distribution; remove for App Store |
-| SwiftLog | Logging | Keep |
-| MASShortcut | Keyboard shortcuts (internal) | Keep — fully internal infrastructure, no external pod |
+| Dependency/interface | Decision |
+|---|---|
+| AXSwift 0.3.2 | Replace or maintain a narrow native wrapper during Swift 6 migration; current package blocks Swift 6. |
+| SwiftDomainParser 1.1.0 | Keep for correct registrable-domain parsing unless tests demonstrate a smaller equivalent. |
+| Sparkle 2.9.1 | Keep only for direct distribution; migrate update signing to EdDSA. |
+| CoreBrightness/SkyLight | Isolate, capability-check and treat as unstable private backends. |
+| `swift-argument-parser` | Add only when a standalone CLI target is approved. |
+| HealthKit/EventKit | Apple frameworks; add only with feature-specific privacy and permission work. |
+| HomeKit | Do not add to the native macOS target; unavailable in the installed macOS SDK. |
 
-### New Dependencies (anticipated)
-| Dependency | Phase | Purpose |
-|------------|-------|---------|
-| swift-argument-parser | 6 | CLI argument parsing |
-| HomeKit.framework | 4 | Smart home scene triggers |
-| EventKit.framework | 1.7 | Query user's calendar for bedtime awareness |
-| HealthKit.framework | 1.8 | Read user's scheduled sleep time |
-| ddc-macos (or similar) | 3.7 | DDC/CI monitor brightness control |
+## Immediate Next Slice
 
----
+The correctness core is now implemented and covered by regression tests. Continue Phase 0 and the architecture foundation of Phase 1 in this order:
 
-## Immediate Next Steps (Priority Order)
+1. Restore localisation and accessibility in the SwiftUI preferences, including the Whitelist label and shortcut recorder.
+2. Split circadian, activity, display, automation and dormant CLI types out of `PrefManager.swift`.
+3. Establish main-actor ownership for AppKit/UI state and introduce fake clock/backend/activity seams for coordinator tests.
+4. Extend `WorkspacePolicy` precedence across rules, disable timers and manual controls.
+5. Add CI, then complete the permission-aware visual pass and signed Sparkle release validation.
 
-1. **Commit Phase 0** — code audit + SwiftUI preferences window
-2. **Phase 1.1–1.2** — Circadian preferences UI (new SwiftUI tab) + persisted configuration
-3. **Phase 2.3** — Color-critical pause with countdown (high user value, low effort)
-4. **Phase 3.1** — Wire up display calibration offsets in `applyNow()`
-5. **Phase 6.1** — Standalone CLI binary (quick win, IPC already built)
-
-## High-Value Feature Priorities (Recommended Early Implementation)
-
-| Feature | Phase | Effort | Value | Rationale |
-|---------|-------|--------|-------|-----------|
-| **Keyboard shortcuts for presets** | 1.10 | Low | High | Designers/devs need quick color-accurate checks |
-| **Camera/mic active detection** | 2.5 | Medium | High | Solves the "looking orange on video calls" problem |
-| **Context profiles** | 1.6 | Medium | High | Handles different workflows; reusable across phases |
-| **Calendar-aware bedtime** | 1.7 | Medium | Medium | Intelligent bedtime shifting for dynamic schedules |
-| **Health.app sync** | 1.8 | Low | Medium | Auto-populate bedtime; Apple ecosystem integration |
-| **Menu bar popover** | 1.11 | High | Medium | Live countdown visualization; more discoverable |
-| **DDC/CI brightness** | 3.7 | High | Medium | Pairs color temp with brightness reduction |
-| **iCloud sync** | 4.5 | Medium | Medium | Multi-Mac users get seamless preference sync |
-
----
-
-## Technical Risks & Open Questions
-
-1. **Per-display color control**: `CBBlueLightClient` may only support system-wide Night Shift. Per-display control likely requires gamma table manipulation (`CGSetDisplayTransferByTable`) which bypasses Night Shift entirely. Need to prototype and validate.
-
-2. **HomeKit entitlements**: Requires provisioning profile with HomeKit capability. May complicate open-source distribution (App Store vs. direct download).
-
-3. **Private API stability**: `CBBlueLightClient`, `CBTrueToneClient`, and `SLSSetAppearanceThemeLegacy` are undocumented. macOS updates can break them without warning.
-
-4. **App Intents migration**: Moving from SiriKit Intents to App Intents is a one-way migration. Existing Shortcuts using old intents will break.
-
-5. **Startup ordering**: The `AppDelegate` → `StatusMenuController` → preferences lazy-init chain warrants monitoring as new SwiftUI hosting controllers are added.
-
-6. **Camera/mic detection (Phase 2.5)**: Apple's privacy indicators (camera-in-use) are available on macOS 11.3+, but reliably detecting them requires either:
-   - Polling `AVCaptureDevice.isConnected` per device (resource-intensive)
-   - Hooking into system privacy center (limited public API)
-   - May require background app refresh capability; validate scope before implementation
-
-7. **Calendar/Health access (Phases 1.7, 1.8)**: Requires user to grant `EventKit` and `HealthKit` permissions in System Preferences. User must accept permission prompts. If denied, features gracefully degrade.
-
-8. **DDC/CI stability (Phase 3.7)**: DDC/CI is not standardized; different monitor vendors implement differently. Some monitors don't support it at all. Must test on multiple external displays and provide graceful fallback (kelvin-only mode).
-
-9. **iCloud sync conflicts (Phase 4.5)**: Determining "most recent" config across devices with clock skew or offline edits is non-trivial. Simple timestamp-based resolution may not always satisfy users. Consider user-facing conflict UI.
-
-10. **Menu bar popover interaction (Phase 1.11)**: `NSPopover` has known interaction quirks (closed on certain clicks, re-appears inconsistently). May need custom window behavior or alternative approach (detachable floating window).
+Do not start HomeKit, per-display gamma control, calendar/health integration, widgets or a CLI target until this slice is complete.

@@ -228,6 +228,7 @@ class NightShiftManager {
                 withTimeInterval: timeInterval,
                 repeats: false,
                 block: { _ in
+                    self.nightShiftDisableTimer = nil
                     self.nightShiftDisableTimerState = .off
                     self.respond(to: .nightShiftDisableTimerEnded)
                 })
@@ -251,8 +252,30 @@ class NightShiftManager {
     }
     
     func invalidateDisableTimer() {
+        guard nightShiftDisableTimer != nil || nightShiftDisableTimerState != .off else { return }
+        nightShiftDisableTimer = nil
         nightShiftDisableTimerState = .off
         respond(to: .nightShiftDisableTimerEnded)
+    }
+
+    func applyWorkspacePolicyDecision(_ decision: WorkspacePolicyDecision) {
+        switch decision {
+        case .noChange:
+            return
+        case .applyStrength(let strength):
+            colorTemperature = strength
+        case .neutralise:
+            setNightShiftEnabledForWorkspacePolicy(false)
+        case .restore(let output):
+            colorTemperature = output.colorTemperature
+            setNightShiftEnabledForWorkspacePolicy(output.isNightShiftEnabled)
+        }
+    }
+
+    private func setNightShiftEnabledForWorkspacePolicy(_ enabled: Bool) {
+        guard client.isNightShiftEnabled != enabled else { return }
+        userInitiatedShift = true
+        client.setNightShiftEnabled(enabled)
     }
 }
 

@@ -240,6 +240,7 @@ struct CircadianTarget: Equatable {
 
 struct CircadianCurveConfiguration: Equatable {
     var bedtime: DateComponents
+    var wakeTime: DateComponents
     var daylightKelvin: Int
     var eveningKelvin: Int
     var deepNightKelvin: Int
@@ -248,6 +249,7 @@ struct CircadianCurveConfiguration: Equatable {
 
     static let `default` = CircadianCurveConfiguration(
         bedtime: DateComponents(hour: 23, minute: 0),
+        wakeTime: DateComponents(hour: 7, minute: 0),
         daylightKelvin: 6500,
         eveningKelvin: 4500,
         deepNightKelvin: 3200,
@@ -267,38 +269,89 @@ final class CircadianTransitionEngine: CircadianTransitioning {
 
     init(
         configuration: CircadianCurveConfiguration = .default,
-        calendar: Calendar = .current
+        calendar: Calendar = .autoupdatingCurrent
     ) {
         self.configuration = configuration
         self.calendar = calendar
     }
 
     func target(for date: Date) -> CircadianTarget {
-        let bedtimeToday = calendar.date(
-            bySettingHour: configuration.bedtime.hour ?? 23,
-            minute: configuration.bedtime.minute ?? 0,
-            second: 0,
-            of: date) ?? date
-        let bedtime = bedtimeToday > date ? bedtimeToday : calendar.date(byAdding: .day, value: 1, to: bedtimeToday) ?? bedtimeToday
+        guard
+            let mostRecentBedtime = occurrence(of: configuration.bedtime, onOrBefore: date),
+            let mostRecentWake = occurrence(of: configuration.wakeTime, onOrBefore: date)
+        else {
+            return CircadianTarget(
+                phase: .daylight,
+                kelvin: configuration.daylightKelvin,
+                phaseProgress: 0
+            )
+        }
+
+        if mostRecentBedtime > mostRecentWake {
+            return CircadianTarget(
+                phase: .deepNight,
+                kelvin: configuration.deepNightKelvin,
+                phaseProgress: 1
+            )
+        }
+
+        guard let bedtime = occurrence(of: configuration.bedtime, after: date) else {
+            return CircadianTarget(
+                phase: .daylight,
+                kelvin: configuration.daylightKelvin,
+                phaseProgress: 0
+            )
+        }
+
+        let eveningLeadTime = max(configuration.eveningLeadTime, 0)
+        let deepNightLeadTime = min(max(configuration.deepNightLeadTime, 0), eveningLeadTime)
         let secondsUntilBedtime = bedtime.timeIntervalSince(date)
 
-        if secondsUntilBedtime > configuration.eveningLeadTime {
+        if secondsUntilBedtime > eveningLeadTime {
             return CircadianTarget(phase: .daylight, kelvin: configuration.daylightKelvin, phaseProgress: 0.0)
         }
 
-        if secondsUntilBedtime > configuration.deepNightLeadTime {
-            let span = configuration.eveningLeadTime - configuration.deepNightLeadTime
-            let elapsed = configuration.eveningLeadTime - secondsUntilBedtime
+        if secondsUntilBedtime > deepNightLeadTime {
+            let span = eveningLeadTime - deepNightLeadTime
+            let elapsed = eveningLeadTime - secondsUntilBedtime
             let progress = clamp(span == 0 ? 1.0 : elapsed / span, lower: 0.0, upper: 1.0)
             let kelvin = interpolate(from: configuration.daylightKelvin, to: configuration.eveningKelvin, progress: progress)
             return CircadianTarget(phase: .evening, kelvin: kelvin, phaseProgress: progress)
         }
 
-        let span = max(configuration.deepNightLeadTime, 1.0)
-        let elapsed = configuration.deepNightLeadTime - secondsUntilBedtime
+        let span = max(deepNightLeadTime, 1.0)
+        let elapsed = deepNightLeadTime - secondsUntilBedtime
         let progress = clamp(elapsed / span, lower: 0.0, upper: 1.0)
         let kelvin = interpolate(from: configuration.eveningKelvin, to: configuration.deepNightKelvin, progress: progress)
         return CircadianTarget(phase: .deepNight, kelvin: kelvin, phaseProgress: progress)
+    }
+
+    private func occurrence(of components: DateComponents, onOrBefore date: Date) -> Date? {
+        calendar.nextDate(
+            after: date.addingTimeInterval(1),
+            matching: timeComponents(from: components),
+            matchingPolicy: .nextTime,
+            repeatedTimePolicy: .first,
+            direction: .backward
+        )
+    }
+
+    private func occurrence(of components: DateComponents, after date: Date) -> Date? {
+        calendar.nextDate(
+            after: date,
+            matching: timeComponents(from: components),
+            matchingPolicy: .nextTime,
+            repeatedTimePolicy: .first,
+            direction: .forward
+        )
+    }
+
+    private func timeComponents(from components: DateComponents) -> DateComponents {
+        DateComponents(
+            hour: components.hour ?? 0,
+            minute: components.minute ?? 0,
+            second: 0
+        )
     }
 
     private func clamp(_ value: Double, lower: Double, upper: Double) -> Double {
@@ -310,8 +363,63 @@ final class CircadianTransitionEngine: CircadianTransitioning {
     }
 }
 
+struct WorkspaceOutputState: Equatable {
+    var isNightShiftEnabled: Bool
+    var colorTemperature: Float
+}
+
+enum WorkspacePolicyDecision: Equatable {
+    case noChange
+    case applyStrength(Float)
+    case neutralise
+    case restore(WorkspaceOutputState)
+}
+
+/// Resolves circadian output and temporary activity overrides without changing
+/// the user's persistent Night Shift intent.
+final class WorkspacePolicy {
+    private var suspendedOutput: WorkspaceOutputState?
+
+    func decision(
+        isCircadianEnabled: Bool,
+        targetStrength: Float,
+        activityOverride: ActivityOverrideSnapshot,
+        currentOutput: WorkspaceOutputState
+    ) -> WorkspacePolicyDecision {
+        guard isCircadianEnabled else {
+            return restoreSuspendedOutputIfNeeded() ?? .noChange
+        }
+
+        if activityOverride.isSuspended,
+           activityOverride.reason == .temporaryPause
+        {
+            if suspendedOutput == nil {
+                suspendedOutput = currentOutput
+            }
+            return currentOutput.isNightShiftEnabled ? .neutralise : .noChange
+        }
+
+        if activityOverride.isSuspended {
+            return .noChange
+        }
+
+        if let restoration = restoreSuspendedOutputIfNeeded() {
+            return restoration
+        }
+
+        guard currentOutput.isNightShiftEnabled else { return .noChange }
+        return .applyStrength(targetStrength)
+    }
+
+    private func restoreSuspendedOutputIfNeeded() -> WorkspacePolicyDecision? {
+        guard let suspendedOutput else { return nil }
+        self.suspendedOutput = nil
+        return .restore(suspendedOutput)
+    }
+}
+
 enum ActivitySuspendReason: String {
-    case fullscreenMedia
+    case foregroundMedia
     case pictureInPicture
     case temporaryPause
 }
@@ -397,7 +505,7 @@ final class ActivityOverrideManager: ActivityOverrideManaging {
         }
 
         guard
-            let activeApp = NSWorkspace.shared.menuBarOwningApplication,
+            let activeApp = NSWorkspace.shared.frontmostApplication,
             let bundleID = activeApp.bundleIdentifier,
             mediaBundleIdentifiers.contains(bundleID)
         else {
@@ -407,7 +515,7 @@ final class ActivityOverrideManager: ActivityOverrideManaging {
 
         currentOverride = ActivityOverrideSnapshot(
             isSuspended: true,
-            reason: .fullscreenMedia,
+            reason: .foregroundMedia,
             until: nil
         )
     }
@@ -504,6 +612,7 @@ final class CircadianWorkspaceCoordinator {
     private let integrations = SystemIntegration.shared
     private var updateTimer: Timer?
     private var previousAutomationState: CircadianAutomationState?
+    private let workspacePolicy = WorkspacePolicy()
     private(set) var isRunning = false
 
     private init() {}
@@ -524,7 +633,9 @@ final class CircadianWorkspaceCoordinator {
         isRunning = false
         updateTimer?.invalidate()
         updateTimer = nil
+        integrations.activityOverride.onChange = nil
         integrations.activityOverride.stop()
+        applyWorkspacePolicy(isCircadianEnabled: false)
     }
 
     @discardableResult
@@ -553,20 +664,28 @@ final class CircadianWorkspaceCoordinator {
     func currentCLIStatePayload() -> [String: Any] {
         let target = integrations.circadianTransition.target(for: Date())
         let override = integrations.activityOverride.currentOverride
-        return [
+        var payload: [String: Any] = [
             "circadianEnabled": UserDefaults.standard.bool(forKey: Keys.isCircadianModeEnabled),
             "phase": target.phase.rawValue,
             "kelvin": target.kelvin,
-            "isSuspended": override.isSuspended,
-            "suspendReason": override.reason?.rawValue as Any
+            "isSuspended": override.isSuspended
         ]
+        if let reason = override.reason {
+            payload["suspendReason"] = reason.rawValue
+        }
+        return payload
     }
 
     func applyNow() {
-        guard UserDefaults.standard.bool(forKey: Keys.isCircadianModeEnabled) else { return }
-
+        let isCircadianEnabled = UserDefaults.standard.bool(forKey: Keys.isCircadianModeEnabled)
         let target = integrations.circadianTransition.target(for: Date())
         let override = integrations.activityOverride.currentOverride
+
+        guard isCircadianEnabled else {
+            applyWorkspacePolicy(isCircadianEnabled: false, target: target, activityOverride: override)
+            return
+        }
+
         let state = CircadianAutomationState(
             phase: target.phase,
             kelvin: target.kelvin,
@@ -577,10 +696,31 @@ final class CircadianWorkspaceCoordinator {
         integrations.automationBridge.triggerDeepNightSceneIfNeeded(previous: previousAutomationState, current: state)
         previousAutomationState = state
 
-        guard !override.isSuspended else { return }
-        guard NightShiftManager.shared.isNightShiftEnabled else { return }
+        applyWorkspacePolicy(
+            isCircadianEnabled: true,
+            target: target,
+            activityOverride: override
+        )
+    }
 
-        NightShiftManager.shared.colorTemperature = strength(fromKelvin: target.kelvin)
+    private func applyWorkspacePolicy(
+        isCircadianEnabled: Bool,
+        target: CircadianTarget? = nil,
+        activityOverride: ActivityOverrideSnapshot = .none
+    ) {
+        let manager = NightShiftManager.shared
+        let currentOutput = WorkspaceOutputState(
+            isNightShiftEnabled: manager.isNightShiftEnabled,
+            colorTemperature: manager.colorTemperature
+        )
+        let targetStrength = target.map { strength(fromKelvin: $0.kelvin) } ?? currentOutput.colorTemperature
+        let decision = workspacePolicy.decision(
+            isCircadianEnabled: isCircadianEnabled,
+            targetStrength: targetStrength,
+            activityOverride: activityOverride,
+            currentOutput: currentOutput
+        )
+        manager.applyWorkspacePolicyDecision(decision)
     }
 
     private func schedulePeriodicRefresh() {

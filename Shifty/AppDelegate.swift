@@ -19,7 +19,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItemClicked: (() -> Void)?
     private var suppressStatusToggleUntil: Date = .distantPast
     private let circadianCoordinator = CircadianWorkspaceCoordinator.shared
-    private var cliCommandObserver: NSObjectProtocol?
 
     lazy var preferenceWindowController: PrefWindowController = {
         let general = HostedPreferencePane(
@@ -107,7 +106,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         updateMenuBarIcon()
         setStatusToggle()
-        observeCLICommands()
         circadianCoordinator.start()
         
         NightShiftManager.shared.onNightShiftChange {
@@ -250,43 +248,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
-        if let cliCommandObserver {
-            DistributedNotificationCenter.default().removeObserver(cliCommandObserver)
-            self.cliCommandObserver = nil
-        }
         circadianCoordinator.stop()
         logw("App terminated")
-    }
-
-    private func observeCLICommands() {
-        cliCommandObserver = DistributedNotificationCenter.default().addObserver(
-            forName: DistributedNotificationCLIBridge.notificationName,
-            object: nil,
-            queue: nil
-        ) { [weak self] notification in
-            guard let self else { return }
-            let payload = notification.userInfo as? [String: Any] ?? [:]
-            guard
-                let commandName = payload["command"] as? String,
-                let command = CLICommand(rawValue: commandName)
-            else { return }
-
-            let response = self.circadianCoordinator.handleCLICommand(command, payload: payload)
-            guard let response else { return }
-
-            var responsePayload = response
-            responsePayload["command"] = command.rawValue
-            if let requestID = payload["requestID"] {
-                responsePayload["requestID"] = requestID
-            }
-
-            DistributedNotificationCenter.default().postNotificationName(
-                DistributedNotificationCLIBridge.responseNotificationName,
-                object: Bundle.main.bundleIdentifier,
-                userInfo: responsePayload,
-                deliverImmediately: true
-            )
-        }
     }
     
     

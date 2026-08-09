@@ -57,5 +57,3 @@ fastlane/test_output
 
 # macOS specific
 .DS_Store
-
-.claude/*

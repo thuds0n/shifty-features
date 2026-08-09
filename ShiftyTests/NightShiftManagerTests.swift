@@ -41,6 +41,32 @@ final class NightShiftManagerTests: XCTestCase {
 
         XCTAssertEqual(client.setToScheduleCallCount, 1)
     }
+
+    func testInvalidatingDisableTimerCancelsItsLaterRestoreEvent() {
+        let client = FakeNightShiftClient()
+        let manager = NightShiftManager(client: client)
+        let timerStarted = expectation(description: "Disable timer started")
+
+        manager.setDisableTimer(forTimeInterval: 0.1)
+        DispatchQueue.main.async {
+            timerStarted.fulfill()
+        }
+        wait(for: [timerStarted], timeout: 1)
+
+        manager.invalidateDisableTimer()
+
+        XCTAssertNil(manager.nightShiftDisableTimer)
+        XCTAssertEqual(manager.nightShiftDisableTimerState, .off)
+        XCTAssertEqual(client.setToScheduleCallCount, 1)
+
+        let timerWouldHaveFired = expectation(description: "Cancelled timer did not fire")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            timerWouldHaveFired.fulfill()
+        }
+        wait(for: [timerWouldHaveFired], timeout: 1)
+
+        XCTAssertEqual(client.setToScheduleCallCount, 1)
+    }
 }
 
 private final class FakeNightShiftClient: NightShiftSystemControlling {
