@@ -8,6 +8,7 @@
 
 import Cocoa
 
+@MainActor
 class StatusMenuController: NSObject, NSMenuDelegate {
     let integrations = SystemIntegration.shared
 

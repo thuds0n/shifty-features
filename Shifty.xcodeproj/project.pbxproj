@@ -10,6 +10,15 @@
 		2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */; };
 		A19F00012A8A000100000001 /* CircadianWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */; };
 		A19F00032A8A000100000003 /* PreferenceAccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */; };
+		A19F00102A8A001000000010 /* SystemIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00112A8A001000000011 /* SystemIntegration.swift */; };
+		A19F00122A8A001000000012 /* CircadianSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00132A8A001000000013 /* CircadianSchedule.swift */; };
+		A19F00142A8A001000000014 /* WorkspacePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00152A8A001000000015 /* WorkspacePolicy.swift */; };
+		A19F00162A8A001000000016 /* ActivityOverrideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00172A8A001000000017 /* ActivityOverrideManager.swift */; };
+		A19F00182A8A001000000018 /* DisplayCalibrationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00192A8A001000000019 /* DisplayCalibrationStore.swift */; };
+		A19F001A2A8A00100000001A /* CircadianAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F001B2A8A00100000001B /* CircadianAutomation.swift */; };
+		A19F001C2A8A00100000001C /* CLITransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F001D2A8A00100000001D /* CLITransport.swift */; };
+		A19F001E2A8A00100000001E /* CircadianWorkspaceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F001F2A8A00100000001F /* CircadianWorkspaceCoordinator.swift */; };
+		A19F00202A8A002000000020 /* CircadianWorkspaceCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00212A8A002000000021 /* CircadianWorkspaceCoordinatorTests.swift */; };
 		43041CC5207DB9FF0076E75C /* CoreBrightness.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43041CC4207DB9FF0076E75C /* CoreBrightness.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		431B7B5D2167C8740039D085 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A934002164019300AFB708 /* Security.framework */; };
 		433AD3011F2CED1F0003FBCD /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 433AD3001F2CED1F0003FBCD /* dsa_pub.pem */; };
@@ -88,6 +97,15 @@
 		3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightShiftManagerTests.swift; sourceTree = "<group>"; };
 		A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianWorkspaceTests.swift; sourceTree = "<group>"; };
 		A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceAccessibilityTests.swift; sourceTree = "<group>"; };
+		A19F00112A8A001000000011 /* SystemIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SystemIntegration.swift; path = Shifty/SystemIntegration.swift; sourceTree = "<group>"; };
+		A19F00132A8A001000000013 /* CircadianSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CircadianSchedule.swift; path = Shifty/CircadianSchedule.swift; sourceTree = "<group>"; };
+		A19F00152A8A001000000015 /* WorkspacePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WorkspacePolicy.swift; path = Shifty/WorkspacePolicy.swift; sourceTree = "<group>"; };
+		A19F00172A8A001000000017 /* ActivityOverrideManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityOverrideManager.swift; path = Shifty/ActivityOverrideManager.swift; sourceTree = "<group>"; };
+		A19F00192A8A001000000019 /* DisplayCalibrationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DisplayCalibrationStore.swift; path = Shifty/DisplayCalibrationStore.swift; sourceTree = "<group>"; };
+		A19F001B2A8A00100000001B /* CircadianAutomation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CircadianAutomation.swift; path = Shifty/CircadianAutomation.swift; sourceTree = "<group>"; };
+		A19F001D2A8A00100000001D /* CLITransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CLITransport.swift; path = Shifty/CLITransport.swift; sourceTree = "<group>"; };
+		A19F001F2A8A00100000001F /* CircadianWorkspaceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CircadianWorkspaceCoordinator.swift; path = Shifty/CircadianWorkspaceCoordinator.swift; sourceTree = "<group>"; };
+		A19F00212A8A002000000021 /* CircadianWorkspaceCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianWorkspaceCoordinatorTests.swift; sourceTree = "<group>"; };
 		43041CB3207DB3440076E75C /* SkyLight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SkyLight.framework; sourceTree = "<group>"; };
 		43041CC4207DB9FF0076E75C /* CoreBrightness.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBrightness.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/PrivateFrameworks/CoreBrightness.framework; sourceTree = DEVELOPER_DIR; };
 		43099BA81FC67B5000A0720B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/CustomTimeWindow.strings"; sourceTree = "<group>"; };
@@ -328,6 +346,14 @@
 		43CA44E826DB450A00537DED /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				A19F00112A8A001000000011 /* SystemIntegration.swift */,
+				A19F00132A8A001000000013 /* CircadianSchedule.swift */,
+				A19F00152A8A001000000015 /* WorkspacePolicy.swift */,
+				A19F00172A8A001000000017 /* ActivityOverrideManager.swift */,
+				A19F00192A8A001000000019 /* DisplayCalibrationStore.swift */,
+				A19F001B2A8A00100000001B /* CircadianAutomation.swift */,
+				A19F001D2A8A00100000001D /* CLITransport.swift */,
+				A19F001F2A8A00100000001F /* CircadianWorkspaceCoordinator.swift */,
 				497B2392200B576700669DDE /* NightShiftManager.swift */,
 				435F0383208027C600ABA2EB /* BrowserManager.swift */,
 				4960957D200EB9CD00D966CA /* RuleManager.swift */,
@@ -362,6 +388,7 @@
 			children = (
 				6D67B7B95C7943A624FA6BC6 /* Info.plist */,
 				A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */,
+				A19F00212A8A002000000021 /* CircadianWorkspaceCoordinatorTests.swift */,
 				A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */,
 				3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */,
 				B7F689588C441301528A1021 /* RuleManagerTests.swift */,
@@ -552,6 +579,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A19F00102A8A001000000010 /* SystemIntegration.swift in Sources */,
+				A19F00122A8A001000000012 /* CircadianSchedule.swift in Sources */,
+				A19F00142A8A001000000014 /* WorkspacePolicy.swift in Sources */,
+				A19F00162A8A001000000016 /* ActivityOverrideManager.swift in Sources */,
+				A19F00182A8A001000000018 /* DisplayCalibrationStore.swift in Sources */,
+				A19F001A2A8A00100000001A /* CircadianAutomation.swift in Sources */,
+				A19F001C2A8A00100000001C /* CLITransport.swift in Sources */,
+				A19F001E2A8A00100000001E /* CircadianWorkspaceCoordinator.swift in Sources */,
 				43A8E69C2141DF7C00BD3870 /* CBTrueToneClient+Shifty.swift in Sources */,
 				433E60EC207D9995007BB55F /* BrightnessSystemClient+Shifty.swift in Sources */,
 				497B2396200B576700669DDE /* NotificationName+Shifty.swift in Sources */,
@@ -586,6 +621,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A19F00012A8A000100000001 /* CircadianWorkspaceTests.swift in Sources */,
+				A19F00202A8A002000000020 /* CircadianWorkspaceCoordinatorTests.swift in Sources */,
 				A19F00032A8A000100000003 /* PreferenceAccessibilityTests.swift in Sources */,
 				2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */,
 				8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */,

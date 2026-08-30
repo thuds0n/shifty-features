@@ -10,6 +10,7 @@ import Cocoa
 import Intents
 
 @NSApplicationMain
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     let prefs = UserDefaults.standard
@@ -174,15 +175,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func observeAccessibilityApiNotifications() {
-        DistributedNotificationCenter.default().addObserver(forName: NSNotification.Name("com.apple.accessibility.api"), object: nil, queue: nil) { _ in
-            logw("Accessibility permissions changed: \(self.integrations.permissions.isAccessibilityTrusted(prompt: false))")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                if self.integrations.permissions.isAccessibilityTrusted(prompt: false) {
-                    UserDefaults.standard.set(true, forKey: Keys.isWebsiteControlEnabled)
-                } else {
-                    UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
-                }
-            })
+        DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name("com.apple.accessibility.api"),
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                guard let self else { return }
+                let isTrusted = self.integrations.permissions.isAccessibilityTrusted(prompt: false)
+                logw("Accessibility permissions changed: \(isTrusted)")
+                UserDefaults.standard.set(isTrusted, forKey: Keys.isWebsiteControlEnabled)
+            }
         }
     }
     

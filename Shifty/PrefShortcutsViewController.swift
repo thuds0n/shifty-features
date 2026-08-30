@@ -93,6 +93,7 @@ struct ShortcutRecorderView: NSViewRepresentable {
 // MARK: - PrefShortcutsViewController (shortcut binding manager, not a VC)
 
 /// Manages global hotkey bindings for all shortcuts. Instantiated at launch by StatusMenuController.
+@MainActor
 final class PrefShortcutsViewController {
     let integrations = SystemIntegration.shared
 

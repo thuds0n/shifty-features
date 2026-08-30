@@ -187,6 +187,7 @@ final class CircadianWorkspaceTests: XCTestCase {
         )
     }
 
+    @MainActor
     func testIdleCLIPayloadIsAValidPropertyListAndOmitsSuspendReason() {
         let payload = CircadianWorkspaceCoordinator.shared.currentCLIStatePayload()
 

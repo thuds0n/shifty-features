@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 22 tests pass: 13 circadian/workspace, 4 `NightShiftManager`, 3 `RuleManager` and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 27 tests pass: 18 circadian/workspace, 4 `NightShiftManager`, 3 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
@@ -52,7 +52,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 
 ### Scaffolding, not production-ready functionality
 
-- `CircadianWorkspaceCoordinator`, a menu toggle and a partial `WorkspacePolicy` boundary.
+- An injectable, main-actor `CircadianWorkspaceCoordinator`, a menu toggle and a partial `WorkspacePolicy` boundary.
 - Foreground-media hold state and temporary-pause neutralise/restore behaviour in `ActivityOverrideManager`.
 - UserDefaults-backed display offset and selection storage.
 - A no-op automation bridge.
@@ -77,6 +77,8 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 - **Disable-timer ownership:** cancellation invalidates and clears the timer before restoration. A regression test proves the cancelled callback cannot restore a second time.
 - **CLI property-list safety:** idle payloads omit an absent suspend reason and pass property-list validation. The unauthenticated distributed command listener is disabled until a bounded IPC design is approved.
 - **SwiftUI localisation and accessibility:** all preference copy now uses semantic localisation keys across the five supported languages. The Whitelist toolbar label resolves correctly, and the shortcut recorder supports focus, keyboard recording/clearing and explicit accessibility state.
+- **Circadian architecture concentration:** preferences, scheduling, policy, activity, calibration, automation, dormant CLI transport and coordination now have focused source files. The coordinator accepts fake clock, mode-store, timer, activity, automation and Night Shift dependencies; lifecycle, output restoration and CLI behaviour have regression coverage.
+- **Initial main-actor boundary:** the app delegate, status-menu controller, shortcut binding manager and circadian coordinator now explicitly own their UI-facing work on the main actor. This is a foundation rather than completion of the Swift 6 migration.
 
 ### P1 status
 
@@ -86,17 +88,15 @@ The P1 findings from the 9 August audit are resolved in the current branch. Phas
 
 1. **Swift 6 is not a switch-only upgrade.** AXSwift fails in Swift 6 mode, and complete-concurrency diagnostics identify shared mutable singletons, missing main-actor isolation and non-Sendable callback captures throughout AppKit, timers and shortcuts. Establish a main-actor boundary first, then replace or fork AXSwift.
 
-2. **Domain coverage remains incomplete.** The pure circadian curve, temporary-pause policy, CLI idle payload, timer cancellation, preference localisation and shortcut-recorder keyboard behaviour now have regression coverage. Coordinator timing, activity-manager lifecycle, display calibration storage, browser parsing/watchers, preference actions, shortcut persistence, timer expiry and wake handling still need tests.
+2. **Domain coverage remains incomplete.** The pure circadian curve, temporary-pause policy, coordinator lifecycle and injected timing, CLI payload and toggling, timer cancellation, preference localisation and shortcut-recorder keyboard behaviour now have regression coverage. Activity-manager lifecycle, display calibration storage, browser parsing/watchers, preference actions, shortcut persistence, timer expiry and wake handling still need tests.
 
-3. **Scaffolding is too concentrated.** `PrefManager.swift` contains preferences, service protocols, display/system adapters, circadian domain logic, activity state, calibration storage, automation, CLI transport and coordination. Split these by responsibility before adding more integrations.
+3. **Release metadata is historical.** The app is still version 1.2/build 66, both appcast copies advertise macOS 10.12.4, and update signing uses deprecated DSA metadata. Sparkle 2 recommends an EdDSA migration before a new release.
 
-4. **Release metadata is historical.** The app is still version 1.2/build 66, both appcast copies advertise macOS 10.12.4, and update signing uses deprecated DSA metadata. Sparkle 2 recommends an EdDSA migration before a new release.
+4. **Public documentation is inconsistent.** The root README says macOS 14 while the hosted English, German and Chinese pages still say macOS 10.12.4. Preference screenshots also predate the SwiftUI migration and require replacement after visual verification.
 
-5. **Public documentation is inconsistent.** The root README says macOS 14 while the hosted English, German and Chinese pages still say macOS 10.12.4. Preference screenshots also predate the SwiftUI migration and require replacement after visual verification.
+5. **The repository carries obsolete binary material.** A tracked 12 MB local `SkyLight.framework` is an old Intel/i386 framework, while the project links the system private framework. Confirm it has no archival purpose, then remove it from the repository and history only as a separate, reviewed maintenance decision.
 
-6. **The repository carries obsolete binary material.** A tracked 12 MB local `SkyLight.framework` is an old Intel/i386 framework, while the project links the system private framework. Confirm it has no archival purpose, then remove it from the repository and history only as a separate, reviewed maintenance decision.
-
-7. **Private API failure is not a first-class state.** CoreBrightness, True Tone and SkyLight calls are abstracted behind protocols, which is a useful seam, but the UI does not expose availability/error state or a safe fallback. Private API failures must never crash launch or silently claim that a change was applied.
+6. **Private API failure is not a first-class state.** CoreBrightness, True Tone and SkyLight calls are abstracted behind protocols, which is a useful seam, but the UI does not expose availability/error state or a safe fallback. Private API failures must never crash launch or silently claim that a change was applied.
 
 ### P3 — maintainability issues
 
@@ -164,7 +164,7 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 
 ### Phase 1 — make circadian mode correct and configurable
 
-- [ ] Split circadian, activity, display, automation and CLI code out of `PrefManager.swift`.
+- [x] Split circadian, activity, display, automation and CLI code out of `PrefManager.swift`.
 - [x] Add schedule tests: before evening, both ramps, bedtime, after bedtime, midnight, morning, DST and time-zone changes.
 - [x] Define the morning/daylight transition.
 - [ ] Define user-override precedence across all state sources.
@@ -173,7 +173,7 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 - [ ] Add a compact Circadian preference pane and menu phase/countdown status.
 - [x] Restore the exact prior Night Shift output when a temporary pause ends.
 - [ ] Ramp output smoothly and extend restoration precedence across every override type.
-- [ ] Add coordinator tests with fake clock, fake backend and fake activity provider.
+- [x] Add coordinator tests with fake clock, fake backend and fake activity provider.
 
 Exit criteria: circadian mode can run for multiple days without a boundary jump, honours all override types, restores predictably and is fully configurable.
 
@@ -226,12 +226,12 @@ Per-display warmth remains research, not a committed product capability.
 
 ## Immediate Next Slice
 
-The correctness and preference-compliance slices are now implemented and covered by tests. Continue Phase 0 and the architecture foundation of Phase 1 in this order:
+The correctness, preference-compliance and initial architecture slices are now implemented and covered by tests. Continue Phase 0 and Phase 1 in this order:
 
-1. Split circadian, activity, display, automation and dormant CLI types out of `PrefManager.swift`.
-2. Establish main-actor ownership for AppKit/UI state and introduce fake clock/backend/activity seams for coordinator tests.
-3. Extend `WorkspacePolicy` precedence across rules, disable timers and manual controls.
-4. Add CI for Debug, universal Release and the unit-test suite.
-5. Complete full interaction and non-English visual passes, then validate the signed archive and Sparkle update path.
+1. Extend `WorkspacePolicy` precedence across rules, disable timers and manual controls.
+2. Add CI for Debug, universal Release and the unit-test suite.
+3. Add activity lifecycle, display calibration and browser watcher tests around the remaining foundation seams.
+4. Complete full interaction and non-English visual passes.
+5. Refresh hosted documentation and screenshots, then validate the signed archive and Sparkle update path.
 
 Do not start HomeKit, per-display gamma control, calendar/health integration, widgets or a CLI target until this slice is complete.
