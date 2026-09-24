@@ -25,6 +25,76 @@ final class UserDefaultsCircadianModeStore: CircadianModeStoring {
     }
 }
 
+protocol CircadianConfigurationStoring: AnyObject {
+    var configuration: CircadianCurveConfiguration { get set }
+}
+
+/// Persists the circadian curve as versioned JSON so the format can evolve.
+/// Missing, unreadable or newer-versioned data falls back to the defaults.
+final class UserDefaultsCircadianConfigurationStore: CircadianConfigurationStoring {
+    private struct StoredConfiguration: Codable {
+        static let currentVersion = 1
+
+        var version: Int
+        var bedtimeMinute: Int
+        var wakeTimeMinute: Int
+        var daylightKelvin: Int
+        var eveningKelvin: Int
+        var deepNightKelvin: Int
+        var eveningLeadMinutes: Int
+        var deepNightLeadMinutes: Int
+    }
+
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    var configuration: CircadianCurveConfiguration {
+        get {
+            guard
+                let data = defaults.data(forKey: Keys.circadianConfiguration),
+                let stored = try? JSONDecoder().decode(StoredConfiguration.self, from: data),
+                stored.version == StoredConfiguration.currentVersion
+            else {
+                return .default
+            }
+            return CircadianCurveConfiguration(
+                bedtime: DateComponents(hour: stored.bedtimeMinute / 60, minute: stored.bedtimeMinute % 60),
+                wakeTime: DateComponents(hour: stored.wakeTimeMinute / 60, minute: stored.wakeTimeMinute % 60),
+                daylightKelvin: stored.daylightKelvin,
+                eveningKelvin: stored.eveningKelvin,
+                deepNightKelvin: stored.deepNightKelvin,
+                eveningLeadTime: TimeInterval(stored.eveningLeadMinutes * 60),
+                deepNightLeadTime: TimeInterval(stored.deepNightLeadMinutes * 60)
+            ).validated()
+        }
+        set {
+            let configuration = newValue.validated()
+            let stored = StoredConfiguration(
+                version: StoredConfiguration.currentVersion,
+                bedtimeMinute: CircadianCurveConfiguration.minuteOfDay(configuration.bedtime),
+                wakeTimeMinute: CircadianCurveConfiguration.minuteOfDay(configuration.wakeTime),
+                daylightKelvin: configuration.daylightKelvin,
+                eveningKelvin: configuration.eveningKelvin,
+                deepNightKelvin: configuration.deepNightKelvin,
+                eveningLeadMinutes: Int((configuration.eveningLeadTime / 60).rounded()),
+                deepNightLeadMinutes: Int((configuration.deepNightLeadTime / 60).rounded())
+            )
+            guard let data = try? JSONEncoder().encode(stored) else { return }
+            defaults.set(data, forKey: Keys.circadianConfiguration)
+        }
+    }
+}
+
+/// A snapshot of the schedule for display: where it is now and what comes next.
+struct CircadianStatus: Equatable {
+    var target: CircadianTarget
+    var nextTransition: CircadianTransition?
+    var isSuspended: Bool
+}
+
 protocol WorkspaceRefreshTimer: AnyObject {
     func invalidate()
 }
@@ -72,6 +142,7 @@ final class CircadianWorkspaceCoordinator {
     private let automationBridge: CircadianAutomationBridging
     private let nightShift: WorkspaceNightShiftControlling
     private let modeStore: CircadianModeStoring
+    private let configurationStore: CircadianConfigurationStoring
     private let clock: WorkspaceClock
     private let refreshScheduler: WorkspaceRefreshScheduling
     private let workspacePolicy: WorkspacePolicy
@@ -86,6 +157,7 @@ final class CircadianWorkspaceCoordinator {
         automationBridge: CircadianAutomationBridging,
         nightShift: WorkspaceNightShiftControlling,
         modeStore: CircadianModeStoring = UserDefaultsCircadianModeStore(),
+        configurationStore: CircadianConfigurationStoring = UserDefaultsCircadianConfigurationStore(),
         clock: WorkspaceClock = SystemWorkspaceClock(),
         refreshScheduler: WorkspaceRefreshScheduling = FoundationWorkspaceRefreshScheduler(),
         workspacePolicy: WorkspacePolicy = WorkspacePolicy()
@@ -95,9 +167,32 @@ final class CircadianWorkspaceCoordinator {
         self.automationBridge = automationBridge
         self.nightShift = nightShift
         self.modeStore = modeStore
+        self.configurationStore = configurationStore
         self.clock = clock
         self.refreshScheduler = refreshScheduler
         self.workspacePolicy = workspacePolicy
+        transition.configuration = configurationStore.configuration
+    }
+
+    var configuration: CircadianCurveConfiguration {
+        transition.configuration
+    }
+
+    /// Validates, persists and immediately applies a new schedule.
+    func updateConfiguration(_ configuration: CircadianCurveConfiguration) {
+        let configuration = configuration.validated()
+        configurationStore.configuration = configuration
+        transition.configuration = configuration
+        applyNow()
+    }
+
+    func currentStatus() -> CircadianStatus {
+        let now = clock.now
+        return CircadianStatus(
+            target: transition.target(for: now),
+            nextTransition: transition.nextTransition(after: now),
+            isSuspended: activityOverride.currentOverride.isSuspended
+        )
     }
 
     func start() {

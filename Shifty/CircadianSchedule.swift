@@ -13,6 +13,12 @@ struct CircadianTarget: Equatable {
     var phaseProgress: Double
 }
 
+/// The next phase the schedule will enter, and when.
+struct CircadianTransition: Equatable {
+    var phase: CircadianPhase
+    var date: Date
+}
+
 struct CircadianCurveConfiguration: Equatable {
     var bedtime: DateComponents
     var wakeTime: DateComponents
@@ -31,11 +37,54 @@ struct CircadianCurveConfiguration: Equatable {
         eveningLeadTime: 2 * 3600,
         deepNightLeadTime: 45 * 60
     )
+
+    static let kelvinRange = 2700...6500
+    static let maximumLeadTime: TimeInterval = 6 * 3600
+
+    /// Returns a configuration that the transition engine can always schedule:
+    /// times are whole minutes of the day, bedtime and wake time differ, Kelvin
+    /// targets are bounded and get warmer through the evening, and the ramps fit
+    /// inside the waking day.
+    func validated() -> CircadianCurveConfiguration {
+        let bedtimeMinutes = Self.minuteOfDay(bedtime)
+        let wakeMinutes = Self.minuteOfDay(wakeTime)
+        guard bedtimeMinutes != wakeMinutes else { return .default }
+
+        let daylight = clampKelvin(daylightKelvin)
+        let evening = min(clampKelvin(eveningKelvin), daylight)
+        let deepNight = min(clampKelvin(deepNightKelvin), evening)
+
+        let awakeMinutes = (bedtimeMinutes - wakeMinutes + 1440) % 1440
+        let maximumEveningLead = min(Self.maximumLeadTime, TimeInterval(awakeMinutes * 60))
+        let eveningLead = min(max(eveningLeadTime, 0), maximumEveningLead)
+        let deepNightLead = min(max(deepNightLeadTime, 0), eveningLead)
+
+        return CircadianCurveConfiguration(
+            bedtime: DateComponents(hour: bedtimeMinutes / 60, minute: bedtimeMinutes % 60),
+            wakeTime: DateComponents(hour: wakeMinutes / 60, minute: wakeMinutes % 60),
+            daylightKelvin: daylight,
+            eveningKelvin: evening,
+            deepNightKelvin: deepNight,
+            eveningLeadTime: eveningLead,
+            deepNightLeadTime: deepNightLead
+        )
+    }
+
+    static func minuteOfDay(_ components: DateComponents) -> Int {
+        let hour = min(max(components.hour ?? 0, 0), 23)
+        let minute = min(max(components.minute ?? 0, 0), 59)
+        return (hour * 60) + minute
+    }
+
+    private func clampKelvin(_ kelvin: Int) -> Int {
+        min(max(kelvin, Self.kelvinRange.lowerBound), Self.kelvinRange.upperBound)
+    }
 }
 
 protocol CircadianTransitioning: AnyObject {
     var configuration: CircadianCurveConfiguration { get set }
     func target(for date: Date) -> CircadianTarget
+    func nextTransition(after date: Date) -> CircadianTransition?
 }
 
 final class CircadianTransitionEngine: CircadianTransitioning {
@@ -66,8 +115,7 @@ final class CircadianTransitionEngine: CircadianTransitioning {
             return CircadianTarget(phase: .daylight, kelvin: configuration.daylightKelvin, phaseProgress: 0)
         }
 
-        let eveningLeadTime = max(configuration.eveningLeadTime, 0)
-        let deepNightLeadTime = min(max(configuration.deepNightLeadTime, 0), eveningLeadTime)
+        let (eveningLeadTime, deepNightLeadTime) = leadTimes
         let secondsUntilBedtime = bedtime.timeIntervalSince(date)
 
         if secondsUntilBedtime > eveningLeadTime {
@@ -92,6 +140,27 @@ final class CircadianTransitionEngine: CircadianTransitioning {
             kelvin: interpolate(from: configuration.eveningKelvin, to: configuration.deepNightKelvin, progress: progress),
             phaseProgress: progress
         )
+    }
+
+    func nextTransition(after date: Date) -> CircadianTransition? {
+        let phase = target(for: date).phase
+
+        if phase == .deepNight {
+            return occurrence(of: configuration.wakeTime, after: date)
+                .map { CircadianTransition(phase: .daylight, date: $0) }
+        }
+
+        guard let bedtime = occurrence(of: configuration.bedtime, after: date) else { return nil }
+        let (eveningLeadTime, deepNightLeadTime) = leadTimes
+        if phase == .daylight && eveningLeadTime > deepNightLeadTime {
+            return CircadianTransition(phase: .evening, date: bedtime.addingTimeInterval(-eveningLeadTime))
+        }
+        return CircadianTransition(phase: .deepNight, date: bedtime.addingTimeInterval(-deepNightLeadTime))
+    }
+
+    private var leadTimes: (evening: TimeInterval, deepNight: TimeInterval) {
+        let evening = max(configuration.eveningLeadTime, 0)
+        return (evening, min(max(configuration.deepNightLeadTime, 0), evening))
     }
 
     private func occurrence(of components: DateComponents, onOrBefore date: Date) -> Date? {

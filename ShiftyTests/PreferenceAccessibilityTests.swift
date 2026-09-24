@@ -62,6 +62,14 @@ final class PreferenceAccessibilityTests: XCTestCase {
         "prefs.about.copyright"
     ]
 
+    private let circadianMenuKeys = [
+        "menu.circadian.phase.daylight",
+        "menu.circadian.phase.evening",
+        "menu.circadian.phase.deep_night",
+        "menu.circadian.paused",
+        "menu.circadian.next_format"
+    ]
+
     func testEverySupportedLocalisationContainsTheSwiftUIPreferenceKeys() throws {
         let appBundle = Bundle(for: AppDelegate.self)
 
@@ -72,7 +80,7 @@ final class PreferenceAccessibilityTests: XCTestCase {
             )
             let localisedBundle = try XCTUnwrap(Bundle(path: resourcePath))
 
-            for key in preferenceKeys {
+            for key in preferenceKeys + circadianMenuKeys {
                 let value = localisedBundle.localizedString(forKey: key, value: nil, table: nil)
                 XCTAssertNotEqual(value, key, "Missing \(key) in \(localisation)")
             }

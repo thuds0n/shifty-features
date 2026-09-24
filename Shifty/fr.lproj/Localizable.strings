@@ -34,6 +34,12 @@
 "menu.preferences" = "Préférences...";
 "menu.quit" = "Quitter Shifty";
 
+"menu.circadian.phase.daylight" = "Lumière du jour";
+"menu.circadian.phase.evening" = "Soirée";
+"menu.circadian.phase.deep_night" = "Nuit profonde";
+"menu.circadian.paused" = "En pause";
+"menu.circadian.next_format" = "%1$@ à %2$@";
+
 "description.enabled" = "Activé";
 "description.enabled_sunrise" = "Activé jusqu’au lever du soleil";
 "description.enabled_time" = "Activer jusque %@";

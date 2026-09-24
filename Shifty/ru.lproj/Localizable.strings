@@ -34,6 +34,12 @@
 "menu.preferences" = "Настройки...";
 "menu.quit" = "Завершить Shifty";
 
+"menu.circadian.phase.daylight" = "Дневной свет";
+"menu.circadian.phase.evening" = "Вечер";
+"menu.circadian.phase.deep_night" = "Глубокая ночь";
+"menu.circadian.paused" = "Приостановлено";
+"menu.circadian.next_format" = "%1$@ в %2$@";
+
 "description.enabled" = "Включено";
 "description.enabled_sunrise" = "Включено до восхода солнца";
 "description.enabled_time" = "Включено до %@";

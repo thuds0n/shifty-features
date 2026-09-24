@@ -34,6 +34,12 @@
 "menu.preferences" = "偏好设置...";
 "menu.quit" = "退出 Shifty 夜览管家";
 
+"menu.circadian.phase.daylight" = "日光";
+"menu.circadian.phase.evening" = "傍晚";
+"menu.circadian.phase.deep_night" = "深夜";
+"menu.circadian.paused" = "已暂停";
+"menu.circadian.next_format" = "%2$@ 进入%1$@";
+
 "description.enabled" = "已启用";
 "description.enabled_sunrise" = "已在日出前启用";
 "description.enabled_time" = "已在%@前启用";

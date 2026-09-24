@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 27 tests pass: 18 circadian/workspace, 4 `NightShiftManager`, 3 `RuleManager` and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 38 tests pass: 29 circadian/workspace, 4 `NightShiftManager`, 3 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
@@ -53,6 +53,8 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 ### Scaffolding, not production-ready functionality
 
 - An injectable, main-actor `CircadianWorkspaceCoordinator`, a menu toggle and a partial `WorkspacePolicy` boundary.
+- Versioned, validated persistence of the circadian curve (bedtime, wake time, lead times and bounded Kelvin targets).
+- A menu status line under Circadian Mode showing the current phase, target Kelvin and the next phase change (macOS 14.4 and later; a tooltip on earlier versions).
 - Foreground-media hold state and temporary-pause neutralise/restore behaviour in `ActivityOverrideManager`.
 - UserDefaults-backed display offset and selection storage.
 - A no-op automation bridge.
@@ -60,7 +62,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 
 ### Not implemented
 
-- Persisted circadian preferences or a Circadian preference pane.
+- A Circadian preference pane for editing the persisted schedule.
 - A fully unified transition/restoration policy shared with manual toggles, disable timers and rules.
 - Real fullscreen or Picture-in-Picture detection.
 - Per-display colour application.
@@ -169,8 +171,9 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 - [x] Define the morning/daylight transition.
 - [ ] Define user-override precedence across all state sources.
 - [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls.
-- [ ] Persist versioned configuration: bedtime/wake time, lead times and bounded Kelvin targets.
-- [ ] Add a compact Circadian preference pane and menu phase/countdown status.
+- [x] Persist versioned configuration: bedtime/wake time, lead times and bounded Kelvin targets.
+- [x] Add menu phase and next-transition status.
+- [ ] Add a compact Circadian preference pane.
 - [x] Restore the exact prior Night Shift output when a temporary pause ends.
 - [ ] Ramp output smoothly and extend restoration precedence across every override type.
 - [x] Add coordinator tests with fake clock, fake backend and fake activity provider.

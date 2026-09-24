@@ -71,8 +71,48 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testStoredConfigurationIsLoadedIntoTheTransitionAtInit() {
+        var configuration = CircadianCurveConfiguration.default
+        configuration.bedtime = DateComponents(hour: 22, minute: 30)
+
+        let fixture = makeFixture(configuration: configuration)
+
+        XCTAssertEqual(fixture.transition.configuration, configuration)
+        XCTAssertEqual(fixture.coordinator.configuration, configuration)
+    }
+
+    @MainActor
+    func testUpdatingConfigurationValidatesPersistsAndApplies() {
+        let fixture = makeFixture()
+        var configuration = CircadianCurveConfiguration.default
+        configuration.bedtime = DateComponents(hour: 22, minute: 0)
+        configuration.deepNightKelvin = 1000
+
+        fixture.coordinator.updateConfiguration(configuration)
+
+        let expected = configuration.validated()
+        XCTAssertEqual(expected.deepNightKelvin, CircadianCurveConfiguration.kelvinRange.lowerBound)
+        XCTAssertEqual(fixture.configurationStore.configuration, expected)
+        XCTAssertEqual(fixture.transition.configuration, expected)
+        XCTAssertEqual(fixture.transition.requestedDates, [fixture.clock.now])
+    }
+
+    @MainActor
+    func testCurrentStatusReportsTargetNextTransitionAndSuspension() {
+        let fixture = makeFixture()
+        fixture.activity.currentOverride = ActivityOverrideSnapshot(isSuspended: true, reason: nil, until: nil)
+
+        let status = fixture.coordinator.currentStatus()
+
+        XCTAssertEqual(status.target.phase, .deepNight)
+        XCTAssertEqual(status.nextTransition, CircadianTransition(phase: .daylight, date: fixture.clock.now.addingTimeInterval(3600)))
+        XCTAssertTrue(status.isSuspended)
+    }
+
+    @MainActor
     private func makeFixture(
         isEnabled: Bool = true,
+        configuration: CircadianCurveConfiguration = .default,
         output: WorkspaceOutputState = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.3)
     ) -> Fixture {
         let transition = FakeCircadianTransition()
@@ -80,6 +120,7 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
         let automation = FakeAutomationBridge()
         let backend = FakeNightShiftBackend(output: output)
         let modeStore = FakeCircadianModeStore(isEnabled: isEnabled)
+        let configurationStore = FakeCircadianConfigurationStore(configuration: configuration)
         let clock = FakeWorkspaceClock(now: Date(timeIntervalSince1970: 1_786_258_800))
         let scheduler = FakeRefreshScheduler()
         let coordinator = CircadianWorkspaceCoordinator(
@@ -88,6 +129,7 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
             automationBridge: automation,
             nightShift: backend,
             modeStore: modeStore,
+            configurationStore: configurationStore,
             clock: clock,
             refreshScheduler: scheduler
         )
@@ -98,6 +140,7 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
             automation: automation,
             backend: backend,
             modeStore: modeStore,
+            configurationStore: configurationStore,
             clock: clock,
             scheduler: scheduler
         )
@@ -111,6 +154,7 @@ private struct Fixture {
     let automation: FakeAutomationBridge
     let backend: FakeNightShiftBackend
     let modeStore: FakeCircadianModeStore
+    let configurationStore: FakeCircadianConfigurationStore
     let clock: FakeWorkspaceClock
     let scheduler: FakeRefreshScheduler
 }
@@ -122,6 +166,18 @@ private final class FakeCircadianTransition: CircadianTransitioning {
     func target(for date: Date) -> CircadianTarget {
         requestedDates.append(date)
         return CircadianTarget(phase: .deepNight, kelvin: configuration.deepNightKelvin, phaseProgress: 1)
+    }
+
+    func nextTransition(after date: Date) -> CircadianTransition? {
+        CircadianTransition(phase: .daylight, date: date.addingTimeInterval(3600))
+    }
+}
+
+private final class FakeCircadianConfigurationStore: CircadianConfigurationStoring {
+    var configuration: CircadianCurveConfiguration
+
+    init(configuration: CircadianCurveConfiguration) {
+        self.configuration = configuration
     }
 }
 

@@ -18,6 +18,7 @@ enum Keys {
     static let runningAppDisableRules = "disabledRunningApps"
     static let browserRules = "browserRules"
     static let isCircadianModeEnabled = "isCircadianModeEnabled"
+    static let circadianConfiguration = "circadianConfiguration"
 
     static let toggleNightShiftShortcut = "toggleNightShiftShortcut"
     static let incrementColorTempShortcut = "incrementColorTempShortcut"
