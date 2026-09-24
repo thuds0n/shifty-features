@@ -23,18 +23,17 @@ class SliderView: NSView {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        kelvinLabel.translatesAutoresizingMaskIntoConstraints = false
-        kelvinLabel.alignment = .center
+        kelvinLabel.alignment = .right
         kelvinLabel.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
         kelvinLabel.textColor = .secondaryLabelColor
+        kelvinLabel.setContentHuggingPriority(.required, for: .horizontal)
+        kelvinLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         kelvinLabel.isHidden = true
-        addSubview(kelvinLabel)
 
-        NSLayoutConstraint.activate([
-            kelvinLabel.centerXAnchor.constraint(equalTo: shiftSlider.centerXAnchor),
-            kelvinLabel.topAnchor.constraint(equalTo: shiftSlider.bottomAnchor, constant: 2),
-            kelvinLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -2)
-        ])
+        // Show the value on the slider's own line. The menu sizes this row from the
+        // xib, so a label below the slider would be clipped. The stack detaches
+        // hidden views, so the slider keeps its full width when the value is off.
+        (shiftSlider.superview as? NSStackView)?.addArrangedSubview(kelvinLabel)
         refreshKelvinLabel()
     }
 

@@ -51,10 +51,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     var prefShortcuts: PrefShortcutsViewController!
     var customTimeWindow: CustomTimeWindow!
     
-    var nightShiftSwitchView: NSView?
-    var trueToneSwitchView: NSView?
-    var darkModeSwitchView: NSView?
-    
     let calendar = NSCalendar(identifier: .gregorian)!
     
 
@@ -71,39 +67,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         descriptionMenuItem.isEnabled = false
         sliderMenuItem.view = sliderView
         
-        nightShiftSwitchView = SwitchView(title: "Night Shift", onSwitchToggle: { isSwitchEnabled in
-            NightShiftManager.shared.isNightShiftEnabled = isSwitchEnabled
-            self.updateMenuItems()
-        })
-        guard let nightShiftSwitchView = nightShiftSwitchView else { return }
-        
-        nightShiftSwitchView.frame = CGRect(
-            x: 0, y: 0,
-            width: statusMenu.size.width,
-            height: nightShiftSwitchView.fittingSize.height)
-        powerMenuItem.view = nightShiftSwitchView
-        
-        trueToneSwitchView = SwitchView(title: "True Tone", onSwitchToggle: { isSwitchEnabled in
-            self.integrations.trueTone.isEnabled = isSwitchEnabled
-            self.updateMenuItems()
-        })
-        guard let trueToneSwitchView = trueToneSwitchView else { return }
-        
-        trueToneSwitchView.frame = CGRect(
-            x: 0, y: 0,
-            width: statusMenu.size.width,
-            height: trueToneSwitchView.fittingSize.height)
-
-        darkModeSwitchView = SwitchView(title: "Dark Mode", onSwitchToggle: { isSwitchEnabled in
-            self.integrations.appearance.darkModeEnabled = isSwitchEnabled
-            self.updateMenuItems()
-        })
-        guard let darkModeSwitchView = darkModeSwitchView else { return }
-        darkModeSwitchView.frame = CGRect(
-            x: 0, y: 0,
-            width: statusMenu.size.width,
-            height: darkModeSwitchView.fittingSize.height)
-
         disableHourMenuItem.title = NSLocalizedString("menu.disable_hour", comment: "Disable for an hour")
         disableCustomMenuItem.title = NSLocalizedString("menu.disable_custom", comment: "Disable for custom time...")
         preferencesMenuItem.title = NSLocalizedString("menu.preferences", comment: "Preferences...")
@@ -171,31 +134,9 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         
         
         // MARK: toggle Night Shift
-        if NightShiftManager.shared.isNightShiftEnabled {
-            powerMenuItem.title = NSLocalizedString("menu.toggle_off", comment: "Turn off Night Shift")
-            sliderView.shiftSlider.isEnabled = true
-        } else {
-            powerMenuItem.title = NSLocalizedString("menu.toggle_on", comment: "Turn on Night Shift")
-            sliderView.shiftSlider.isEnabled = false
-        }
-        
-        if let nightShiftSwitchView = nightShiftSwitchView as? SwitchView {
-            nightShiftSwitchView.switchState = NightShiftManager.shared.isNightShiftEnabled
-        }
-        if let darkModeSwitchView = darkModeSwitchView as? SwitchView {
-            darkModeSwitchView.switchState = integrations.appearance.darkModeEnabled
-            darkModeMenuItem.view = darkModeSwitchView
-        } else {
-            darkModeMenuItem.view = nil
-        }
-        if integrations.trueTone.isSupportedAndAvailable {
-            trueToneMenuItem.view = trueToneSwitchView
-            if let trueToneSwitchView = trueToneSwitchView as? SwitchView {
-                trueToneSwitchView.switchState = integrations.trueTone.isEnabled
-            }
-        } else {
-            trueToneMenuItem.view = nil
-        }
+        powerMenuItem.title = "Night Shift"
+        powerMenuItem.state = NightShiftManager.shared.isNightShiftEnabled ? .on : .off
+        sliderView.shiftSlider.isEnabled = NightShiftManager.shared.isNightShiftEnabled
         
         
         //MARK: disable for app
@@ -285,10 +226,13 @@ class StatusMenuController: NSObject, NSMenuDelegate {
                 trueToneMenuItem.isHidden = true
             case .unavailable:
                 trueToneMenuItem.isEnabled = false
+                trueToneMenuItem.state = .off
                 trueToneMenuItem.title = NSLocalizedString("menu.true_tone_unavailable", comment: "True Tone is not available")
             case .enabled:
-                trueToneMenuItem.title = NSLocalizedString("menu.true_tone_off", comment: "Turn off True Tone")
+                trueToneMenuItem.title = "True Tone"
+                trueToneMenuItem.state = .on
             case .disabled:
+                trueToneMenuItem.state = .off
                 if NightShiftManager.shared.isDisableRuleActive {
                     trueToneMenuItem.isEnabled = false
                     if RuleManager.shared.isDisabledForDomain {
@@ -299,7 +243,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
                         trueToneMenuItem.title = String(format: NSLocalizedString("menu.true_tone_disabled_for", comment: "True Tone is disabled for %@"), currentAppName)
                     }
                 } else {
-                    trueToneMenuItem.title = NSLocalizedString("menu.true_tone_on", comment: "Turn on True Tone")
+                    trueToneMenuItem.title = "True Tone"
                 }
             }
         } else {
