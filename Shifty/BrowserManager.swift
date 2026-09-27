@@ -54,6 +54,11 @@ struct WebsiteContext: Equatable {
     /// The full host, e.g. "docs.example.co.uk".
     var subdomain: String?
 
+    init(domain: String?, subdomain: String?) {
+        self.domain = domain
+        self.subdomain = subdomain
+    }
+
     init(url: URL?, registrableDomain: (String) -> String?) {
         subdomain = url?.host
         domain = subdomain.flatMap(registrableDomain)

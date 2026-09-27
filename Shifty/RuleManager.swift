@@ -9,6 +9,44 @@ import Cocoa
 import ScriptingBridge
 
 
+/// What the rules are evaluated against: the frontmost app, running apps and
+/// current website. Injected so rule behaviour can be tested without real apps.
+protocol RuleContextProviding: AnyObject {
+    var frontmostBundleIdentifier: String? { get }
+    var runningBundleIdentifiers: [String] { get }
+    var website: WebsiteContext { get }
+    var isSupportedBrowserInFront: Bool { get }
+    func stopBrowserWatcher()
+    func updateForSupportedBrowser()
+}
+
+final class SystemRuleContext: RuleContextProviding {
+    var frontmostBundleIdentifier: String? {
+        NSWorkspace.shared.menuBarOwningApplication?.bundleIdentifier
+    }
+
+    var runningBundleIdentifiers: [String] {
+        NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier)
+    }
+
+    var website: WebsiteContext {
+        BrowserManager.shared.currentWebsite
+    }
+
+    var isSupportedBrowserInFront: Bool {
+        BrowserManager.shared.currentAppIsSupportedBrowser
+    }
+
+    func stopBrowserWatcher() {
+        BrowserManager.shared.stopBrowserWatcher()
+    }
+
+    func updateForSupportedBrowser() {
+        BrowserManager.shared.updateForSupportedBrowser()
+    }
+}
+
+
 class RuleManager {
     /// Posted on the main queue whenever any stored rule is added or removed.
     static let rulesDidChangeNotification = Notification.Name("RuleManagerRulesDidChange")
@@ -17,10 +55,14 @@ class RuleManager {
     private let nightShiftEventHandler: (NightShiftEvent) -> Void
     /// Store used to load and persist the app and browser rule sets
     private let defaults: UserDefaults
+    private let context: RuleContextProviding
     
     init(defaults: UserDefaults = .standard,
+         context: RuleContextProviding = SystemRuleContext(),
+         notificationCenter: NotificationCenter = NSWorkspace.shared.notificationCenter,
          nightShiftEventHandler: @escaping (NightShiftEvent) -> Void = { NightShiftManager.shared.respond(to: $0) }) {
         self.defaults = defaults
+        self.context = context
         self.nightShiftEventHandler = nightShiftEventHandler
 
         if let appData = defaults.value(forKey: Keys.currentAppDisableRules) as? Data {
@@ -47,28 +89,12 @@ class RuleManager {
             }
         }
         
-        NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didActivateApplicationNotification,
-            object: nil,
-            queue: nil)
-        { notification in
-            self.appSwitched(notification: notification)
-        }
-        
-        NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didLaunchApplicationNotification,
-            object: nil,
-            queue: nil)
-        { notification in
-            self.appSwitched(notification: notification)
-        }
-        
-        NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didTerminateApplicationNotification,
-            object: nil,
-            queue: nil)
-        { notification in
-            self.appSwitched(notification: notification)
+        for name in [NSWorkspace.didActivateApplicationNotification,
+                     NSWorkspace.didLaunchApplicationNotification,
+                     NSWorkspace.didTerminateApplicationNotification] {
+            notificationCenter.addObserver(forName: name, object: nil, queue: nil) { [weak self] _ in
+                self?.evaluateCurrentContext()
+            }
         }
     }
     
@@ -155,43 +181,42 @@ class RuleManager {
     
     
     var isDisabledForCurrentApp: Bool {
-        guard let bundleIdentifier = currentApp?.bundleIdentifier else {
+        guard let bundleIdentifier = context.frontmostBundleIdentifier else {
             logw("Could not obtain bundle identifier of current application")
             return false
         }
-        return currentAppDisableRules.filter {
-            $0.bundleIdentifier == bundleIdentifier }.count > 0
+        return currentAppDisableRules.contains { $0.bundleIdentifier == bundleIdentifier }
     }
     
     func addCurrentAppDisableRule(forApp app: NSRunningApplication) {
         guard let bundleID = app.bundleIdentifier else { return }
-        let rule = AppRule(bundleIdentifier: bundleID, fullScreenOnly: false)
-        currentAppDisableRules.insert(rule)
+        addCurrentAppDisableRule(bundleIdentifier: bundleID)
+    }
+
+    func addCurrentAppDisableRule(bundleIdentifier: BundleIdentifier) {
+        currentAppDisableRules.insert(AppRule(bundleIdentifier: bundleIdentifier, fullScreenOnly: false))
         sendNightShiftEvent(.nightShiftDisableRuleActivated)
     }
     
     func removeCurrentAppDisableRule(forApp app: NSRunningApplication) {
-        guard let bundleID = app.bundleIdentifier,
-              let index = currentAppDisableRules.firstIndex(where: {
-                  $0.bundleIdentifier == bundleID
-              }) else { return }
-        
-        currentAppDisableRules.remove(at: index)
-        sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
+        guard let bundleID = app.bundleIdentifier else { return }
+        removeCurrentAppDisableRule(bundleIdentifier: bundleID)
+    }
+
+    func removeCurrentAppDisableRule(bundleIdentifier: BundleIdentifier) {
+        guard let rule = currentAppDisableRules.first(where: { $0.bundleIdentifier == bundleIdentifier }) else { return }
+        removeCurrentAppDisableRule(rule)
     }
     
     
     var isDisabledForRunningApp: Bool {
-        disabledCurrentlyRunningApps.count > 0
+        !disabledRunningBundleIdentifiers.isEmpty
     }
     
-    /// The currently running apps that Night Shift is disabled for
-    var disabledCurrentlyRunningApps: [NSRunningApplication] {
+    /// The running apps that Night Shift is disabled for
+    var disabledRunningBundleIdentifiers: [BundleIdentifier] {
         let disabledBundleIDs = Set(runningAppDisableRules.map { $0.bundleIdentifier })
-        return runningApps.filter {
-            guard let bundleID = $0.bundleIdentifier else { return false }
-            return disabledBundleIDs.contains(bundleID)
-        }
+        return context.runningBundleIdentifiers.filter(disabledBundleIDs.contains)
     }
     
     func isDisabledWhenRunningApp(_ app: NSRunningApplication) -> Bool {
@@ -201,25 +226,27 @@ class RuleManager {
     
     func addRunningAppDisableRule(forApp app: NSRunningApplication) {
         guard let bundleID = app.bundleIdentifier else { return }
-        let rule = AppRule(bundleIdentifier: bundleID, fullScreenOnly: false)
-        
-        runningAppDisableRules.insert(rule)
+        addRunningAppDisableRule(bundleIdentifier: bundleID)
+    }
+
+    func addRunningAppDisableRule(bundleIdentifier: BundleIdentifier) {
+        runningAppDisableRules.insert(AppRule(bundleIdentifier: bundleIdentifier, fullScreenOnly: false))
         sendNightShiftEvent(.nightShiftDisableRuleActivated)
     }
     
     func removeRunningAppDisableRule(forApp app: NSRunningApplication) {
-        guard let bundleID = app.bundleIdentifier,
-              let index = runningAppDisableRules.firstIndex(where: {
-                  $0.bundleIdentifier == bundleID
-              }) else { return }
-                
-        runningAppDisableRules.remove(at: index)
-        sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
+        guard let bundleID = app.bundleIdentifier else { return }
+        removeRunningAppDisableRule(bundleIdentifier: bundleID)
+    }
+
+    func removeRunningAppDisableRule(bundleIdentifier: BundleIdentifier) {
+        guard let rule = runningAppDisableRules.first(where: { $0.bundleIdentifier == bundleIdentifier }) else { return }
+        removeRunningAppDisableRule(rule)
     }
     
     
     var isDisabledForDomain: Bool {
-        guard let currentDomain = BrowserManager.shared.currentDomain else { return false }
+        guard let currentDomain = context.website.domain else { return false }
         let disabledDomain = browserRules.filter {
             $0.type == .domain && $0.host == currentDomain }.count > 0
         return disabledDomain
@@ -237,7 +264,7 @@ class RuleManager {
         guard let index = browserRules.firstIndex(of: rule) else { return }
         browserRules.remove(at: index)
         
-        if let currentSubdomain = BrowserManager.shared.currentSubdomain,
+        if let currentSubdomain = context.website.subdomain,
            getSubdomainRule(forSubdomain: currentSubdomain) == .enabled
         {
             setSubdomainRule(.none, forSubdomain: currentSubdomain)
@@ -269,7 +296,7 @@ class RuleManager {
     }
     
     var ruleForCurrentSubdomain: SubdomainRuleType {
-        guard let currentSubdomain = BrowserManager.shared.currentSubdomain else { return .none }
+        guard let currentSubdomain = context.website.subdomain else { return .none }
         return getSubdomainRule(forSubdomain: currentSubdomain)
     }
     
@@ -319,36 +346,36 @@ class RuleManager {
     
     
     func removeRulesForCurrentState() {
-        if let currentApp = currentApp {
-            removeCurrentAppDisableRule(forApp: currentApp)
-            for app in disabledCurrentlyRunningApps {
-                removeRunningAppDisableRule(forApp: app)
+        if let bundleIdentifier = context.frontmostBundleIdentifier {
+            removeCurrentAppDisableRule(bundleIdentifier: bundleIdentifier)
+            for runningBundleIdentifier in disabledRunningBundleIdentifiers {
+                removeRunningAppDisableRule(bundleIdentifier: runningBundleIdentifier)
             }
         }
-        if let currentDomain = BrowserManager.shared.currentDomain {
-            removeDomainDisableRule(forDomain: currentDomain)
+        let website = context.website
+        if let domain = website.domain {
+            removeDomainDisableRule(forDomain: domain)
         }
-        if let currentSubdomain = BrowserManager.shared.currentSubdomain {
-            setSubdomainRule(.none, forSubdomain: currentSubdomain)
+        if let subdomain = website.subdomain {
+            setSubdomainRule(.none, forSubdomain: subdomain)
         }
     }
     
     
-    private func appSwitched(notification: Notification) {
-        BrowserManager.shared.stopBrowserWatcher()
+    /// Re-evaluates app rules after the frontmost or running apps change, and hands
+    /// supported browsers to the website watcher.
+    func evaluateCurrentContext() {
+        context.stopBrowserWatcher()
         if isDisabledForCurrentApp || isDisabledForRunningApp {
             sendNightShiftEvent(.nightShiftDisableRuleActivated)
-        } else if BrowserManager.shared.currentAppIsSupportedBrowser {
-            BrowserManager.shared.updateForSupportedBrowser()
+        } else if context.isSupportedBrowserInFront {
+            context.updateForSupportedBrowser()
         } else {
             sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
         }
     }
 
-    
 }
-
-
 
 enum RuleType: String, Codable {
     case domain

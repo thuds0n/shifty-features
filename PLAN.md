@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 68 tests pass: 28 circadian/workspace, 14 `NightShiftManager`/policy/ramp, 7 `RuleManager`, 7 website parsing/browser, 6 activity override, 4 display calibration and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 77 tests pass: 28 circadian/workspace, 14 `NightShiftManager`/policy/ramp, 9 end-to-end scenarios (pause, app and website rules, strength hold, fade), 7 `RuleManager`, 7 website parsing/browser, 6 activity override, 4 display calibration and 2 preference localisation/accessibility tests. 6 opt-in CoreBrightness hardware tests are skipped by default and pass on macOS 27 |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
@@ -91,7 +91,7 @@ The P1 findings from the 9 August audit are resolved in the current branch. Phas
 
 1. **Swift 6 is not a switch-only upgrade.** AXSwift fails in Swift 6 mode, and complete-concurrency diagnostics identify shared mutable singletons, missing main-actor isolation and non-Sendable callback captures throughout AppKit, timers and shortcuts. Establish a main-actor boundary first, then replace or fork AXSwift.
 
-2. **Domain coverage remains incomplete.** The pure circadian curve, on/off and pause policy, coordinator lifecycle and injected timing, CLI payload and toggling, timer cancellation, preference localisation and shortcut-recorder keyboard behaviour now have regression coverage. Activity-manager lifecycle, display calibration storage, website domain parsing, website rule events and supported-browser matching are now covered. The live ScriptingBridge/Accessibility browser watcher still needs a manual or UI-level check; preference actions, shortcut persistence, timer expiry and wake handling still need tests.
+2. **Domain coverage remains incomplete.** The pure circadian curve, on/off and pause policy, coordinator lifecycle and injected timing, CLI payload and toggling, timer cancellation, preference localisation and shortcut-recorder keyboard behaviour now have regression coverage. Activity-manager lifecycle, display calibration storage, website domain parsing, website rule events and supported-browser matching are now covered. End-to-end scenarios run the real Night Shift, rule and circadian managers against faked system edges, and opt-in hardware tests confirm the private CoreBrightness API on the installed macOS. The live ScriptingBridge/Accessibility browser watcher still needs a manual or UI-level check; preference actions, shortcut persistence, timer expiry and wake handling still need tests.
 
 3. **Release metadata is historical.** The app is still version 1.2/build 66, both appcast copies advertise macOS 10.12.4, and update signing uses deprecated DSA metadata. Sparkle 2 recommends an EdDSA migration before a new release.
 

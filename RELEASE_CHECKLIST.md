@@ -13,6 +13,8 @@
   - `set -o pipefail && xcodebuild build -project Shifty.xcodeproj -scheme Shifty -configuration Release -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO | xcbeautify`
 - Run automated tests through `xcbeautify`:
   - `set -o pipefail && xcodebuild test -project Shifty.xcodeproj -scheme Shifty -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO -only-testing:ShiftyTests | xcbeautify`
+- Run the CoreBrightness hardware tests on a real Mac (they briefly change Night Shift, then restore it):
+  - `set -o pipefail && TEST_RUNNER_SHIFTY_HARDWARE_TESTS=1 xcodebuild test -project Shifty.xcodeproj -scheme Shifty -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO -only-testing:ShiftyTests/HardwareNightShiftTests | xcbeautify`
 - Run Xcode static analysis through `xcbeautify`:
   - `set -o pipefail && xcodebuild analyze -project Shifty.xcodeproj -scheme Shifty -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO | xcbeautify`
 - Run manual regression pass:

@@ -43,6 +43,9 @@ class NightShiftManager {
     }
 
     private let rampScheduler: StrengthRampScheduling
+    /// The rules consulted for disable state. A closure because `RuleManager.shared`
+    /// in turn reports events to `NightShiftManager.shared`.
+    private let ruleManager: () -> RuleManager
     private var strengthRamp: WorkspaceRefreshTimer?
     
     var schedule: ScheduleType {
@@ -79,15 +82,17 @@ class NightShiftManager {
     
     /// When true, app or website rule has disabled Night Shift
     var isDisableRuleActive: Bool {
-        return RuleManager.shared.disableRuleIsActive
+        return ruleManager().disableRuleIsActive
     }
 
     init(
         client: NightShiftSystemControlling = SystemIntegration.shared.nightShiftSystem,
-        rampScheduler: StrengthRampScheduling = TimerStrengthRampScheduler()
+        rampScheduler: StrengthRampScheduling = TimerStrengthRampScheduler(),
+        ruleManager: @escaping () -> RuleManager = { RuleManager.shared }
     ) {
         self.client = client
         self.rampScheduler = rampScheduler
+        self.ruleManager = ruleManager
         var prevSchedule = client.schedule
         
         updateDarkMode()
@@ -173,7 +178,7 @@ class NightShiftManager {
             userSet = .on
             cancelDisableTimer()
             if isDisableRuleActive {
-                RuleManager.shared.removeRulesForCurrentState()
+                ruleManager().removeRulesForCurrentState()
             }
         case .userDisabledNightShift:
             userSet = .off
