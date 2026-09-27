@@ -26,7 +26,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
-| Visual regression pass | Partially verified | The menu and all four English preference panes render correctly with Screen Recording and Accessibility granted; full interaction and every localisation remain pending |
+| Visual regression pass | Partially verified | All five preference panes verified on macOS 27 in English, German, French, Russian and Simplified Chinese (shortcut recorder truncation and row alignment fixed). The English menu and submenus are verified; non-English menus and full interaction remain pending |
 | Signed archive, notarisation and Sparkle update | Unverified | Not exercised during this audit |
 | CI | Implemented | GitHub Actions (`.github/workflows/ci.yml`) passes on hosted macOS with Xcode 26.6: Debug build and 51 unit tests, universal Release build and static analysis |
 

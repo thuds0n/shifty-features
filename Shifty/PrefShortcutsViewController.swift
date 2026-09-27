@@ -61,7 +61,11 @@ private struct ShortcutRow: View {
                 defaultsKey: key,
                 accessibilityLabel: NSLocalizedString(labelKey, comment: "Shortcut action")
             )
-                .frame(width: 160, height: 26)
+                .frame(width: ShortcutRecorderView.width, height: 26)
+                // The recorder has no text baseline, so the form would align its bottom
+                // edge with the label's baseline. Place its baseline just below centre so
+                // it sits level with the label instead.
+                .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + 4 }
         } label: {
             Text(LocalizedStringKey(labelKey))
         }
@@ -71,6 +75,9 @@ private struct ShortcutRow: View {
 // MARK: - ShortcutRecorderView (NSViewRepresentable)
 
 struct ShortcutRecorderView: NSViewRepresentable {
+    /// Wide enough for the longest localised prompt ("Записать сочетание клавиш").
+    static let width: CGFloat = 200
+
     let defaultsKey: String
     let accessibilityLabel: String
 
@@ -86,7 +93,8 @@ struct ShortcutRecorderView: NSViewRepresentable {
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: MASShortcutView, context: Context) -> CGSize? {
-        CGSize(width: proposal.width ?? 160, height: 26)
+        // A fixed size keeps the grouped form's label and recorder on one line.
+        CGSize(width: Self.width, height: 26)
     }
 }
 
@@ -420,7 +428,9 @@ final class MASShortcutView: NSView {
 
         label.translatesAutoresizingMaskIntoConstraints = false
         label.alignment = .center
-        label.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
+        label.font = NSFont.systemFont(ofSize: 12)
+        label.lineBreakMode = .byTruncatingTail
+        label.allowsDefaultTighteningForTruncation = true
         addSubview(label)
 
         clearButton.translatesAutoresizingMaskIntoConstraints = false
@@ -529,6 +539,7 @@ final class MASShortcutView: NSView {
 
         if let shortcutValue {
             label.stringValue = shortcutValue.displayString
+            label.font = NSFont.systemFont(ofSize: 12, weight: .medium)
             label.textColor = .labelColor
             clearButton.isHidden = false
         } else {
@@ -536,6 +547,7 @@ final class MASShortcutView: NSView {
                 "prefs.shortcuts.recorder.record",
                 comment: "Prompt to record a shortcut"
             )
+            label.font = NSFont.systemFont(ofSize: 12)
             label.textColor = .placeholderTextColor
             clearButton.isHidden = true
         }
