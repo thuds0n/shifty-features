@@ -64,6 +64,7 @@
 		497B2395200B576700669DDE /* NightShiftManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497B2392200B576700669DDE /* NightShiftManager.swift */; };
 		497B2396200B576700669DDE /* NotificationName+Shifty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497B2393200B576700669DDE /* NotificationName+Shifty.swift */; };
 		8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F689588C441301528A1021 /* RuleManagerTests.swift */; };
+		A1C0DE000000000000000022 /* BrowserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000021 /* BrowserTests.swift */; };
 		A1C0DE000000000000000012 /* ActivityAndCalibrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000011 /* ActivityAndCalibrationTests.swift */; };
 		F1A2B3C4D5E6000100000001 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6000100000002 /* Log.swift */; };
 		F1A2B3C4D5E600010000000D /* DomainParser in Frameworks */ = {isa = PBXBuildFile; productRef = F1A2B3C4D5E600010000000E /* DomainParser */; };
@@ -203,6 +204,7 @@
 		5D74F3DCD01690542A47CF13 /* ShiftyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShiftyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D67B7B95C7943A624FA6BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B7F689588C441301528A1021 /* RuleManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleManagerTests.swift; sourceTree = "<group>"; };
+		A1C0DE000000000000000021 /* BrowserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserTests.swift; sourceTree = "<group>"; };
 		A1C0DE000000000000000011 /* ActivityAndCalibrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityAndCalibrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -394,6 +396,7 @@
 				A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */,
 				3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */,
 				B7F689588C441301528A1021 /* RuleManagerTests.swift */,
+				A1C0DE000000000000000021 /* BrowserTests.swift */,
 				A1C0DE000000000000000011 /* ActivityAndCalibrationTests.swift */,
 			);
 			path = ShiftyTests;
@@ -628,6 +631,7 @@
 				A19F00032A8A000100000003 /* PreferenceAccessibilityTests.swift in Sources */,
 				2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */,
 				8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */,
+				A1C0DE000000000000000022 /* BrowserTests.swift in Sources */,
 				A1C0DE000000000000000012 /* ActivityAndCalibrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

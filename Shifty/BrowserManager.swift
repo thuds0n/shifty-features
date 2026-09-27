@@ -47,6 +47,43 @@ enum SupportedBrowserID: BundleIdentifier {
 }
 
 
+/// The website part of a browser URL that rules apply to.
+struct WebsiteContext: Equatable {
+    /// The registrable domain, e.g. "example.co.uk" for "docs.example.co.uk".
+    var domain: String?
+    /// The full host, e.g. "docs.example.co.uk".
+    var subdomain: String?
+
+    init(url: URL?, registrableDomain: (String) -> String?) {
+        subdomain = url?.host
+        domain = subdomain.flatMap(registrableDomain)
+    }
+
+    var hasValidDomain: Bool {
+        domain != nil
+    }
+
+    /// A subdomain only counts when it differs from the domain and its "www." form,
+    /// so rules aren't offered twice for the same site.
+    var hasValidSubdomain: Bool {
+        guard let subdomain else { return false }
+        guard let domain else { return true }
+        return subdomain != domain && subdomain != "www.\(domain)"
+    }
+
+    /// The Night Shift event that the website rules imply for this site.
+    static func ruleEvent(subdomainRule: SubdomainRuleType, isDomainDisabled: Bool) -> NightShiftEvent {
+        if subdomainRule == .enabled {
+            return .nightShiftEnableRuleActivated
+        } else if isDomainDisabled || subdomainRule == .disabled {
+            return .nightShiftDisableRuleActivated
+        } else {
+            return .nightShiftDisableRuleDeactivated
+        }
+    }
+}
+
+
 class BrowserManager {
     static var shared = BrowserManager()
     let integrations = SystemIntegration.shared
@@ -82,13 +119,18 @@ class BrowserManager {
     
     
     
+    var currentWebsite: WebsiteContext {
+        WebsiteContext(url: currentURL) { [domainParser] host in
+            domainParser?.parse(host: host)?.domain
+        }
+    }
+
     var currentDomain: String? {
-        guard let host = currentURL?.host else { return nil }
-        return domainParser?.parse(host: host)?.domain
+        currentWebsite.domain
     }
     
     var currentSubdomain: String? {
-        return currentURL?.host
+        currentWebsite.subdomain
     }
     
     
@@ -116,18 +158,13 @@ class BrowserManager {
     
     
     var hasValidDomain: Bool {
-        return currentDomain != nil
+        currentWebsite.hasValidDomain
     }
     
     
     
     var hasValidSubdomain: Bool {
-        if let currentDomain = currentDomain {
-            if currentDomain == currentSubdomain || currentSubdomain == "www.\(currentDomain)" {
-                return false
-            }
-        }
-        return currentSubdomain != nil
+        currentWebsite.hasValidSubdomain
     }
     
     
@@ -142,13 +179,9 @@ class BrowserManager {
     }
     
     private func fireNightShiftEvent() {
-        if RuleManager.shared.ruleForCurrentSubdomain == .enabled {
-            NightShiftManager.shared.respond(to: .nightShiftEnableRuleActivated)
-        } else if RuleManager.shared.isDisabledForDomain || RuleManager.shared.ruleForCurrentSubdomain == .disabled {
-            NightShiftManager.shared.respond(to: .nightShiftDisableRuleActivated)
-        } else {
-            NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
-        }
+        NightShiftManager.shared.respond(to: WebsiteContext.ruleEvent(
+            subdomainRule: RuleManager.shared.ruleForCurrentSubdomain,
+            isDomainDisabled: RuleManager.shared.isDisabledForDomain))
     }
     
     
