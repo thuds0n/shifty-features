@@ -3,7 +3,6 @@ import Cocoa
 enum ActivitySuspendReason: String {
     case foregroundMedia
     case pictureInPicture
-    case temporaryPause
 }
 
 struct ActivityOverrideSnapshot: Equatable {
@@ -19,8 +18,6 @@ protocol ActivityOverrideManaging: AnyObject {
     var onChange: ((ActivityOverrideSnapshot) -> Void)? { get set }
     func start()
     func stop()
-    func setTemporaryPause(minutes: Int)
-    func clearTemporaryPause()
 }
 
 final class ActivityOverrideManager: ActivityOverrideManaging {
@@ -30,7 +27,6 @@ final class ActivityOverrideManager: ActivityOverrideManaging {
         didSet { onChange?(currentOverride) }
     }
 
-    private var temporaryPauseTimer: Timer?
     private var observers = [NSObjectProtocol]()
 
     private let mediaBundleIdentifiers: Set<String> = [
@@ -64,37 +60,10 @@ final class ActivityOverrideManager: ActivityOverrideManaging {
             NSWorkspace.shared.notificationCenter.removeObserver(observer)
         }
         observers.removeAll()
-        temporaryPauseTimer?.invalidate()
-        temporaryPauseTimer = nil
         currentOverride = .none
     }
 
-    func setTemporaryPause(minutes: Int) {
-        let clampedMinutes = min(max(minutes, 1), 30)
-        temporaryPauseTimer?.invalidate()
-        let endDate = Date().addingTimeInterval(TimeInterval(clampedMinutes * 60))
-        currentOverride = ActivityOverrideSnapshot(isSuspended: true, reason: .temporaryPause, until: endDate)
-        temporaryPauseTimer = Timer.scheduledTimer(
-            withTimeInterval: TimeInterval(clampedMinutes * 60),
-            repeats: false
-        ) { [weak self] _ in
-            self?.temporaryPauseTimer = nil
-            self?.evaluateMediaContext()
-        }
-    }
-
-    func clearTemporaryPause() {
-        temporaryPauseTimer?.invalidate()
-        temporaryPauseTimer = nil
-        evaluateMediaContext()
-    }
-
     private func evaluateMediaContext() {
-        if temporaryPauseTimer != nil, let until = currentOverride.until {
-            currentOverride = ActivityOverrideSnapshot(isSuspended: true, reason: .temporaryPause, until: until)
-            return
-        }
-
         guard
             let activeApp = NSWorkspace.shared.frontmostApplication,
             let bundleID = activeApp.bundleIdentifier,

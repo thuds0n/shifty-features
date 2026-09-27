@@ -137,22 +137,23 @@ final class NightShiftManagerTests: XCTestCase {
         XCTAssertEqual(client.setNightShiftEnabledCalls.last, true)
     }
 
-    func testWorkspacePauseHoldsAgainstManualChangesAndRestoresThroughThePolicy() {
+    func testPauseHoldsAgainstOtherEventsAndEndsBackOnTheManualChoice() {
         let client = FakeNightShiftClient()
-        client.isNightShiftEnabled = true
-        client.colorTemperature = 0.4
         let manager = NightShiftManager(client: client)
         manager.respond(to: .userEnabledNightShift)
-
-        manager.applyWorkspacePolicyDecision(.neutralise)
+        let paused = expectation(description: "Pause started")
+        manager.pause(for: 600)
+        DispatchQueue.main.async { paused.fulfill() }
+        wait(for: [paused], timeout: 1)
+        XCTAssertTrue(manager.isPaused)
         XCTAssertFalse(client.isNightShiftEnabled)
 
         manager.respond(to: .nightShiftDisableRuleDeactivated)
         XCTAssertFalse(client.isNightShiftEnabled, "Other events must not end the pause early")
 
-        manager.applyWorkspacePolicyDecision(.restore(WorkspaceOutputState(isNightShiftEnabled: false, colorTemperature: 0.4)))
+        manager.resumeFromPause()
+        XCTAssertFalse(manager.isPaused)
         XCTAssertTrue(client.isNightShiftEnabled, "The manual on made before the pause still applies")
-        XCTAssertEqual(client.colorTemperature, 0.4)
     }
 }
 

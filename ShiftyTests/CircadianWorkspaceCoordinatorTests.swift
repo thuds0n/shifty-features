@@ -30,21 +30,18 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
     }
 
     @MainActor
-    func testTemporaryPauseNeutralisesThenRestoresExactOutput() {
-        let originalOutput = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.64)
-        let fixture = makeFixture(output: originalOutput)
-        fixture.activity.currentOverride = ActivityOverrideSnapshot(
-            isSuspended: true,
-            reason: .temporaryPause,
-            until: fixture.clock.now.addingTimeInterval(300)
-        )
+    func testCLIPauseUsesTheSharedNightShiftPause() {
+        let fixture = makeFixture()
 
-        fixture.coordinator.applyNow()
-        fixture.activity.currentOverride = .none
-        fixture.coordinator.applyNow()
+        let paused = fixture.coordinator.handleCLICommand(.setTemporaryPause, payload: ["minutes": 5])
+        XCTAssertEqual(fixture.backend.pauseDurations, [300])
+        XCTAssertEqual(paused?["isSuspended"] as? Bool, true)
+        XCTAssertEqual(paused?["suspendReason"] as? String, "temporaryPause")
+        XCTAssertTrue(fixture.coordinator.currentStatus().isSuspended)
 
-        XCTAssertEqual(fixture.backend.decisions, [.neutralise, .restore(originalOutput)])
-        XCTAssertEqual(fixture.backend.currentWorkspaceOutput, originalOutput)
+        let resumed = fixture.coordinator.handleCLICommand(.clearTemporaryPause, payload: [:])
+        XCTAssertEqual(fixture.backend.resumeCount, 1)
+        XCTAssertEqual(resumed?["isSuspended"] as? Bool, false)
     }
 
     @MainActor
@@ -203,14 +200,6 @@ private final class FakeActivityOverrideManager: ActivityOverrideManaging {
 
     func start() { startCount += 1 }
     func stop() { stopCount += 1 }
-
-    func setTemporaryPause(minutes: Int) {
-        currentOverride = ActivityOverrideSnapshot(isSuspended: true, reason: .temporaryPause, until: nil)
-    }
-
-    func clearTemporaryPause() {
-        currentOverride = .none
-    }
 }
 
 private final class FakeAutomationBridge: CircadianAutomationBridging {
@@ -229,6 +218,9 @@ private final class FakeAutomationBridge: CircadianAutomationBridging {
 private final class FakeNightShiftBackend: WorkspaceNightShiftControlling {
     private(set) var currentWorkspaceOutput: WorkspaceOutputState
     private(set) var decisions = [WorkspacePolicyDecision]()
+    private(set) var isPaused = false
+    private(set) var pauseDurations = [TimeInterval]()
+    private(set) var resumeCount = 0
 
     init(output: WorkspaceOutputState) {
         currentWorkspaceOutput = output
@@ -239,13 +231,20 @@ private final class FakeNightShiftBackend: WorkspaceNightShiftControlling {
         switch decision {
         case .applyStrength(let strength):
             currentWorkspaceOutput.colorTemperature = strength
-        case .neutralise:
-            currentWorkspaceOutput.isNightShiftEnabled = false
-        case .restore(let output):
-            currentWorkspaceOutput = output
         case .noChange:
             break
         }
+    }
+
+    func pause(for duration: TimeInterval) {
+        pauseDurations.append(duration)
+        isPaused = true
+        currentWorkspaceOutput.isNightShiftEnabled = false
+    }
+
+    func resumeFromPause() {
+        resumeCount += 1
+        isPaused = false
     }
 }
 

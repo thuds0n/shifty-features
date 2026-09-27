@@ -62,15 +62,12 @@ class NightShiftManager {
         return nightShiftDisableTimerState != .off
     }
 
-    /// True while the circadian coordinator's temporary pause is neutralising Night Shift.
-    private(set) var isWorkspacePauseActive = false
-
     /// The output last sent to CoreBrightness, so unchanged decisions aren't re-applied.
     private var appliedOutput: NightShiftOutput?
 
     var policyInputs: NightShiftPolicyInputs {
         NightShiftPolicyInputs(
-            isPaused: isDisabledWithTimer || isWorkspacePauseActive,
+            isPaused: isDisabledWithTimer,
             isDisableRuleActive: isDisableRuleActive,
             manualOverride: userSet)
     }
@@ -270,16 +267,19 @@ class NightShiftManager {
             return
         case .applyStrength(let strength):
             colorTemperature = strength
-        case .neutralise:
-            isWorkspacePauseActive = true
-            reconcile()
-        case .restore(let output):
-            // The on/off state comes back from the policy rather than the snapshot, so a
-            // rule or manual change made during the pause is respected.
-            isWorkspacePauseActive = false
-            colorTemperature = output.colorTemperature
-            reconcile()
         }
+    }
+
+    var isPaused: Bool {
+        isDisabledWithTimer
+    }
+
+    func pause(for duration: TimeInterval) {
+        setDisableTimer(forTimeInterval: duration)
+    }
+
+    func resumeFromPause() {
+        invalidateDisableTimer()
     }
 }
 

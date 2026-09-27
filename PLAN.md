@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 48 tests pass: 30 circadian/workspace, 10 `NightShiftManager`/policy, 6 `RuleManager` and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 47 tests pass: 29 circadian/workspace, 10 `NightShiftManager`/policy, 6 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
@@ -57,7 +57,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 - Versioned, validated persistence of the circadian curve (bedtime, wake time, lead times and bounded Kelvin targets).
 - A menu status line under Circadian Mode showing the current phase, target Kelvin and the next phase change (macOS 14.4 and later; a tooltip on earlier versions).
 - A Circadian preference pane with a 24-hour phase strip, live status, wake time, bedtime, evening start and night warmth. All preference panes share one window size, and the window opens centred and remembers its position.
-- Foreground-media hold state and temporary-pause neutralise/restore behaviour in `ActivityOverrideManager`.
+- Foreground-media hold state in `ActivityOverrideManager`. Pauses are a single timed pause owned by `NightShiftManager` and shared by the menu, shortcuts, Shortcuts actions and the CLI transport.
 - UserDefaults-backed display offset and selection storage.
 - A no-op automation bridge.
 - Dormant distributed-notification transport types without an active command listener or standalone CLI target.
@@ -75,7 +75,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 ### Resolved correctness findings
 
 - **Circadian day boundary:** an explicit wake time now ends Deep Night. Tests cover both ramps, bedtime, after bedtime, midnight, morning, daylight-saving and time-zone behaviour.
-- **Temporary-pause semantics:** a temporary pause now captures the current Night Shift enabled/strength state, neutralises Night Shift without rewriting persistent user intent, and restores the captured output when the pause or circadian mode ends.
+- **Temporary-pause semantics:** there is one timed pause. It turns Night Shift off without rewriting persistent user intent; when it ends, `NightShiftPolicy` decides the state from rules, the last manual choice and the schedule, and the strength is untouched throughout.
 - **Foreground-media naming:** the app-level heuristic now reports foreground media rather than claiming fullscreen detection. It continues to hold output; it does not neutralise Night Shift or claim PiP evidence.
 - **Disable-timer ownership:** cancellation invalidates and clears the timer before restoration. A regression test proves the cancelled callback cannot restore a second time.
 - **CLI property-list safety:** idle payloads omit an absent suspend reason and pass property-list validation. The unauthenticated distributed command listener is disabled until a bounded IPC design is approved.
@@ -91,7 +91,7 @@ The P1 findings from the 9 August audit are resolved in the current branch. Phas
 
 1. **Swift 6 is not a switch-only upgrade.** AXSwift fails in Swift 6 mode, and complete-concurrency diagnostics identify shared mutable singletons, missing main-actor isolation and non-Sendable callback captures throughout AppKit, timers and shortcuts. Establish a main-actor boundary first, then replace or fork AXSwift.
 
-2. **Domain coverage remains incomplete.** The pure circadian curve, temporary-pause policy, coordinator lifecycle and injected timing, CLI payload and toggling, timer cancellation, preference localisation and shortcut-recorder keyboard behaviour now have regression coverage. Activity-manager lifecycle, display calibration storage, browser parsing/watchers, preference actions, shortcut persistence, timer expiry and wake handling still need tests.
+2. **Domain coverage remains incomplete.** The pure circadian curve, on/off and pause policy, coordinator lifecycle and injected timing, CLI payload and toggling, timer cancellation, preference localisation and shortcut-recorder keyboard behaviour now have regression coverage. Activity-manager lifecycle, display calibration storage, browser parsing/watchers, preference actions, shortcut persistence, timer expiry and wake handling still need tests.
 
 3. **Release metadata is historical.** The app is still version 1.2/build 66, both appcast copies advertise macOS 10.12.4, and update signing uses deprecated DSA metadata. Sparkle 2 recommends an EdDSA migration before a new release.
 
@@ -170,11 +170,11 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 - [x] Add schedule tests: before evening, both ramps, bedtime, after bedtime, midnight, morning, DST and time-zone changes.
 - [x] Define the morning/daylight transition.
 - [x] Define user-override precedence across all state sources: a pause, then app/website rules, then a manual on/off (held until the next scheduled start or end), then the macOS schedule. A hand-set strength holds until the next circadian phase change.
-- [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls. On/off now resolves through `NightShiftPolicy` for every source; remaining: merge the menu pause timer and the circadian temporary pause into one pause model, and move strength decisions into the same policy.
+- [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls. On/off now resolves through `NightShiftPolicy` for every source; the menu pause and the circadian temporary pause are one pause model; remaining: move strength decisions into the same policy.
 - [x] Persist versioned configuration: bedtime/wake time, lead times and bounded Kelvin targets.
 - [x] Add menu phase and next-transition status.
 - [x] Add a compact Circadian preference pane.
-- [x] Restore the exact prior Night Shift output when a temporary pause ends.
+- [x] Restore Night Shift predictably when a pause ends: the policy re-derives on/off and the strength is never changed by a pause.
 - [ ] Ramp output smoothly and extend restoration precedence across every override type.
 - [x] Add coordinator tests with fake clock, fake backend and fake activity provider.
 
@@ -231,7 +231,7 @@ Per-display warmth remains research, not a committed product capability.
 
 The correctness, preference-compliance and initial architecture slices are now implemented and covered by tests. Continue Phase 0 and Phase 1 in this order:
 
-1. Merge the menu pause timer and the circadian temporary pause into one pause model, and move strength decisions into the shared policy.
+1. Move strength decisions into the shared policy.
 2. Add CI for Debug, universal Release and the unit-test suite.
 3. Add activity lifecycle, display calibration and browser watcher tests around the remaining foundation seams.
 4. Complete full interaction and non-English visual passes.

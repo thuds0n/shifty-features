@@ -114,6 +114,10 @@ final class FoundationWorkspaceRefreshScheduler: WorkspaceRefreshScheduling {
 protocol WorkspaceNightShiftControlling: AnyObject {
     var currentWorkspaceOutput: WorkspaceOutputState { get }
     func applyWorkspacePolicyDecision(_ decision: WorkspacePolicyDecision)
+    /// The single timed pause shared with the menu, shortcuts and Shortcuts actions.
+    var isPaused: Bool { get }
+    func pause(for duration: TimeInterval)
+    func resumeFromPause()
 }
 
 extension NightShiftManager: WorkspaceNightShiftControlling {
@@ -200,7 +204,7 @@ final class CircadianWorkspaceCoordinator {
         return CircadianStatus(
             target: transition.target(for: now),
             nextTransition: transition.nextTransition(after: now),
-            isSuspended: activityOverride.currentOverride.isSuspended
+            isSuspended: nightShift.isPaused || activityOverride.currentOverride.isSuspended
         )
     }
 
@@ -232,10 +236,10 @@ final class CircadianWorkspaceCoordinator {
             return currentCLIStatePayload()
         case .setTemporaryPause:
             if let minutes = payload["minutes"] as? Int {
-                activityOverride.setTemporaryPause(minutes: minutes)
+                nightShift.pause(for: TimeInterval(max(minutes, 1) * 60))
             }
         case .clearTemporaryPause:
-            activityOverride.clearTemporaryPause()
+            nightShift.resumeFromPause()
         case .toggleEnabled:
             modeStore.isCircadianModeEnabled.toggle()
         }
@@ -247,13 +251,16 @@ final class CircadianWorkspaceCoordinator {
     func currentCLIStatePayload() -> [String: Any] {
         let target = transition.target(for: clock.now)
         let override = activityOverride.currentOverride
+        let isPaused = nightShift.isPaused
         var payload: [String: Any] = [
             "circadianEnabled": modeStore.isCircadianModeEnabled,
             "phase": target.phase.rawValue,
             "kelvin": target.kelvin,
-            "isSuspended": override.isSuspended
+            "isSuspended": isPaused || override.isSuspended
         ]
-        if let reason = override.reason {
+        if isPaused {
+            payload["suspendReason"] = "temporaryPause"
+        } else if let reason = override.reason {
             payload["suspendReason"] = reason.rawValue
         }
         return payload

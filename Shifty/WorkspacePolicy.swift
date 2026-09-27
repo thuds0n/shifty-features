@@ -8,48 +8,21 @@ struct WorkspaceOutputState: Equatable {
 enum WorkspacePolicyDecision: Equatable {
     case noChange
     case applyStrength(Float)
-    case neutralise
-    case restore(WorkspaceOutputState)
 }
 
-/// Resolves circadian output and temporary activity overrides without changing
-/// the user's persistent Night Shift intent.
+/// Decides the circadian strength. Pauses and on/off are owned by `NightShiftPolicy`:
+/// a paused or disabled Night Shift is simply left alone here.
 final class WorkspacePolicy {
-    private var suspendedOutput: WorkspaceOutputState?
-
     func decision(
         isCircadianEnabled: Bool,
         targetStrength: Float,
         activityOverride: ActivityOverrideSnapshot,
         currentOutput: WorkspaceOutputState
     ) -> WorkspacePolicyDecision {
-        guard isCircadianEnabled else {
-            return restoreSuspendedOutputIfNeeded() ?? .noChange
-        }
-
-        if activityOverride.isSuspended, activityOverride.reason == .temporaryPause {
-            if suspendedOutput == nil {
-                suspendedOutput = currentOutput
-            }
-            return currentOutput.isNightShiftEnabled ? .neutralise : .noChange
-        }
-
-        if activityOverride.isSuspended {
+        guard isCircadianEnabled, !activityOverride.isSuspended, currentOutput.isNightShiftEnabled else {
             return .noChange
         }
-
-        if let restoration = restoreSuspendedOutputIfNeeded() {
-            return restoration
-        }
-
-        guard currentOutput.isNightShiftEnabled else { return .noChange }
         return .applyStrength(targetStrength)
-    }
-
-    private func restoreSuspendedOutputIfNeeded() -> WorkspacePolicyDecision? {
-        guard let suspendedOutput else { return nil }
-        self.suspendedOutput = nil
-        return .restore(suspendedOutput)
     }
 }
 
@@ -65,7 +38,7 @@ enum NightShiftOutput: Equatable {
 
 /// Every input that can turn Night Shift on or off.
 struct NightShiftPolicyInputs: Equatable {
-    /// A menu, Shortcuts or circadian temporary pause is running.
+    /// A timed pause is running (menu, Shortcuts action, shortcut or CLI).
     var isPaused: Bool
     /// An app or website rule is disabling Night Shift for the current context.
     var isDisableRuleActive: Bool

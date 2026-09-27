@@ -95,71 +95,23 @@ final class CircadianWorkspaceTests: XCTestCase {
         XCTAssertEqual(target.kelvin, CircadianCurveConfiguration.default.deepNightKelvin)
     }
 
-    func testWorkspacePolicyNeutralisesAndRestoresExactOutput() {
+    func testWorkspacePolicyLeavesAPausedOrDisabledNightShiftAlone() {
         let policy = WorkspacePolicy()
-        let originalOutput = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.72)
-        let temporaryPause = ActivityOverrideSnapshot(
-            isSuspended: true,
-            reason: .temporaryPause,
-            until: date(year: 2026, month: 8, day: 9, hour: 22)
-        )
+        let off = WorkspaceOutputState(isNightShiftEnabled: false, colorTemperature: 0.72)
 
         XCTAssertEqual(
-            policy.decision(
-                isCircadianEnabled: true,
-                targetStrength: 0.9,
-                activityOverride: temporaryPause,
-                currentOutput: originalOutput
-            ),
-            .neutralise
-        )
-        XCTAssertEqual(
-            policy.decision(
-                isCircadianEnabled: true,
-                targetStrength: 0.9,
-                activityOverride: temporaryPause,
-                currentOutput: WorkspaceOutputState(isNightShiftEnabled: false, colorTemperature: 0.72)
-            ),
-            .noChange
-        )
-        XCTAssertEqual(
-            policy.decision(
-                isCircadianEnabled: true,
-                targetStrength: 0.9,
-                activityOverride: .none,
-                currentOutput: WorkspaceOutputState(isNightShiftEnabled: false, colorTemperature: 0.72)
-            ),
-            .restore(originalOutput)
-        )
-    }
-
-    func testDisablingCircadianModeRestoresAnActivePause() {
-        let policy = WorkspacePolicy()
-        let originalOutput = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.55)
-
-        _ = policy.decision(
-            isCircadianEnabled: true,
-            targetStrength: 0.8,
-            activityOverride: ActivityOverrideSnapshot(
-                isSuspended: true,
-                reason: .temporaryPause,
-                until: nil
-            ),
-            currentOutput: originalOutput
-        )
-
+            policy.decision(isCircadianEnabled: true, targetStrength: 0.9, activityOverride: .none, currentOutput: off),
+            .noChange)
         XCTAssertEqual(
             policy.decision(
                 isCircadianEnabled: false,
-                targetStrength: 0.8,
+                targetStrength: 0.9,
                 activityOverride: .none,
-                currentOutput: WorkspaceOutputState(isNightShiftEnabled: false, colorTemperature: 0.55)
-            ),
-            .restore(originalOutput)
-        )
+                currentOutput: WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.72)),
+            .noChange)
     }
 
-    func testForegroundMediaHoldsOutputWithoutClaimingATemporaryPause() {
+    func testForegroundMediaHoldsTheCurrentStrength() {
         let policy = WorkspacePolicy()
         let currentOutput = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.4)
 
