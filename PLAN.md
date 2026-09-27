@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 47 tests pass: 29 circadian/workspace, 10 `NightShiftManager`/policy, 6 `RuleManager` and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 46 tests pass: 28 circadian/workspace, 10 `NightShiftManager`/policy, 6 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
@@ -141,7 +141,7 @@ AppDelegate / StatusMenuController / App Intents / CLI
 Required boundaries:
 
 - `CircadianSchedule`: pure, deterministic date-to-target calculation.
-- `WorkspacePolicy`: resolves competing inputs into one desired state and restoration action.
+- `NightShiftPolicy` and `NightShiftStrengthPolicy` (in `WorkspacePolicy.swift`): pure resolvers for on/off and strength with documented precedence.
 - `NightShiftBackend`: capability, read, apply, preview, restore and error reporting.
 - `ActivitySignalProvider`: reports evidence, confidence and permission state; it does not decide colour policy.
 - `ConfigurationStore`: versioned `Codable` settings with migration tests.
@@ -170,7 +170,7 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 - [x] Add schedule tests: before evening, both ramps, bedtime, after bedtime, midnight, morning, DST and time-zone changes.
 - [x] Define the morning/daylight transition.
 - [x] Define user-override precedence across all state sources: a pause, then app/website rules, then a manual on/off (held until the next scheduled start or end), then the macOS schedule. A hand-set strength holds until the next circadian phase change.
-- [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls. On/off now resolves through `NightShiftPolicy` for every source; the menu pause and the circadian temporary pause are one pause model; remaining: move strength decisions into the same policy.
+- [x] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls: `NightShiftPolicy` decides on/off and `NightShiftStrengthPolicy` decides strength, from one pause model.
 - [x] Persist versioned configuration: bedtime/wake time, lead times and bounded Kelvin targets.
 - [x] Add menu phase and next-transition status.
 - [x] Add a compact Circadian preference pane.
@@ -231,10 +231,9 @@ Per-display warmth remains research, not a committed product capability.
 
 The correctness, preference-compliance and initial architecture slices are now implemented and covered by tests. Continue Phase 0 and Phase 1 in this order:
 
-1. Move strength decisions into the shared policy.
-2. Add CI for Debug, universal Release and the unit-test suite.
-3. Add activity lifecycle, display calibration and browser watcher tests around the remaining foundation seams.
-4. Complete full interaction and non-English visual passes.
-5. Refresh hosted documentation and screenshots, then validate the signed archive and Sparkle update path.
+1. Add CI for Debug, universal Release and the unit-test suite.
+2. Add activity lifecycle, display calibration and browser watcher tests around the remaining foundation seams.
+3. Complete full interaction and non-English visual passes.
+4. Refresh hosted documentation and screenshots, then validate the signed archive and Sparkle update path.
 
 Do not start HomeKit, per-display gamma control, calendar/health integration, widgets or a CLI target until this slice is complete.

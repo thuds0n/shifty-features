@@ -10,19 +10,40 @@ enum WorkspacePolicyDecision: Equatable {
     case applyStrength(Float)
 }
 
-/// Decides the circadian strength. Pauses and on/off are owned by `NightShiftPolicy`:
-/// a paused or disabled Night Shift is simply left alone here.
-final class WorkspacePolicy {
-    func decision(
-        isCircadianEnabled: Bool,
-        targetStrength: Float,
-        activityOverride: ActivityOverrideSnapshot,
-        currentOutput: WorkspaceOutputState
-    ) -> WorkspacePolicyDecision {
-        guard isCircadianEnabled, !activityOverride.isSuspended, currentOutput.isNightShiftEnabled else {
+// MARK: - Night Shift strength policy
+
+/// Every input that can change Night Shift's strength.
+struct NightShiftStrengthInputs: Equatable {
+    /// Night Shift is on (so not paused, disabled by a rule or switched off).
+    var isNightShiftOn: Bool
+    var isCircadianEnabled: Bool
+    /// A video app is in front, so strength changes would be visible mid-playback.
+    var isActivitySuspended: Bool
+    /// The user set a strength by hand and it holds until the next phase change.
+    var isManualStrengthHeld: Bool
+    /// The strength the circadian schedule wants now.
+    var circadianTarget: Float
+}
+
+/// Resolves Night Shift strength from every state source, in one place.
+///
+/// Precedence, highest first:
+/// 1. While Night Shift is off or paused, strength is left alone.
+/// 2. A hand-set strength holds until the next circadian phase change.
+/// 3. A foreground video app holds the current strength.
+/// 4. Circadian Mode applies its target.
+/// 5. Otherwise the user's strength is left alone.
+enum NightShiftStrengthPolicy {
+    static func decision(for inputs: NightShiftStrengthInputs) -> WorkspacePolicyDecision {
+        guard
+            inputs.isNightShiftOn,
+            !inputs.isManualStrengthHeld,
+            !inputs.isActivitySuspended,
+            inputs.isCircadianEnabled
+        else {
             return .noChange
         }
-        return .applyStrength(targetStrength)
+        return .applyStrength(inputs.circadianTarget)
     }
 }
 

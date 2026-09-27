@@ -149,7 +149,6 @@ final class CircadianWorkspaceCoordinator {
     private let configurationStore: CircadianConfigurationStoring
     private let clock: WorkspaceClock
     private let refreshScheduler: WorkspaceRefreshScheduling
-    private let workspacePolicy: WorkspacePolicy
 
     private var updateTimer: WorkspaceRefreshTimer?
     private var previousAutomationState: CircadianAutomationState?
@@ -165,8 +164,7 @@ final class CircadianWorkspaceCoordinator {
         modeStore: CircadianModeStoring = UserDefaultsCircadianModeStore(),
         configurationStore: CircadianConfigurationStoring = UserDefaultsCircadianConfigurationStore(),
         clock: WorkspaceClock = SystemWorkspaceClock(),
-        refreshScheduler: WorkspaceRefreshScheduling = FoundationWorkspaceRefreshScheduler(),
-        workspacePolicy: WorkspacePolicy = WorkspacePolicy()
+        refreshScheduler: WorkspaceRefreshScheduling = FoundationWorkspaceRefreshScheduler()
     ) {
         self.transition = transition
         self.activityOverride = activityOverride
@@ -176,7 +174,6 @@ final class CircadianWorkspaceCoordinator {
         self.configurationStore = configurationStore
         self.clock = clock
         self.refreshScheduler = refreshScheduler
-        self.workspacePolicy = workspacePolicy
         transition.configuration = configurationStore.configuration
     }
 
@@ -288,8 +285,7 @@ final class CircadianWorkspaceCoordinator {
         if let holdUntil = manualStrengthHoldUntil, clock.now >= holdUntil {
             manualStrengthHoldUntil = nil
         }
-        let strengthTarget = manualStrengthHoldUntil == nil ? target : nil
-        applyWorkspacePolicy(isCircadianEnabled: true, target: strengthTarget, activityOverride: override)
+        applyWorkspacePolicy(isCircadianEnabled: true, target: target, activityOverride: override)
     }
 
     private func applyWorkspacePolicy(
@@ -298,13 +294,13 @@ final class CircadianWorkspaceCoordinator {
         activityOverride: ActivityOverrideSnapshot = .none
     ) {
         let currentOutput = nightShift.currentWorkspaceOutput
-        let targetStrength = target.map { strength(fromKelvin: $0.kelvin) } ?? currentOutput.colorTemperature
-        let decision = workspacePolicy.decision(
+        let decision = NightShiftStrengthPolicy.decision(for: NightShiftStrengthInputs(
+            isNightShiftOn: currentOutput.isNightShiftEnabled,
             isCircadianEnabled: isCircadianEnabled,
-            targetStrength: targetStrength,
-            activityOverride: activityOverride,
-            currentOutput: currentOutput
-        )
+            isActivitySuspended: activityOverride.isSuspended,
+            isManualStrengthHeld: manualStrengthHoldUntil != nil,
+            circadianTarget: target.map { strength(fromKelvin: $0.kelvin) } ?? currentOutput.colorTemperature
+        ))
         nightShift.applyWorkspacePolicyDecision(decision)
     }
 

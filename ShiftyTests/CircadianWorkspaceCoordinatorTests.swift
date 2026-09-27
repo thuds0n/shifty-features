@@ -112,7 +112,7 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
         fixture.coordinator.holdManualStrength()
 
         fixture.coordinator.applyNow()
-        XCTAssertEqual(fixture.backend.decisions.last, .applyStrength(0.3), "Keeps the hand-set strength")
+        XCTAssertEqual(fixture.backend.decisions.last, .noChange, "Leaves the hand-set strength alone")
 
         fixture.clock.now = fixture.clock.now.addingTimeInterval(3600)
         fixture.coordinator.applyNow()

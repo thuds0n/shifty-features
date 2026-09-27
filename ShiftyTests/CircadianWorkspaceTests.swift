@@ -95,48 +95,23 @@ final class CircadianWorkspaceTests: XCTestCase {
         XCTAssertEqual(target.kelvin, CircadianCurveConfiguration.default.deepNightKelvin)
     }
 
-    func testWorkspacePolicyLeavesAPausedOrDisabledNightShiftAlone() {
-        let policy = WorkspacePolicy()
-        let off = WorkspaceOutputState(isNightShiftEnabled: false, colorTemperature: 0.72)
+    func testStrengthPolicyPrecedence() {
+        func decision(
+            on: Bool = true, circadian: Bool = true, media: Bool = false, held: Bool = false
+        ) -> WorkspacePolicyDecision {
+            NightShiftStrengthPolicy.decision(for: NightShiftStrengthInputs(
+                isNightShiftOn: on,
+                isCircadianEnabled: circadian,
+                isActivitySuspended: media,
+                isManualStrengthHeld: held,
+                circadianTarget: 0.8))
+        }
 
-        XCTAssertEqual(
-            policy.decision(isCircadianEnabled: true, targetStrength: 0.9, activityOverride: .none, currentOutput: off),
-            .noChange)
-        XCTAssertEqual(
-            policy.decision(
-                isCircadianEnabled: false,
-                targetStrength: 0.9,
-                activityOverride: .none,
-                currentOutput: WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.72)),
-            .noChange)
-    }
-
-    func testForegroundMediaHoldsTheCurrentStrength() {
-        let policy = WorkspacePolicy()
-        let currentOutput = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.4)
-
-        XCTAssertEqual(
-            policy.decision(
-                isCircadianEnabled: true,
-                targetStrength: 0.8,
-                activityOverride: ActivityOverrideSnapshot(
-                    isSuspended: true,
-                    reason: .foregroundMedia,
-                    until: nil
-                ),
-                currentOutput: currentOutput
-            ),
-            .noChange
-        )
-        XCTAssertEqual(
-            policy.decision(
-                isCircadianEnabled: true,
-                targetStrength: 0.8,
-                activityOverride: .none,
-                currentOutput: currentOutput
-            ),
-            .applyStrength(0.8)
-        )
+        XCTAssertEqual(decision(), .applyStrength(0.8))
+        XCTAssertEqual(decision(on: false), .noChange, "Off or paused leaves strength alone")
+        XCTAssertEqual(decision(held: true), .noChange, "A hand-set strength holds")
+        XCTAssertEqual(decision(media: true), .noChange, "A foreground video holds the strength")
+        XCTAssertEqual(decision(circadian: false), .noChange, "Without Circadian Mode the user's strength stays")
     }
 
     func testNextTransitionFromDaylightIsTheEveningRamp() {
