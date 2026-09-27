@@ -75,6 +75,8 @@ private final class PreferencesTabViewController: NSTabViewController {
 // MARK: - PrefWindowController
 
 class PrefWindowController: NSWindowController {
+    static let paneSize = NSSize(width: 520, height: 560)
+
     private let paneViewControllers: [NSViewController & PreferencesPane]
     private let preferencesTitle: String
     private let tabController: PreferencesTabViewController
@@ -86,12 +88,16 @@ class PrefWindowController: NSWindowController {
         self.tabController = PreferencesTabViewController(panes: viewControllers)
 
         let window = NSWindow(
-            contentRect: NSRect(origin: .zero, size: NSSize(width: 520, height: 490)),
+            contentRect: NSRect(origin: .zero, size: Self.paneSize),
             styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered,
             defer: false)
         window.contentViewController = tabController
         super.init(window: window)
+
+        // Start centred, then remember wherever the user moves it.
+        window.center()
+        window.setFrameAutosaveName("PreferencesWindow")
     }
 
     required init?(coder: NSCoder) {

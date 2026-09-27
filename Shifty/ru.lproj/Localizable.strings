@@ -123,6 +123,13 @@
 "alert.not_now" = "Не сейчас";
 "alert.close" = "Закрыть";
 
-
-
-
+"prefs.circadian" = "Циркадный";
+"prefs.circadian.enable" = "Циркадный режим";
+"prefs.circadian.enable_footer" = "Постепенно делает экран теплее в течение вечера с учётом времени пробуждения и отхода ко сну.";
+"prefs.circadian.section.schedule" = "Расписание";
+"prefs.circadian.wake_time" = "Время пробуждения";
+"prefs.circadian.bedtime" = "Время отхода ко сну";
+"prefs.circadian.wind_down" = "Начало вечера";
+"prefs.circadian.before_bedtime_format" = "За %@ до сна";
+"prefs.circadian.section.warmth" = "Теплота";
+"prefs.circadian.night_warmth" = "Теплота ночью";

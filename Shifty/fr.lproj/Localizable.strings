@@ -123,6 +123,13 @@
 "alert.not_now" = "Plus tard";
 "alert.close" = "Fermer";
 
-
-
-
+"prefs.circadian" = "Circadien";
+"prefs.circadian.enable" = "Mode circadien";
+"prefs.circadian.enable_footer" = "Réchauffe progressivement l’écran au fil de la soirée, selon vos heures de réveil et de coucher.";
+"prefs.circadian.section.schedule" = "Horaire";
+"prefs.circadian.wake_time" = "Heure de réveil";
+"prefs.circadian.bedtime" = "Heure du coucher";
+"prefs.circadian.wind_down" = "Début de la soirée";
+"prefs.circadian.before_bedtime_format" = "%@ avant le coucher";
+"prefs.circadian.section.warmth" = "Chaleur";
+"prefs.circadian.night_warmth" = "Chaleur de nuit";

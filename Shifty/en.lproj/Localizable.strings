@@ -125,7 +125,13 @@
 "alert.not_now" = "Not now";
 "alert.close" = "Close";
 
-
-
-
-
+"prefs.circadian" = "Circadian";
+"prefs.circadian.enable" = "Circadian Mode";
+"prefs.circadian.enable_footer" = "Gradually warms the display through the evening, based on when you wake up and go to bed.";
+"prefs.circadian.section.schedule" = "Schedule";
+"prefs.circadian.wake_time" = "Wake time";
+"prefs.circadian.bedtime" = "Bedtime";
+"prefs.circadian.wind_down" = "Evening begins";
+"prefs.circadian.before_bedtime_format" = "%@ before bedtime";
+"prefs.circadian.section.warmth" = "Warmth";
+"prefs.circadian.night_warmth" = "Night warmth";

@@ -59,7 +59,17 @@ final class PreferenceAccessibilityTests: XCTestCase {
         "prefs.about.donate",
         "prefs.about.help_translate",
         "prefs.about.credits",
-        "prefs.about.copyright"
+        "prefs.about.copyright",
+        "prefs.circadian",
+        "prefs.circadian.enable",
+        "prefs.circadian.enable_footer",
+        "prefs.circadian.section.schedule",
+        "prefs.circadian.wake_time",
+        "prefs.circadian.bedtime",
+        "prefs.circadian.wind_down",
+        "prefs.circadian.before_bedtime_format",
+        "prefs.circadian.section.warmth",
+        "prefs.circadian.night_warmth"
     ]
 
     private let circadianMenuKeys = [

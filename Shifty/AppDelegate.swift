@@ -22,36 +22,46 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let circadianCoordinator = CircadianWorkspaceCoordinator.shared
 
     lazy var preferenceWindowController: PrefWindowController = {
+        // Every pane shares one size so switching tabs doesn't resize the window.
+        let paneSize = PrefWindowController.paneSize
+
         let general = HostedPreferencePane(
             identifier: "general",
             image: NSImage(systemSymbolName: "gearshape", accessibilityDescription: nil),
             label: NSLocalizedString("prefs.general", comment: "General"),
-            size: NSSize(width: 520, height: 510),
+            size: paneSize,
             rootView: PrefGeneralView())
+
+        let circadian = HostedPreferencePane(
+            identifier: "circadian",
+            image: NSImage(systemSymbolName: "sun.horizon", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.circadian", comment: "Circadian"),
+            size: paneSize,
+            rootView: PrefCircadianView())
 
         let shortcuts = HostedPreferencePane(
             identifier: "shortcuts",
             image: NSImage(systemSymbolName: "command", accessibilityDescription: nil),
             label: NSLocalizedString("prefs.shortcuts", comment: "Shortcuts"),
-            size: NSSize(width: 520, height: 450),
+            size: paneSize,
             rootView: PrefShortcutsView())
 
         let whitelist = HostedPreferencePane(
             identifier: "whitelist",
             image: NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil),
             label: NSLocalizedString("prefs.whitelist", comment: "Whitelist"),
-            size: NSSize(width: 520, height: 460),
+            size: paneSize,
             rootView: PrefWhitelistView())
 
         let about = HostedPreferencePane(
             identifier: "about",
             image: NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil),
             label: NSLocalizedString("prefs.about", comment: "About"),
-            size: NSSize(width: 420, height: 440),
+            size: paneSize,
             rootView: PrefAboutView())
 
         return PrefWindowController(
-            viewControllers: [general, shortcuts, whitelist, about],
+            viewControllers: [general, circadian, shortcuts, whitelist, about],
             title: NSLocalizedString("prefs.title", comment: "Preferences"))
     }()
 

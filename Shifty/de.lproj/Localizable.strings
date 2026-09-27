@@ -123,6 +123,13 @@
 "alert.not_now" = "Nicht jetzt";
 "alert.close" = "Schließen";
 
-
-
-
+"prefs.circadian" = "Zirkadian";
+"prefs.circadian.enable" = "Zirkadianer Modus";
+"prefs.circadian.enable_footer" = "Macht die Anzeige im Laufe des Abends schrittweise wärmer, abgestimmt auf Aufsteh- und Schlafenszeit.";
+"prefs.circadian.section.schedule" = "Zeitplan";
+"prefs.circadian.wake_time" = "Aufstehzeit";
+"prefs.circadian.bedtime" = "Schlafenszeit";
+"prefs.circadian.wind_down" = "Abend beginnt";
+"prefs.circadian.before_bedtime_format" = "%@ vor der Schlafenszeit";
+"prefs.circadian.section.warmth" = "Wärme";
+"prefs.circadian.night_warmth" = "Wärme in der Nacht";

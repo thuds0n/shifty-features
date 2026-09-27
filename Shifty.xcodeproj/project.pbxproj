@@ -31,6 +31,7 @@
 		437556B41FF745A6001951AB /* Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437556B31FF745A6001951AB /* Setup.swift */; };
 		437556B61FF746BD001951AB /* SlideSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437556B51FF746BD001951AB /* SlideSegue.swift */; };
 		437D7E161EC015CB00544FC8 /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437D7E151EC015CB00544FC8 /* SliderView.swift */; };
+		A1C0DE000000000000000002 /* PrefCircadianView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000001 /* PrefCircadianView.swift */; };
 		4394DDA91EBE376F00F22908 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4394DDA21EBE376F00F22908 /* AppDelegate.swift */; };
 		4394DDAA1EBE376F00F22908 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4394DDA31EBE376F00F22908 /* Assets.xcassets */; };
 		4394DDAD1EBE376F00F22908 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4394DDA81EBE376F00F22908 /* StatusMenuController.swift */; };
@@ -148,6 +149,7 @@
 		437556B31FF745A6001951AB /* Setup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Setup.swift; path = Shifty/Setup.swift; sourceTree = "<group>"; };
 		437556B51FF746BD001951AB /* SlideSegue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SlideSegue.swift; path = Shifty/SlideSegue.swift; sourceTree = "<group>"; };
 		437D7E151EC015CB00544FC8 /* SliderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SliderView.swift; path = Shifty/SliderView.swift; sourceTree = "<group>"; };
+		A1C0DE000000000000000001 /* PrefCircadianView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrefCircadianView.swift; path = Shifty/PrefCircadianView.swift; sourceTree = "<group>"; };
 		4394DDA21EBE376F00F22908 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Shifty/AppDelegate.swift; sourceTree = "<group>"; };
 		4394DDA31EBE376F00F22908 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Shifty/Assets.xcassets; sourceTree = "<group>"; };
 		4394DDA41EBE376F00F22908 /* CBBlueLightClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CBBlueLightClient.h; path = Shifty/CBBlueLightClient.h; sourceTree = "<group>"; };
@@ -289,6 +291,7 @@
 				4394DDA21EBE376F00F22908 /* AppDelegate.swift */,
 				4394DDA81EBE376F00F22908 /* StatusMenuController.swift */,
 				437D7E151EC015CB00544FC8 /* SliderView.swift */,
+				A1C0DE000000000000000001 /* PrefCircadianView.swift */,
 				43D5C2381FC35FB500AF88E0 /* MainMenu.xib */,
 				4350191C1F21E99F0001324F /* CustomTimeWindow.swift */,
 				43D5C2231FC2CACF00AF88E0 /* CustomTimeWindow.xib */,
@@ -593,6 +596,7 @@
 				437556B61FF746BD001951AB /* SlideSegue.swift in Sources */,
 				4368E3031EBEBA6C00D53310 /* PrefManager.swift in Sources */,
 				437D7E161EC015CB00544FC8 /* SliderView.swift in Sources */,
+				A1C0DE000000000000000002 /* PrefCircadianView.swift in Sources */,
 				497B2395200B576700669DDE /* NightShiftManager.swift in Sources */,
 				4351C7811FB5737900788CC9 /* PrefGeneralViewController.swift in Sources */,
 				4960957E200EB9CD00D966CA /* RuleManager.swift in Sources */,

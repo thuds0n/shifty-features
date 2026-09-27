@@ -52,13 +52,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     var customTimeWindow: CustomTimeWindow!
     
     let calendar = NSCalendar(identifier: .gregorian)!
-
-    private let circadianTimeFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-        return formatter
-    }()
     
 
     //MARK: Menu life cycle
@@ -358,7 +351,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         circadianModeMenuItem.state = enabled ? .on : .off
 
         let statusText = enabled
-            ? circadianStatusText(CircadianWorkspaceCoordinator.shared.currentStatus())
+            ? CircadianWorkspaceCoordinator.shared.currentStatus().displayText(timeFormatter: .circadianTime)
             : nil
         if #available(macOS 14.4, *) {
             circadianModeMenuItem.subtitle = statusText
@@ -367,30 +360,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         }
     }
 
-    private func circadianStatusText(_ status: CircadianStatus) -> String {
-        var parts = status.isSuspended
-            ? [NSLocalizedString("menu.circadian.paused", comment: "Circadian Mode is paused")]
-            : [circadianPhaseName(status.target.phase), "\(status.target.kelvin)K"]
-
-        if let next = status.nextTransition {
-            parts.append(String(
-                format: NSLocalizedString("menu.circadian.next_format", comment: "Next phase and its start time, e.g. Deep Night at 22:15"),
-                circadianPhaseName(next.phase),
-                circadianTimeFormatter.string(from: next.date)))
-        }
-        return parts.joined(separator: " · ")
-    }
-
-    private func circadianPhaseName(_ phase: CircadianPhase) -> String {
-        switch phase {
-        case .daylight:
-            return NSLocalizedString("menu.circadian.phase.daylight", comment: "Circadian phase name")
-        case .evening:
-            return NSLocalizedString("menu.circadian.phase.evening", comment: "Circadian phase name")
-        case .deepNight:
-            return NSLocalizedString("menu.circadian.phase.deep_night", comment: "Circadian phase name")
-        }
-    }
     
     
     

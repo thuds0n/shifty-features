@@ -123,6 +123,13 @@
 "alert.not_now" = "以后再说";
 "alert.close" = "关闭";
 
-
-
-
+"prefs.circadian" = "昼夜节律";
+"prefs.circadian.enable" = "昼夜节律模式";
+"prefs.circadian.enable_footer" = "根据你的起床和就寝时间，在晚间逐渐让屏幕变暖。";
+"prefs.circadian.section.schedule" = "时间表";
+"prefs.circadian.wake_time" = "起床时间";
+"prefs.circadian.bedtime" = "就寝时间";
+"prefs.circadian.wind_down" = "傍晚开始";
+"prefs.circadian.before_bedtime_format" = "就寝前 %@";
+"prefs.circadian.section.warmth" = "暖度";
+"prefs.circadian.night_warmth" = "夜间暖度";

@@ -55,6 +55,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 - An injectable, main-actor `CircadianWorkspaceCoordinator`, a menu toggle and a partial `WorkspacePolicy` boundary.
 - Versioned, validated persistence of the circadian curve (bedtime, wake time, lead times and bounded Kelvin targets).
 - A menu status line under Circadian Mode showing the current phase, target Kelvin and the next phase change (macOS 14.4 and later; a tooltip on earlier versions).
+- A Circadian preference pane with a 24-hour phase strip, live status, wake time, bedtime, evening start and night warmth. All preference panes share one window size, and the window opens centred and remembers its position.
 - Foreground-media hold state and temporary-pause neutralise/restore behaviour in `ActivityOverrideManager`.
 - UserDefaults-backed display offset and selection storage.
 - A no-op automation bridge.
@@ -62,7 +63,6 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 
 ### Not implemented
 
-- A Circadian preference pane for editing the persisted schedule.
 - A fully unified transition/restoration policy shared with manual toggles, disable timers and rules.
 - Real fullscreen or Picture-in-Picture detection.
 - Per-display colour application.
@@ -173,7 +173,7 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 - [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls.
 - [x] Persist versioned configuration: bedtime/wake time, lead times and bounded Kelvin targets.
 - [x] Add menu phase and next-transition status.
-- [ ] Add a compact Circadian preference pane.
+- [x] Add a compact Circadian preference pane.
 - [x] Restore the exact prior Night Shift output when a temporary pause ends.
 - [ ] Ramp output smoothly and extend restoration precedence across every override type.
 - [x] Add coordinator tests with fake clock, fake backend and fake activity provider.
