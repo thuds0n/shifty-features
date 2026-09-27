@@ -13,11 +13,15 @@ import ScriptingBridge
 class RuleManager {
     static var shared = RuleManager()
     private let nightShiftEventHandler: (NightShiftEvent) -> Void
+    /// Store used to load and persist the app and browser rule sets
+    private let defaults: UserDefaults
     
-    init(nightShiftEventHandler: @escaping (NightShiftEvent) -> Void = { NightShiftManager.shared.respond(to: $0) }) {
+    init(defaults: UserDefaults = .standard,
+         nightShiftEventHandler: @escaping (NightShiftEvent) -> Void = { NightShiftManager.shared.respond(to: $0) }) {
+        self.defaults = defaults
         self.nightShiftEventHandler = nightShiftEventHandler
 
-        if let appData = UserDefaults.standard.value(forKey: Keys.currentAppDisableRules) as? Data {
+        if let appData = defaults.value(forKey: Keys.currentAppDisableRules) as? Data {
             do {
                 currentAppDisableRules = try PropertyListDecoder().decode(Set<AppRule>.self, from: appData)
             } catch {
@@ -25,7 +29,7 @@ class RuleManager {
             }
         }
         
-        if let appData = UserDefaults.standard.value(forKey: Keys.runningAppDisableRules) as? Data {
+        if let appData = defaults.value(forKey: Keys.runningAppDisableRules) as? Data {
             do {
                 runningAppDisableRules = try PropertyListDecoder().decode(Set<AppRule>.self, from: appData)
             } catch let error {
@@ -33,7 +37,7 @@ class RuleManager {
             }
         }
         
-        if let browserData = UserDefaults.standard.value(forKey: Keys.browserRules) as? Data {
+        if let browserData = defaults.value(forKey: Keys.browserRules) as? Data {
             do {
                 browserRules = try PropertyListDecoder().decode(Set<BrowserRule>.self, from: browserData)
             } catch let error {
@@ -68,19 +72,19 @@ class RuleManager {
     
     private var currentAppDisableRules = Set<AppRule>() {
         didSet {
-            UserDefaults.standard.set(try? PropertyListEncoder().encode(currentAppDisableRules), forKey: Keys.currentAppDisableRules)
+            defaults.set(try? PropertyListEncoder().encode(currentAppDisableRules), forKey: Keys.currentAppDisableRules)
         }
     }
     
     private var runningAppDisableRules = Set<AppRule>() {
         didSet {
-            UserDefaults.standard.set(try? PropertyListEncoder().encode(runningAppDisableRules), forKey: Keys.runningAppDisableRules)
+            defaults.set(try? PropertyListEncoder().encode(runningAppDisableRules), forKey: Keys.runningAppDisableRules)
         }
     }
     
     var browserRules = Set<BrowserRule>() {
         didSet(newValue) {
-            UserDefaults.standard.set(try? PropertyListEncoder().encode(browserRules), forKey: Keys.browserRules)
+            defaults.set(try? PropertyListEncoder().encode(browserRules), forKey: Keys.browserRules)
         }
     }
     
