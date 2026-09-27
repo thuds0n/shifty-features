@@ -50,7 +50,7 @@
 "prefs.general" = "通用";
 "prefs.shortcuts" = "快捷键";
 "prefs.about" = "关于";
-"prefs.whitelist" = "例外规则";
+"prefs.rules" = "规则";
 
 "prefs.general.section.application" = "应用程序";
 "prefs.general.launch_at_login" = "登录时启动 Shifty 夜览管家";
@@ -73,13 +73,18 @@
 "prefs.general.schedule.from" = "从";
 "prefs.general.schedule.to" = "到";
 
-"prefs.whitelist.active_app" = "当前应用程序";
-"prefs.whitelist.when_running" = "运行时";
-"prefs.whitelist.websites" = "网站";
-"prefs.whitelist.no_rules" = "没有规则";
-"prefs.whitelist.domain_disabled" = "已停用域名";
-"prefs.whitelist.subdomain_disabled" = "已停用子域名";
-"prefs.whitelist.subdomain_enabled" = "已启用子域名";
+"prefs.rules.active_app" = "当前应用程序";
+"prefs.rules.when_running" = "运行时";
+"prefs.rules.websites" = "网站";
+"prefs.rules.domain_disabled" = "已停用域名";
+"prefs.rules.subdomain_disabled" = "已停用子域名";
+"prefs.rules.subdomain_enabled" = "已启用子域名";
+"prefs.rules.remove" = "删除规则";
+"prefs.rules.active_app_footer" = "当这些应用程序位于前台时，“夜览”会关闭。";
+"prefs.rules.when_running_footer" = "当这些应用程序正在运行时，“夜览”会关闭。";
+"prefs.rules.websites_footer" = "启用网站色温调节后，在受支持的浏览器中生效。";
+"prefs.rules.empty_title" = "没有规则";
+"prefs.rules.empty_message" = "使用 Shifty 菜单为当前应用程序或网站关闭“夜览”。";
 
 "prefs.shortcuts.section.night_shift" = "夜览";
 "prefs.shortcuts.toggle_night_shift" = "切换“夜览”模式";

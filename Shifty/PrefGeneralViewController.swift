@@ -297,88 +297,134 @@ private enum ScheduleMode: Hashable {
     case off, solar, custom
 }
 
-// MARK: - PrefWhitelistView
+// MARK: - PrefRulesView
 
-struct PrefWhitelistView: View {
+struct PrefRulesView: View {
     @State private var currentAppRules: [AppRule] = []
     @State private var runningAppRules: [AppRule] = []
     @State private var browserRules: [BrowserRule] = []
 
-    var body: some View {
-        List {
-            ruleSection(
-                header: Label("prefs.whitelist.active_app", systemImage: "macwindow"),
-                rules: currentAppRules
-            )
-            ruleSection(
-                header: Label("prefs.whitelist.when_running", systemImage: "app.badge"),
-                rules: runningAppRules
-            )
+    private var hasRules: Bool {
+        !(currentAppRules.isEmpty && runningAppRules.isEmpty && browserRules.isEmpty)
+    }
 
-            Section {
-                if browserRules.isEmpty {
-                    emptyLabel()
-                } else {
-                    ForEach(browserRules, id: \.host) { rule in
+    var body: some View {
+        Group {
+            if hasRules {
+                rulesForm
+            } else {
+                ContentUnavailableView {
+                    Label("prefs.rules.empty_title", systemImage: "list.bullet.rectangle")
+                } description: {
+                    Text("prefs.rules.empty_message")
+                }
+            }
+        }
+        .onAppear(perform: loadRules)
+        .onReceive(NotificationCenter.default.publisher(for: RuleManager.rulesDidChangeNotification)) { _ in
+            loadRules()
+        }
+    }
+
+    private var rulesForm: some View {
+        Form {
+            if !currentAppRules.isEmpty {
+                Section {
+                    ForEach(currentAppRules, id: \.bundleIdentifier) { rule in
+                        appRuleRow(rule) { RuleManager.shared.removeCurrentAppDisableRule(rule) }
+                    }
+                } header: {
+                    Label("prefs.rules.active_app", systemImage: "macwindow")
+                } footer: {
+                    Text("prefs.rules.active_app_footer")
+                }
+            }
+
+            if !runningAppRules.isEmpty {
+                Section {
+                    ForEach(runningAppRules, id: \.bundleIdentifier) { rule in
+                        appRuleRow(rule) { RuleManager.shared.removeRunningAppDisableRule(rule) }
+                    }
+                } header: {
+                    Label("prefs.rules.when_running", systemImage: "app.badge")
+                } footer: {
+                    Text("prefs.rules.when_running_footer")
+                }
+            }
+
+            if !browserRules.isEmpty {
+                Section {
+                    ForEach(browserRules, id: \.self) { rule in
                         browserRuleRow(rule)
                     }
+                } header: {
+                    Label("prefs.rules.websites", systemImage: "globe")
+                } footer: {
+                    Text("prefs.rules.websites_footer")
                 }
-            } header: {
-                Label("prefs.whitelist.websites", systemImage: "globe")
             }
         }
-        .listStyle(.inset)
-        .onAppear(perform: loadRules)
+        .formStyle(.grouped)
     }
 
     @ViewBuilder
-    private func ruleSection(header: some View, rules: [AppRule]) -> some View {
-        Section {
-            if rules.isEmpty {
-                emptyLabel()
-            } else {
-                ForEach(rules, id: \.bundleIdentifier) { rule in
-                    appRuleRow(rule)
-                }
-            }
-        } header: {
-            header
-        }
-    }
-
-    @ViewBuilder
-    private func appRuleRow(_ rule: AppRule) -> some View {
+    private func appRuleRow(_ rule: AppRule, remove: @escaping () -> Void) -> some View {
+        let name = displayName(for: rule.bundleIdentifier)
         HStack(spacing: 10) {
             appIconView(for: rule.bundleIdentifier)
                 .frame(width: 22, height: 22)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(displayName(for: rule.bundleIdentifier))
-                    .fontWeight(.medium)
+                Text(name)
                 Text(rule.bundleIdentifier)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            Spacer()
+            removeButton(for: name, action: remove)
         }
-        .padding(.vertical, 2)
+        .contextMenu { removeMenuItem(action: remove) }
     }
 
     @ViewBuilder
     private func browserRuleRow(_ rule: BrowserRule) -> some View {
+        let remove = { RuleManager.shared.removeBrowserRule(rule) }
         HStack(spacing: 10) {
             Image(systemName: iconName(for: rule.type))
                 .foregroundStyle(tint(for: rule.type))
                 .frame(width: 22)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(rule.host)
-                    .fontWeight(.medium)
                 Text(ruleDescription(for: rule.type))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            Spacer()
+            removeButton(for: rule.host, action: remove)
         }
-        .padding(.vertical, 2)
+        .contextMenu { removeMenuItem(action: remove) }
+    }
+
+    private func removeButton(for subject: String, action: @escaping () -> Void) -> some View {
+        Button(role: .destructive, action: action) {
+            Image(systemName: "minus.circle")
+        }
+        .buttonStyle(.borderless)
+        .foregroundStyle(.secondary)
+        .help(Text("prefs.rules.remove"))
+        .accessibilityLabel(Text("prefs.rules.remove"))
+        .accessibilityValue(Text(verbatim: subject))
+    }
+
+    private func removeMenuItem(action: @escaping () -> Void) -> some View {
+        Button(role: .destructive, action: action) {
+            Label("prefs.rules.remove", systemImage: "minus.circle")
+        }
     }
 
     @ViewBuilder
@@ -391,13 +437,6 @@ struct PrefWhitelistView: View {
             Image(systemName: "app.dashed")
                 .foregroundStyle(.secondary)
         }
-    }
-
-    @ViewBuilder
-    private func emptyLabel() -> some View {
-        Text("prefs.whitelist.no_rules")
-            .foregroundStyle(.tertiary)
-            .italic()
     }
 
     private func loadRules() {
@@ -446,11 +485,11 @@ struct PrefWhitelistView: View {
     private func ruleDescription(for type: RuleType) -> String {
         switch type {
         case .domain:
-            return NSLocalizedString("prefs.whitelist.domain_disabled", comment: "Domain rule is disabled")
+            return NSLocalizedString("prefs.rules.domain_disabled", comment: "Domain rule is disabled")
         case .subdomainDisabled:
-            return NSLocalizedString("prefs.whitelist.subdomain_disabled", comment: "Subdomain rule is disabled")
+            return NSLocalizedString("prefs.rules.subdomain_disabled", comment: "Subdomain rule is disabled")
         case .subdomainEnabled:
-            return NSLocalizedString("prefs.whitelist.subdomain_enabled", comment: "Subdomain rule is enabled")
+            return NSLocalizedString("prefs.rules.subdomain_enabled", comment: "Subdomain rule is enabled")
         }
     }
 }

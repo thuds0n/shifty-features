@@ -52,7 +52,7 @@
 "prefs.general" = "General";
 "prefs.shortcuts" = "Shortcuts";
 "prefs.about" = "About";
-"prefs.whitelist" = "Whitelist";
+"prefs.rules" = "Rules";
 
 "prefs.general.section.application" = "Application";
 "prefs.general.launch_at_login" = "Launch at Login";
@@ -75,13 +75,18 @@
 "prefs.general.schedule.from" = "From";
 "prefs.general.schedule.to" = "To";
 
-"prefs.whitelist.active_app" = "Active App";
-"prefs.whitelist.when_running" = "When Running";
-"prefs.whitelist.websites" = "Websites";
-"prefs.whitelist.no_rules" = "No rules";
-"prefs.whitelist.domain_disabled" = "Domain disabled";
-"prefs.whitelist.subdomain_disabled" = "Subdomain disabled";
-"prefs.whitelist.subdomain_enabled" = "Subdomain enabled";
+"prefs.rules.active_app" = "Active App";
+"prefs.rules.when_running" = "When Running";
+"prefs.rules.websites" = "Websites";
+"prefs.rules.domain_disabled" = "Domain disabled";
+"prefs.rules.subdomain_disabled" = "Subdomain disabled";
+"prefs.rules.subdomain_enabled" = "Subdomain enabled";
+"prefs.rules.remove" = "Remove Rule";
+"prefs.rules.active_app_footer" = "Night Shift turns off while one of these apps is in front.";
+"prefs.rules.when_running_footer" = "Night Shift turns off while any of these apps is running.";
+"prefs.rules.websites_footer" = "Applies in supported browsers when Website Shifting is on.";
+"prefs.rules.empty_title" = "No Rules";
+"prefs.rules.empty_message" = "Use the Shifty menu to turn Night Shift off for the app or website you’re using.";
 
 "prefs.shortcuts.section.night_shift" = "Night Shift";
 "prefs.shortcuts.toggle_night_shift" = "Toggle Night Shift";

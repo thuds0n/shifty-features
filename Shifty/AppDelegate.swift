@@ -46,12 +46,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             size: paneSize,
             rootView: PrefShortcutsView())
 
-        let whitelist = HostedPreferencePane(
-            identifier: "whitelist",
+        let rules = HostedPreferencePane(
+            identifier: "rules",
             image: NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil),
-            label: NSLocalizedString("prefs.whitelist", comment: "Whitelist"),
+            label: NSLocalizedString("prefs.rules", comment: "Rules"),
             size: paneSize,
-            rootView: PrefWhitelistView())
+            rootView: PrefRulesView())
 
         let about = HostedPreferencePane(
             identifier: "about",
@@ -61,7 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             rootView: PrefAboutView())
 
         return PrefWindowController(
-            viewControllers: [general, circadian, shortcuts, whitelist, about],
+            viewControllers: [general, circadian, shortcuts, rules, about],
             title: NSLocalizedString("prefs.title", comment: "Preferences"))
     }()
 

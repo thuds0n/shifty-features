@@ -41,7 +41,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 - Website URL detection for supported browsers using Apple Events, Accessibility and public-suffix parsing.
 - Dark Mode and True Tone integration.
 - Global keyboard shortcuts.
-- SwiftUI-hosted General, Shortcuts, Whitelist and About preference panes.
+- SwiftUI-hosted General, Circadian, Shortcuts, Rules and About preference panes. The Rules pane updates live and removes individual rules.
 - Legacy SiriKit intent-definition handlers.
 - Localised SwiftUI preference panes in English, German, French, Russian and Simplified Chinese.
 - A keyboard-operable shortcut recorder with VoiceOver role, label, value, help and an explicit clear action.
@@ -78,7 +78,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 - **Foreground-media naming:** the app-level heuristic now reports foreground media rather than claiming fullscreen detection. It continues to hold output; it does not neutralise Night Shift or claim PiP evidence.
 - **Disable-timer ownership:** cancellation invalidates and clears the timer before restoration. A regression test proves the cancelled callback cannot restore a second time.
 - **CLI property-list safety:** idle payloads omit an absent suspend reason and pass property-list validation. The unauthenticated distributed command listener is disabled until a bounded IPC design is approved.
-- **SwiftUI localisation and accessibility:** all preference copy now uses semantic localisation keys across the five supported languages. The Whitelist toolbar label resolves correctly, and the shortcut recorder supports focus, keyboard recording/clearing and explicit accessibility state.
+- **SwiftUI localisation and accessibility:** all preference copy now uses semantic localisation keys across the five supported languages. The Rules (formerly Whitelist) toolbar label resolves correctly, and the shortcut recorder supports focus, keyboard recording/clearing and explicit accessibility state.
 - **Circadian architecture concentration:** preferences, scheduling, policy, activity, calibration, automation, dormant CLI transport and coordination now have focused source files. The coordinator accepts fake clock, mode-store, timer, activity, automation and Night Shift dependencies; lifecycle, output restoration and CLI behaviour have regression coverage.
 - **Initial main-actor boundary:** the app delegate, status-menu controller, shortcut binding manager and circadian coordinator now explicitly own their UI-facing work on the main actor. This is a foundation rather than completion of the Swift 6 migration.
 
@@ -104,7 +104,6 @@ The P1 findings from the 9 August audit are resolved in the current branch. Phas
 
 - Replace remaining force casts/unwraps in setup, storyboard segue and slider-to-delegate paths with guarded failures.
 - Store and remove long-lived notification observers explicitly; test repeated manager creation and teardown.
-- Make the whitelist reactive or clearly label it as a snapshot; it currently refreshes only on appearance.
 - Clamp shortcut-based colour-temperature mutations rather than relying on the private client.
 - Decide whether direct Sparkle distribution is the sole release channel; this determines updater, sandbox and entitlement work.
 

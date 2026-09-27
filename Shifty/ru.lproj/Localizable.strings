@@ -50,7 +50,7 @@
 "prefs.general" = "Главное";
 "prefs.shortcuts" = "Сокращения";
 "prefs.about" = "О программе";
-"prefs.whitelist" = "Исключения";
+"prefs.rules" = "Правила";
 
 "prefs.general.section.application" = "Приложение";
 "prefs.general.launch_at_login" = "Запускать Shifty при входе";
@@ -73,13 +73,18 @@
 "prefs.general.schedule.from" = "С";
 "prefs.general.schedule.to" = "До";
 
-"prefs.whitelist.active_app" = "Активное приложение";
-"prefs.whitelist.when_running" = "Во время работы";
-"prefs.whitelist.websites" = "Сайты";
-"prefs.whitelist.no_rules" = "Нет правил";
-"prefs.whitelist.domain_disabled" = "Домен отключён";
-"prefs.whitelist.subdomain_disabled" = "Субдомен отключён";
-"prefs.whitelist.subdomain_enabled" = "Субдомен включён";
+"prefs.rules.active_app" = "Активное приложение";
+"prefs.rules.when_running" = "Во время работы";
+"prefs.rules.websites" = "Сайты";
+"prefs.rules.domain_disabled" = "Домен отключён";
+"prefs.rules.subdomain_disabled" = "Субдомен отключён";
+"prefs.rules.subdomain_enabled" = "Субдомен включён";
+"prefs.rules.remove" = "Удалить правило";
+"prefs.rules.active_app_footer" = "Night Shift отключается, пока одно из этих приложений активно.";
+"prefs.rules.when_running_footer" = "Night Shift отключается, пока запущено одно из этих приложений.";
+"prefs.rules.websites_footer" = "Действует в поддерживаемых браузерах, если включено переключение на сайтах.";
+"prefs.rules.empty_title" = "Нет правил";
+"prefs.rules.empty_message" = "Отключите Night Shift для текущего приложения или сайта в меню Shifty.";
 
 "prefs.shortcuts.section.night_shift" = "Night Shift";
 "prefs.shortcuts.toggle_night_shift" = "Переключить Night Shift";

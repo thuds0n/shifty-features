@@ -50,7 +50,7 @@
 "prefs.general" = "Allgemein";
 "prefs.shortcuts" = "Tastenkürzel";
 "prefs.about" = "Über";
-"prefs.whitelist" = "Ausnahmen";
+"prefs.rules" = "Regeln";
 
 "prefs.general.section.application" = "Anwendung";
 "prefs.general.launch_at_login" = "Shifty beim Anmelden starten";
@@ -73,13 +73,18 @@
 "prefs.general.schedule.from" = "Von";
 "prefs.general.schedule.to" = "Bis";
 
-"prefs.whitelist.active_app" = "Aktive App";
-"prefs.whitelist.when_running" = "Während der Ausführung";
-"prefs.whitelist.websites" = "Webseiten";
-"prefs.whitelist.no_rules" = "Keine Regeln";
-"prefs.whitelist.domain_disabled" = "Domain deaktiviert";
-"prefs.whitelist.subdomain_disabled" = "Subdomain deaktiviert";
-"prefs.whitelist.subdomain_enabled" = "Subdomain aktiviert";
+"prefs.rules.active_app" = "Aktive App";
+"prefs.rules.when_running" = "Während der Ausführung";
+"prefs.rules.websites" = "Webseiten";
+"prefs.rules.domain_disabled" = "Domain deaktiviert";
+"prefs.rules.subdomain_disabled" = "Subdomain deaktiviert";
+"prefs.rules.subdomain_enabled" = "Subdomain aktiviert";
+"prefs.rules.remove" = "Regel entfernen";
+"prefs.rules.active_app_footer" = "Night Shift wird ausgeschaltet, solange eine dieser Apps im Vordergrund ist.";
+"prefs.rules.when_running_footer" = "Night Shift wird ausgeschaltet, solange eine dieser Apps läuft.";
+"prefs.rules.websites_footer" = "Gilt in unterstützten Browsern, wenn Webseiten-Shift aktiviert ist.";
+"prefs.rules.empty_title" = "Keine Regeln";
+"prefs.rules.empty_message" = "Über das Shifty-Menü lässt sich Night Shift für die aktuelle App oder Webseite ausschalten.";
 
 "prefs.shortcuts.section.night_shift" = "Night Shift";
 "prefs.shortcuts.toggle_night_shift" = "Night Shift umschalten";

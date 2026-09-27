@@ -50,7 +50,7 @@
 "prefs.general" = "Général";
 "prefs.shortcuts" = "Raccourcis";
 "prefs.about" = "À propos";
-"prefs.whitelist" = "Liste d’exceptions";
+"prefs.rules" = "Règles";
 
 "prefs.general.section.application" = "Application";
 "prefs.general.launch_at_login" = "Lancer Shifty à l’ouverture de session";
@@ -73,13 +73,18 @@
 "prefs.general.schedule.from" = "De";
 "prefs.general.schedule.to" = "À";
 
-"prefs.whitelist.active_app" = "Application active";
-"prefs.whitelist.when_running" = "Lors de l’exécution";
-"prefs.whitelist.websites" = "Sites web";
-"prefs.whitelist.no_rules" = "Aucune règle";
-"prefs.whitelist.domain_disabled" = "Domaine désactivé";
-"prefs.whitelist.subdomain_disabled" = "Sous-domaine désactivé";
-"prefs.whitelist.subdomain_enabled" = "Sous-domaine activé";
+"prefs.rules.active_app" = "Application active";
+"prefs.rules.when_running" = "Lors de l’exécution";
+"prefs.rules.websites" = "Sites web";
+"prefs.rules.domain_disabled" = "Domaine désactivé";
+"prefs.rules.subdomain_disabled" = "Sous-domaine désactivé";
+"prefs.rules.subdomain_enabled" = "Sous-domaine activé";
+"prefs.rules.remove" = "Supprimer la règle";
+"prefs.rules.active_app_footer" = "Night Shift se désactive lorsqu’une de ces applications est au premier plan.";
+"prefs.rules.when_running_footer" = "Night Shift se désactive lorsqu’une de ces applications est ouverte.";
+"prefs.rules.websites_footer" = "S’applique dans les navigateurs compatibles lorsque la permutation des sites web est activée.";
+"prefs.rules.empty_title" = "Aucune règle";
+"prefs.rules.empty_message" = "Utilisez le menu Shifty pour désactiver Night Shift pour l’application ou le site en cours.";
 
 "prefs.shortcuts.section.night_shift" = "Night Shift";
 "prefs.shortcuts.toggle_night_shift" = "Activer ou désactiver Night Shift";

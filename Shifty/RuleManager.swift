@@ -10,6 +10,9 @@ import ScriptingBridge
 
 
 class RuleManager {
+    /// Posted on the main queue whenever any stored rule is added or removed.
+    static let rulesDidChangeNotification = Notification.Name("RuleManagerRulesDidChange")
+
     static var shared = RuleManager()
     private let nightShiftEventHandler: (NightShiftEvent) -> Void
     
@@ -68,18 +71,21 @@ class RuleManager {
     private var currentAppDisableRules = Set<AppRule>() {
         didSet {
             UserDefaults.standard.set(try? PropertyListEncoder().encode(currentAppDisableRules), forKey: Keys.currentAppDisableRules)
+            postRulesDidChange()
         }
     }
     
     private var runningAppDisableRules = Set<AppRule>() {
         didSet {
             UserDefaults.standard.set(try? PropertyListEncoder().encode(runningAppDisableRules), forKey: Keys.runningAppDisableRules)
+            postRulesDidChange()
         }
     }
     
     var browserRules = Set<BrowserRule>() {
         didSet(newValue) {
             UserDefaults.standard.set(try? PropertyListEncoder().encode(browserRules), forKey: Keys.browserRules)
+            postRulesDidChange()
         }
     }
     
@@ -105,6 +111,37 @@ class RuleManager {
                 return lhs.host.localizedCaseInsensitiveCompare(rhs.host) == .orderedAscending
             }
             return lhs.type.rawValue < rhs.type.rawValue
+        }
+    }
+
+    private func postRulesDidChange() {
+        let post = { NotificationCenter.default.post(name: Self.rulesDidChangeNotification, object: self) }
+        if Thread.isMainThread {
+            post()
+        } else {
+            DispatchQueue.main.async(execute: post)
+        }
+    }
+
+    // MARK: Removing stored rules
+
+    func removeCurrentAppDisableRule(_ rule: AppRule) {
+        guard currentAppDisableRules.remove(rule) != nil else { return }
+        sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
+    }
+
+    func removeRunningAppDisableRule(_ rule: AppRule) {
+        guard runningAppDisableRules.remove(rule) != nil else { return }
+        sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
+    }
+
+    func removeBrowserRule(_ rule: BrowserRule) {
+        guard browserRules.remove(rule) != nil else { return }
+        switch rule.type {
+        case .domain, .subdomainDisabled:
+            sendNightShiftEvent(.nightShiftDisableRuleDeactivated)
+        case .subdomainEnabled:
+            sendNightShiftEvent(.nightShiftEnableRuleDeactivated)
         }
     }
 

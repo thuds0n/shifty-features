@@ -18,10 +18,11 @@
 - Run manual regression pass:
   - Startup/setup flow (first-run setup window, accessibility permissions prompt)
   - Menu bar icon and Quick Toggle behavior (left-click, right-click, Control+click)
-  - Preferences window — verify all four panes open and switch correctly:
+  - Preferences window — verify all five panes open and switch correctly without the window resizing, and that the window opens centred then remembers its position:
     - **General**: all toggles persist across app restarts; Night Shift schedule picker + time fields show/hide correctly; True Tone section visible only on supported hardware
+    - **Circadian**: toggle, wake time, bedtime, evening start and night warmth persist across restarts; the phase strip and status line match the menu status
     - **Shortcuts**: shortcut recorder fields accept and clear bindings; global shortcuts fire when app is backgrounded
-    - **Whitelist**: saved app/domain/subdomain snapshots display with correct names, icons and rule types; close and reopen the pane after rule changes until live updates are implemented
+    - **Rules**: app/domain/subdomain rules display with correct names, icons and rule types; rules added from the menu appear while the pane is open; the remove button and context menu delete a rule; the empty state shows when no rules exist
     - **About**: version string matches `Info.plist`; all link buttons open correct URLs/actions
   - Website shifting + accessibility permissions
   - Login-item (Launch at Login) toggle — verify helper correctly starts/stops
