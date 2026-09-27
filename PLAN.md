@@ -28,7 +28,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
 | Visual regression pass | Partially verified | The menu and all four English preference panes render correctly with Screen Recording and Accessibility granted; full interaction and every localisation remain pending |
 | Signed archive, notarisation and Sparkle update | Unverified | Not exercised during this audit |
-| CI | Pending | No CI configuration is present |
+| CI | Configured, not yet run | GitHub Actions (`.github/workflows/ci.yml`): Debug build and unit tests, universal Release build and static analysis on pushes to `master` and pull requests; all steps pass locally |
 
 The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict concurrency is a migration goal, not the current implementation state.
 
@@ -156,7 +156,7 @@ All UI-facing state and AppKit integration should be main-actor isolated. Pure s
 - [x] Fix timer invalidation and add timer/restore tests.
 - [x] Fix missing preference localisation, migrate new UI copy to localisation keys and add all supported translations.
 - [x] Make the shortcut recorder keyboard-operable and expose tested VoiceOver semantics.
-- [ ] Add CI for Debug build, Release build and unit tests using macOS 14+.
+- [x] Add CI for Debug build, Release build and unit tests using macOS 14+. Confirm the first hosted run is green.
 - [ ] Complete a permission-aware visual pass across the menu and all four preference panes.
 - [ ] Refresh hosted requirements and screenshots.
 - [ ] Decide direct-download distribution, then migrate Sparkle from DSA to EdDSA and validate a signed test update.
@@ -231,7 +231,7 @@ Per-display warmth remains research, not a committed product capability.
 
 The correctness, preference-compliance and initial architecture slices are now implemented and covered by tests. Continue Phase 0 and Phase 1 in this order:
 
-1. Add CI for Debug, universal Release and the unit-test suite.
+1. Confirm the first hosted CI run is green.
 2. Add activity lifecycle, display calibration and browser watcher tests around the remaining foundation seams.
 3. Complete full interaction and non-English visual passes.
 4. Refresh hosted documentation and screenshots, then validate the signed archive and Sparkle update path.
