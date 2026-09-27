@@ -9,25 +9,10 @@
 "general.ok" = "ОК";
 "general.cancel" = "Отмена";
 
-"menu.toggle_on" = "Включить Night Shift";
-"menu.toggle_off" = "Выключить Night Shift";
-"menu.disable_for" = "Выключить для %@";
-"menu.disabled_for" = "Выключено для %@";
-"menu.enable_for" = "Включить для %@";
-"menu.enabled_for" = "Включено для %@";
-
-"menu.disable_running_app" = "Выключить, когда %@ работает";
-"menu.disabled_running_app" = "Выключено, когда %@ работает";
-"menu.disable_fullscreen" = "Только на полном экране";
-
 "menu.disable_hour" = "Выключить на час";
-"menu.disabled_hour" = "Выключено на час";
 "menu.disable_custom" = "Выключить на своё время...";
-"menu.disabled_custom" = "Выключено на своё время";
 "menu.allow_browser_automation" = "Разрешить переключение на сайте %@";
 
-"menu.true_tone_on" = "Включить True Tone";
-"menu.true_tone_off" = "Выключить True Tone";
 "menu.true_tone_unavailable" = "True Tone не доступен";
 "menu.true_tone_disabled_for" = "True Tone выключен для %@";
 
@@ -39,6 +24,15 @@
 "menu.circadian.phase.deep_night" = "Глубокая ночь";
 "menu.circadian.paused" = "Приостановлено";
 "menu.circadian.next_format" = "%1$@ в %2$@";
+"menu.pause" = "Приостановить";
+"menu.pause_custom" = "Другое время…";
+"menu.resume_now" = "Возобновить сейчас";
+"menu.rules_for" = "Правила для %@";
+"menu.rules.header" = "Отключать Night Shift";
+"menu.rule.app_in_front" = "Когда %@ на переднем плане";
+"menu.rule.app_open" = "Когда %@ открыто";
+"menu.rule.on_site" = "На %@";
+"menu.rule.except_on_site" = "Кроме %@";
 
 "description.enabled" = "Включено";
 "description.enabled_sunrise" = "Включено до восхода солнца";
@@ -116,13 +110,11 @@
 "prefs.about.credits" = "Сведения об авторах";
 "prefs.about.copyright" = "© 2017–2026 Нэйт Томпсон · Лицензия GPLv3";
 
-
 "alert.hardware_message" = "Ваш Мак не поддерживает Night Shift";
 "alert.hardware_informative" = "Для использования Shifty нужен Мак новее.";
 
 "alert.accessibility_disabled_message" = "Универсальный доступ для Shifty не предоставлен";
 "alert.accessibility_disabled_informative" = "Универсальный доступ должен быть предоставлен для использования переключения на сайтах. Обеспечьте Shifty доступ в настройках Защиты и безопасности, расположенных в Системных настройках.";
-
 
 "alert.open_preferences" = "Откройте Системные настройки";
 "alert.not_now" = "Не сейчас";

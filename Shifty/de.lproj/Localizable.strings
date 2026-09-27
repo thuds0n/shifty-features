@@ -9,25 +9,10 @@
 "general.ok" = "OK";
 "general.cancel" = "Abbrechen";
 
-"menu.toggle_on" = "Night Shift aktivieren";
-"menu.toggle_off" = "Night Shift deaktivieren";
-"menu.disable_for" = "Deaktivieren für %@";
-"menu.disabled_for" = "Deaktiviert für %@";
-"menu.enable_for" = "Aktivieren für %@";
-"menu.enabled_for" = "Aktiviert für %@";
-
-"menu.disable_running_app" = "Deaktivieren, wenn %@ läuft";
-"menu.disabled_running_app" = "Deaktivieren, wenn %@ läuft";
-"menu.disable_fullscreen" = "Nur im Vollbildmodus";
-
 "menu.disable_hour" = "Für eine Stunde deaktivieren";
-"menu.disabled_hour" = "Für eine Stunde deaktiviert";
 "menu.disable_custom" = "Für bestimmte Zeit deaktivieren…";
-"menu.disabled_custom" = "Für bestimmte Zeit deaktiviert";
 "menu.allow_browser_automation" = "Webseiten-Shift mit %@ erlauben";
 
-"menu.true_tone_on" = "True Tone aktivieren";
-"menu.true_tone_off" = "True Tone deaktivieren";
 "menu.true_tone_unavailable" = "True Tone ist nicht verfügbar";
 "menu.true_tone_disabled_for" = "True Tone ist deaktiviert für %@";
 
@@ -39,6 +24,15 @@
 "menu.circadian.phase.deep_night" = "Tiefe Nacht";
 "menu.circadian.paused" = "Pausiert";
 "menu.circadian.next_format" = "%1$@ um %2$@";
+"menu.pause" = "Pausieren";
+"menu.pause_custom" = "Andere Dauer …";
+"menu.resume_now" = "Jetzt fortsetzen";
+"menu.rules_for" = "Regeln für %@";
+"menu.rules.header" = "Night Shift ausschalten";
+"menu.rule.app_in_front" = "Solange %@ im Vordergrund ist";
+"menu.rule.app_open" = "Solange %@ geöffnet ist";
+"menu.rule.on_site" = "Auf %@";
+"menu.rule.except_on_site" = "Außer auf %@";
 
 "description.enabled" = "Aktiviert";
 "description.enabled_sunrise" = "Bis Sonnenaufgang aktiviert";
@@ -116,13 +110,11 @@
 "prefs.about.credits" = "Danksagung";
 "prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3-Lizenz";
 
-
 "alert.hardware_message" = "Dieser Mac unterstützt kein Night Shift";
 "alert.hardware_informative" = "Um Shifty verwenden zu können, ist ein aktueller Mac erforderlich.";
 
 "alert.accessibility_disabled_message" = "Bedienungshilfen-Berechtigungen für Shifty wurden deaktiviert";
 "alert.accessibility_disabled_informative" = "Der Webseiten-Shift benötigt die Berechtigung in den Bedienungshilfen. Den Zugriff unter Systemeinstellungen > Sicherheit > Privatsphäre gewähren.";
-
 
 "alert.open_preferences" = "Systemeinstellungen öffnen";
 "alert.not_now" = "Nicht jetzt";

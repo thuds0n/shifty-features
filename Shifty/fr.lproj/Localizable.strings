@@ -9,25 +9,10 @@
 "general.ok" = "OK";
 "general.cancel" = "Annuler";
 
-"menu.toggle_on" = "Activer Night Shift";
-"menu.toggle_off" = "Désactiver Night Shift";
-"menu.disable_for" = "Désactiver pendant %@";
-"menu.disabled_for" = "Désactivé pendant %@";
-"menu.enable_for" = "Activer pendant %@";
-"menu.enabled_for" = "Activé pendant %@";
-
-"menu.disable_running_app" = "Désactiver pour %@";
-"menu.disabled_running_app" = "Désactivé pour %@";
-"menu.disable_fullscreen" = "Uniquement en mode plein écran";
-
 "menu.disable_hour" = "Désactiver pendant une heure";
-"menu.disabled_hour" = "Désactiver pendant une heure";
 "menu.disable_custom" = "Personnaliser le temps de désactivation...";
-"menu.disabled_custom" = "Désactivation personnalisée";
 "menu.allow_browser_automation" = "Permettre permutation des sites web avec %@";
 
-"menu.true_tone_on" = "Activer True Tone";
-"menu.true_tone_off" = "Désactiver True Tone";
 "menu.true_tone_unavailable" = "True Tone n'est pas disponible";
 "menu.true_tone_disabled_for" = "True Tone est désactivé pour %@";
 
@@ -39,6 +24,15 @@
 "menu.circadian.phase.deep_night" = "Nuit profonde";
 "menu.circadian.paused" = "En pause";
 "menu.circadian.next_format" = "%1$@ à %2$@";
+"menu.pause" = "Suspendre";
+"menu.pause_custom" = "Autre durée…";
+"menu.resume_now" = "Reprendre maintenant";
+"menu.rules_for" = "Règles pour %@";
+"menu.rules.header" = "Désactiver Night Shift";
+"menu.rule.app_in_front" = "Lorsque %@ est au premier plan";
+"menu.rule.app_open" = "Lorsque %@ est ouvert";
+"menu.rule.on_site" = "Sur %@";
+"menu.rule.except_on_site" = "Sauf sur %@";
 
 "description.enabled" = "Activé";
 "description.enabled_sunrise" = "Activé jusqu’au lever du soleil";
@@ -116,13 +110,11 @@
 "prefs.about.credits" = "Crédits";
 "prefs.about.copyright" = "© 2017–2026 Nate Thompson · Licence GPLv3";
 
-
 "alert.hardware_message" = "Votre Mac ne supporte pas Night Shift";
 "alert.hardware_informative" = "Un Mac plus récent est requis pour utiliser Shifty.";
 
 "alert.accessibility_disabled_message" = "Les autorisations d’accessibilité ont été désactivées";
 "alert.accessibility_disabled_informative" = "Les autorisations d’accessibilité doivent être données pour activer la permutation des sites web. Veuillez autoriser Shifty dans les Préférences Système, onglet « Sécurité & Confidentialité ».";
-
 
 "alert.open_preferences" = "Ouvrir les Préférences Système";
 "alert.not_now" = "Plus tard";

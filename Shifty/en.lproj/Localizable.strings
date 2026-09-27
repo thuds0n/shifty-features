@@ -9,27 +9,10 @@
 "general.ok" = "OK";
 "general.cancel" = "Cancel";
 
-"menu.toggle_on" = "Turn on Night Shift";
-"menu.toggle_off" = "Turn off Night Shift";
-"menu.disable_for" = "Disable for %@";
-"menu.disabled_for" = "Disabled for %@";
-"menu.disable_for_running_app" = "Disable when %@ is running";
-"menu.disabled_for_running_app" = "Disabled when %@ is running";
-"menu.enable_for" = "Enable for %@";
-"menu.enabled_for" = "Enabled for %@";
-
-"menu.disable_running_app" = "Disable when %@ is running";
-"menu.disabled_running_app" = "Disabled when %@ is running";
-"menu.disable_fullscreen" = "Only in full screen";
-
 "menu.disable_hour" = "Disable for an hour";
-"menu.disabled_hour" = "Disabled for an hour";
 "menu.disable_custom" = "Disable for custom time...";
-"menu.disabled_custom" = "Disabled for custom time";
 "menu.allow_browser_automation" = "Allow Website Shifting with %@";
 
-"menu.true_tone_on" = "Turn on True Tone";
-"menu.true_tone_off" = "Turn off True Tone";
 "menu.true_tone_unavailable" = "True Tone is not available";
 "menu.true_tone_disabled_for" = "True Tone is disabled for %@";
 
@@ -41,6 +24,15 @@
 "menu.circadian.phase.deep_night" = "Deep Night";
 "menu.circadian.paused" = "Paused";
 "menu.circadian.next_format" = "%1$@ at %2$@";
+"menu.pause" = "Pause";
+"menu.pause_custom" = "Custom…";
+"menu.resume_now" = "Resume Now";
+"menu.rules_for" = "Rules for %@";
+"menu.rules.header" = "Turn Off Night Shift";
+"menu.rule.app_in_front" = "While %@ Is in Front";
+"menu.rule.app_open" = "While %@ Is Open";
+"menu.rule.on_site" = "On %@";
+"menu.rule.except_on_site" = "Except on %@";
 
 "description.enabled" = "Enabled";
 "description.enabled_sunrise" = "Enabled until sunrise";
@@ -118,13 +110,11 @@
 "prefs.about.credits" = "Credits";
 "prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3 Licence";
 
-
 "alert.hardware_message" = "Your Mac does not support Night Shift";
 "alert.hardware_informative" = "A newer Mac is required to use Shifty.";
 
 "alert.accessibility_disabled_message" = "Accessibility permissions for Shifty have been disabled";
 "alert.accessibility_disabled_informative" = "Accessibility control must be allowed to enable Website Shifting. Grant access to Shifty in Security & Privacy preferences, located in System Preferences.";
-
 
 "alert.open_preferences" = "Open System Preferences";
 "alert.not_now" = "Not now";

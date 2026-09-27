@@ -82,7 +82,16 @@ final class PreferenceAccessibilityTests: XCTestCase {
         "menu.circadian.phase.evening",
         "menu.circadian.phase.deep_night",
         "menu.circadian.paused",
-        "menu.circadian.next_format"
+        "menu.circadian.next_format",
+        "menu.pause",
+        "menu.pause_custom",
+        "menu.resume_now",
+        "menu.rules_for",
+        "menu.rules.header",
+        "menu.rule.app_in_front",
+        "menu.rule.app_open",
+        "menu.rule.on_site",
+        "menu.rule.except_on_site"
     ]
 
     func testEverySupportedLocalisationContainsTheSwiftUIPreferenceKeys() throws {

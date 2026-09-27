@@ -9,25 +9,10 @@
 "general.ok" = "好";
 "general.cancel" = "取消";
 
-"menu.toggle_on" = "打开“夜览”模式";
-"menu.toggle_off" = "关闭“夜览”模式";
-"menu.disable_for" = "为%@关闭“夜览”模式";
-"menu.disabled_for" = "已为%@关闭“夜览”模式";
-"menu.enable_for" = "为%@开启“夜览”模式";
-"menu.enabled_for" = "已为%@开启“夜览”模式";
-
-"menu.disable_running_app" = "当运行%@时禁用";
-"menu.disabled_running_app" = "已在运行%@时禁用";
-"menu.disable_fullscreen" = "仅在全屏模式下禁用";
-
 "menu.disable_hour" = "关闭一个小时";
-"menu.disabled_hour" = "已关闭一个小时";
 "menu.disable_custom" = "在自定义时间段内关闭“夜览”模式...";
-"menu.disabled_custom" = "在自定义时间段内关闭“夜览”模式";
 "menu.allow_browser_automation" = "允许调节在%@中访问网站的色温";
 
-"menu.true_tone_on" = "开启“原彩显示”";
-"menu.true_tone_off" = "关闭“原彩显示”";
 "menu.true_tone_unavailable" = "“原彩显示”不可用";
 "menu.true_tone_disabled_for" = "已为%@禁用“原彩显示”";
 
@@ -39,6 +24,15 @@
 "menu.circadian.phase.deep_night" = "深夜";
 "menu.circadian.paused" = "已暂停";
 "menu.circadian.next_format" = "%2$@ 进入%1$@";
+"menu.pause" = "暂停";
+"menu.pause_custom" = "自定时长…";
+"menu.resume_now" = "立即恢复";
+"menu.rules_for" = "%@ 的规则";
+"menu.rules.header" = "关闭“夜览”";
+"menu.rule.app_in_front" = "当%@位于前台时";
+"menu.rule.app_open" = "当%@打开时";
+"menu.rule.on_site" = "在%@上";
+"menu.rule.except_on_site" = "%@除外";
 
 "description.enabled" = "已启用";
 "description.enabled_sunrise" = "已在日出前启用";
@@ -116,13 +110,11 @@
 "prefs.about.credits" = "致谢名单";
 "prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3 许可证";
 
-
 "alert.hardware_message" = "你的 Mac 不支持“夜览”模式。";
 "alert.hardware_informative" = "需要新款 Mac，才能启用“夜览”模式与 Shifty 夜览管家。";
 
 "alert.accessibility_disabled_message" = "已禁用 Shifty 夜览管家的辅助功能权限";
 "alert.accessibility_disabled_informative" = "您必须先授权 Shifty 夜览管家通过“辅助功能”控制您的电脑，才能调节网站色温。您可在系统偏好设置的安全性与隐私面板中提供授权。";
-
 
 "alert.open_preferences" = "打开系统偏好设置";
 "alert.not_now" = "以后再说";
