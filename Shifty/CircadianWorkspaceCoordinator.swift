@@ -149,6 +149,8 @@ final class CircadianWorkspaceCoordinator {
 
     private var updateTimer: WorkspaceRefreshTimer?
     private var previousAutomationState: CircadianAutomationState?
+    /// While set, circadian refreshes leave a hand-set strength alone.
+    private(set) var manualStrengthHoldUntil: Date?
     private(set) var isRunning = false
 
     init(
@@ -183,7 +185,14 @@ final class CircadianWorkspaceCoordinator {
         let configuration = configuration.validated()
         configurationStore.configuration = configuration
         transition.configuration = configuration
+        manualStrengthHoldUntil = nil
         applyNow()
+    }
+
+    /// Keeps a strength the user set by hand (menu slider, shortcut or Shortcuts action)
+    /// until the schedule's next phase change, instead of overwriting it on the next refresh.
+    func holdManualStrength() {
+        manualStrengthHoldUntil = transition.nextTransition(after: clock.now)?.date
     }
 
     func currentStatus() -> CircadianStatus {
@@ -269,7 +278,11 @@ final class CircadianWorkspaceCoordinator {
         automationBridge.triggerDeepNightSceneIfNeeded(previous: previousAutomationState, current: state)
         previousAutomationState = state
 
-        applyWorkspacePolicy(isCircadianEnabled: true, target: target, activityOverride: override)
+        if let holdUntil = manualStrengthHoldUntil, clock.now >= holdUntil {
+            manualStrengthHoldUntil = nil
+        }
+        let strengthTarget = manualStrengthHoldUntil == nil ? target : nil
+        applyWorkspacePolicy(isCircadianEnabled: true, target: strengthTarget, activityOverride: override)
     }
 
     private func applyWorkspacePolicy(

@@ -67,6 +67,93 @@ final class NightShiftManagerTests: XCTestCase {
 
         XCTAssertEqual(client.setToScheduleCallCount, 1)
     }
+
+    // MARK: Policy precedence
+
+    func testPolicyPrecedence() {
+        func output(paused: Bool = false, rule: Bool = false, manual: UserSet = .notSet) -> NightShiftOutput {
+            NightShiftPolicy.output(for: NightShiftPolicyInputs(isPaused: paused, isDisableRuleActive: rule, manualOverride: manual))
+        }
+
+        XCTAssertEqual(output(), .followSchedule)
+        XCTAssertEqual(output(manual: .on), .on)
+        XCTAssertEqual(output(manual: .off), .off)
+        XCTAssertEqual(output(rule: true, manual: .on), .off, "A rule outranks a manual on")
+        XCTAssertEqual(output(paused: true, manual: .on), .off, "A pause outranks a manual on")
+        XCTAssertEqual(output(paused: true, rule: true), .off)
+    }
+
+    // MARK: Reconciliation
+
+    func testScheduleStartDuringAPauseIsForcedBackOff() {
+        let client = FakeNightShiftClient()
+        let manager = NightShiftManager(client: client)
+        manager.nightShiftDisableTimerState = .custom(endDate: Date().addingTimeInterval(600))
+        manager.respond(to: .nightShiftDisableTimerStarted)
+
+        client.isNightShiftEnabled = true
+        client.scheduledState = true
+        manager.respond(to: .enteredScheduledNightShift)
+
+        XCTAssertEqual(client.setNightShiftEnabledCalls.last, false)
+        XCTAssertFalse(client.isNightShiftEnabled)
+    }
+
+    func testUnchangedDecisionDoesNotCallCoreBrightnessAgain() {
+        let client = FakeNightShiftClient()
+        let manager = NightShiftManager(client: client)
+
+        manager.respond(to: .userDisabledNightShift)
+        manager.respond(to: .nightShiftEnableRuleDeactivated)
+        manager.respond(to: .nightShiftDisableRuleDeactivated)
+
+        XCTAssertEqual(client.setNightShiftEnabledCalls, [false])
+        XCTAssertEqual(client.setToScheduleCallCount, 0)
+    }
+
+    func testScheduleChangeAlwaysHandsControlBackToTheSchedule() {
+        let client = FakeNightShiftClient()
+        let manager = NightShiftManager(client: client)
+        manager.respond(to: .nightShiftDisableRuleDeactivated)
+
+        manager.respond(to: .scheduleChanged)
+
+        XCTAssertEqual(manager.userSet, .notSet)
+        XCTAssertEqual(client.setToScheduleCallCount, 2)
+    }
+
+    func testTurningNightShiftOnCancelsARunningPause() {
+        let client = FakeNightShiftClient()
+        let manager = NightShiftManager(client: client)
+        let timerStarted = expectation(description: "Disable timer started")
+        manager.setDisableTimer(forTimeInterval: 600)
+        DispatchQueue.main.async { timerStarted.fulfill() }
+        wait(for: [timerStarted], timeout: 1)
+
+        manager.respond(to: .userEnabledNightShift)
+
+        XCTAssertNil(manager.nightShiftDisableTimer)
+        XCTAssertEqual(manager.nightShiftDisableTimerState, .off)
+        XCTAssertEqual(client.setNightShiftEnabledCalls.last, true)
+    }
+
+    func testWorkspacePauseHoldsAgainstManualChangesAndRestoresThroughThePolicy() {
+        let client = FakeNightShiftClient()
+        client.isNightShiftEnabled = true
+        client.colorTemperature = 0.4
+        let manager = NightShiftManager(client: client)
+        manager.respond(to: .userEnabledNightShift)
+
+        manager.applyWorkspacePolicyDecision(.neutralise)
+        XCTAssertFalse(client.isNightShiftEnabled)
+
+        manager.respond(to: .nightShiftDisableRuleDeactivated)
+        XCTAssertFalse(client.isNightShiftEnabled, "Other events must not end the pause early")
+
+        manager.applyWorkspacePolicyDecision(.restore(WorkspaceOutputState(isNightShiftEnabled: false, colorTemperature: 0.4)))
+        XCTAssertTrue(client.isNightShiftEnabled, "The manual on made before the pause still applies")
+        XCTAssertEqual(client.colorTemperature, 0.4)
+    }
 }
 
 private final class FakeNightShiftClient: NightShiftSystemControlling {

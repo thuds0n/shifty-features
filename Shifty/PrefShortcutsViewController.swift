@@ -127,11 +127,13 @@ final class PrefShortcutsViewController {
                 NightShiftManager.shared.respond(to: .userEnabledNightShift)
                 NightShiftManager.shared.colorTemperature = 0.1
             }
+            CircadianWorkspaceCoordinator.shared.holdManualStrength()
         }
 
         MASShortcutBinder.shared().bindShortcut(withDefaultsKey: Keys.decrementColorTempShortcut) {
             if NightShiftManager.shared.isNightShiftEnabled {
                 NightShiftManager.shared.colorTemperature -= 0.1
+                CircadianWorkspaceCoordinator.shared.holdManualStrength()
                 if NightShiftManager.shared.colorTemperature == 0.0 {
                     NSSound.beep()
                 }

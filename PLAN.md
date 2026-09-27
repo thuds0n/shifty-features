@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 38 tests pass: 29 circadian/workspace, 4 `NightShiftManager`, 3 `RuleManager` and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 48 tests pass: 30 circadian/workspace, 10 `NightShiftManager`/policy, 6 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
@@ -53,6 +53,7 @@ The project currently targets macOS 14 and declares Swift 5.0. Swift 6 strict co
 ### Scaffolding, not production-ready functionality
 
 - An injectable, main-actor `CircadianWorkspaceCoordinator`, a menu toggle and a partial `WorkspacePolicy` boundary.
+- `NightShiftPolicy`: one on/off decision for pauses, rules, manual changes and the macOS schedule, applied by `NightShiftManager` only when the decision changes or the system drifts from it.
 - Versioned, validated persistence of the circadian curve (bedtime, wake time, lead times and bounded Kelvin targets).
 - A menu status line under Circadian Mode showing the current phase, target Kelvin and the next phase change (macOS 14.4 and later; a tooltip on earlier versions).
 - A Circadian preference pane with a 24-hour phase strip, live status, wake time, bedtime, evening start and night warmth. All preference panes share one window size, and the window opens centred and remembers its position.
@@ -168,8 +169,8 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 - [x] Split circadian, activity, display, automation and CLI code out of `PrefManager.swift`.
 - [x] Add schedule tests: before evening, both ramps, bedtime, after bedtime, midnight, morning, DST and time-zone changes.
 - [x] Define the morning/daylight transition.
-- [ ] Define user-override precedence across all state sources.
-- [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls.
+- [x] Define user-override precedence across all state sources: a pause, then app/website rules, then a manual on/off (held until the next scheduled start or end), then the macOS schedule. A hand-set strength holds until the next circadian phase change.
+- [ ] Implement a single policy controller shared by schedule, rules, temporary pauses and manual controls. On/off now resolves through `NightShiftPolicy` for every source; remaining: merge the menu pause timer and the circadian temporary pause into one pause model, and move strength decisions into the same policy.
 - [x] Persist versioned configuration: bedtime/wake time, lead times and bounded Kelvin targets.
 - [x] Add menu phase and next-transition status.
 - [x] Add a compact Circadian preference pane.
@@ -230,7 +231,7 @@ Per-display warmth remains research, not a committed product capability.
 
 The correctness, preference-compliance and initial architecture slices are now implemented and covered by tests. Continue Phase 0 and Phase 1 in this order:
 
-1. Extend `WorkspacePolicy` precedence across rules, disable timers and manual controls.
+1. Merge the menu pause timer and the circadian temporary pause into one pause model, and move strength decisions into the shared policy.
 2. Add CI for Debug, universal Release and the unit-test suite.
 3. Add activity lifecycle, display calibration and browser watcher tests around the remaining foundation seams.
 4. Complete full interaction and non-English visual passes.

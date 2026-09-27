@@ -110,6 +110,20 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testManualStrengthIsHeldUntilTheNextPhaseChange() {
+        let fixture = makeFixture(output: WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.3))
+        fixture.coordinator.holdManualStrength()
+
+        fixture.coordinator.applyNow()
+        XCTAssertEqual(fixture.backend.decisions.last, .applyStrength(0.3), "Keeps the hand-set strength")
+
+        fixture.clock.now = fixture.clock.now.addingTimeInterval(3600)
+        fixture.coordinator.applyNow()
+        XCTAssertNil(fixture.coordinator.manualStrengthHoldUntil)
+        XCTAssertEqual(fixture.backend.decisions.last, .applyStrength(1), "Resumes the circadian target at the phase change")
+    }
+
+    @MainActor
     private func makeFixture(
         isEnabled: Bool = true,
         configuration: CircadianCurveConfiguration = .default,

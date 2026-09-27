@@ -42,6 +42,7 @@ class SliderView: NSView {
         
         if event?.type == .leftMouseUp {
             NightShiftManager.shared.colorTemperature = sender.floatValue / 100
+            CircadianWorkspaceCoordinator.shared.holdManualStrength()
             refreshKelvinLabel()
             
             sender.superview?.enclosingMenuItem?.menu?.cancelTracking()

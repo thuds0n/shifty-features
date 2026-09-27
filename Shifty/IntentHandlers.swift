@@ -49,6 +49,7 @@ class SetColorTemperatureIntentHandler: NSObject, SetColorTemperatureIntentHandl
         let colorTemp = intent.colorTemperature!.floatValue
         NightShiftManager.shared.isNightShiftEnabled = colorTemp > 0
         NightShiftManager.shared.colorTemperature = colorTemp
+        await CircadianWorkspaceCoordinator.shared.holdManualStrength()
         return SetColorTemperatureIntentResponse(code: .success, userActivity: nil)
     }
 
