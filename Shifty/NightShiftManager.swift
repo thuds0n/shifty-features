@@ -36,9 +36,14 @@ class NightShiftManager {
             client.colorTemperature
         }
         set {
+            // A direct change (slider, shortcut, Shortcuts action) wins over a fade in progress.
+            cancelStrengthRamp()
             client.colorTemperature = newValue
         }
     }
+
+    private let rampScheduler: StrengthRampScheduling
+    private var strengthRamp: WorkspaceRefreshTimer?
     
     var schedule: ScheduleType {
         get {
@@ -77,8 +82,12 @@ class NightShiftManager {
         return RuleManager.shared.disableRuleIsActive
     }
 
-    init(client: NightShiftSystemControlling = SystemIntegration.shared.nightShiftSystem) {
+    init(
+        client: NightShiftSystemControlling = SystemIntegration.shared.nightShiftSystem,
+        rampScheduler: StrengthRampScheduling = TimerStrengthRampScheduler()
+    ) {
         self.client = client
+        self.rampScheduler = rampScheduler
         var prevSchedule = client.schedule
         
         updateDarkMode()
@@ -266,8 +275,37 @@ class NightShiftManager {
         case .noChange:
             return
         case .applyStrength(let strength):
-            colorTemperature = strength
+            rampStrength(to: strength)
         }
+    }
+
+    /// Fades to `target` using previews for the in-between steps and commits only the
+    /// final value. The fade stops if Night Shift turns off or pauses part-way through.
+    private func rampStrength(to target: Float) {
+        cancelStrengthRamp()
+        let values = StrengthRamp.values(from: client.colorTemperature, to: target)
+        guard !values.isEmpty else {
+            client.colorTemperature = target
+            return
+        }
+        strengthRamp = rampScheduler.run(values, interval: StrengthRamp.stepInterval) { [weak self] value in
+            guard let self, self.client.isNightShiftEnabled else {
+                self?.strengthRamp = nil
+                return false
+            }
+            if value == values.last {
+                self.client.colorTemperature = value
+                self.strengthRamp = nil
+            } else {
+                self.client.previewColorTemperature(value)
+            }
+            return true
+        }
+    }
+
+    private func cancelStrengthRamp() {
+        strengthRamp?.invalidate()
+        strengthRamp = nil
     }
 
     var isPaused: Bool {

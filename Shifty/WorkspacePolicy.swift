@@ -90,3 +90,48 @@ enum NightShiftPolicy {
         }
     }
 }
+
+// MARK: - Strength ramp
+
+/// Runs a sequence of ramp steps over time. Injected so tests can run steps immediately.
+protocol StrengthRampScheduling: AnyObject {
+    /// Calls `step` for each value in order, `interval` apart, stopping early when it
+    /// returns false. Returns a handle that cancels the remaining steps.
+    func run(_ values: [Float], interval: TimeInterval, step: @escaping (Float) -> Bool) -> WorkspaceRefreshTimer
+}
+
+final class TimerStrengthRampScheduler: StrengthRampScheduling {
+    func run(_ values: [Float], interval: TimeInterval, step: @escaping (Float) -> Bool) -> WorkspaceRefreshTimer {
+        var remaining = values[...]
+        let timer = Timer(timeInterval: interval, repeats: true) { timer in
+            guard let value = remaining.popFirst(), step(value), !remaining.isEmpty else {
+                timer.invalidate()
+                return
+            }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        return timer
+    }
+}
+
+/// Fades circadian strength changes instead of jumping, so launches, phase boundaries
+/// and the end of a hold don't visibly snap the display's colour.
+enum StrengthRamp {
+    static let duration: TimeInterval = 3
+    static let stepInterval: TimeInterval = 1.0 / 30
+    /// Changes smaller than this are applied directly; the minute-by-minute circadian
+    /// updates fall well under it.
+    static let threshold: Float = 0.02
+
+    /// The intermediate values from `start` to `end`, ending exactly on `end`.
+    /// Empty when the change is small enough to apply directly.
+    static func values(from start: Float, to end: Float) -> [Float] {
+        guard abs(end - start) >= threshold else { return [] }
+        let count = Int((duration / stepInterval).rounded())
+        return (1...count).map { index in
+            let t = Float(index) / Float(count)
+            let eased = t * t * (3 - 2 * t)
+            return index == count ? end : start + ((end - start) * eased)
+        }
+    }
+}

@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 46 tests pass: 28 circadian/workspace, 10 `NightShiftManager`/policy, 6 `RuleManager` and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 50 tests pass: 28 circadian/workspace, 14 `NightShiftManager`/policy/ramp, 6 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
@@ -175,7 +175,7 @@ Exit criteria: build, tests, CI, visual checklist, signed archive and update pat
 - [x] Add menu phase and next-transition status.
 - [x] Add a compact Circadian preference pane.
 - [x] Restore Night Shift predictably when a pause ends: the policy re-derives on/off and the strength is never changed by a pause.
-- [ ] Ramp output smoothly and extend restoration precedence across every override type.
+- [x] Ramp output smoothly and extend restoration precedence across every override type: strength changes of 2% or more fade over three seconds using previews and commit once, and every override restores through the shared on/off and strength policies.
 - [x] Add coordinator tests with fake clock, fake backend and fake activity provider.
 
 Exit criteria: circadian mode can run for multiple days without a boundary jump, honours all override types, restores predictably and is fully configurable.

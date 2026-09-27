@@ -155,12 +155,72 @@ final class NightShiftManagerTests: XCTestCase {
         XCTAssertFalse(manager.isPaused)
         XCTAssertTrue(client.isNightShiftEnabled, "The manual on made before the pause still applies")
     }
+
+    // MARK: Strength ramp
+
+    func testRampEasesToTheExactTargetAndSkipsSmallChanges() {
+        let values = StrengthRamp.values(from: 0.2, to: 0.8)
+        XCTAssertEqual(values.count, 90)
+        XCTAssertEqual(values.last, 0.8)
+        XCTAssertEqual(values, values.sorted(), "Moves in one direction")
+        XCTAssertTrue(StrengthRamp.values(from: 0.5, to: 0.51).isEmpty)
+    }
+
+    func testLargeStrengthChangeFadesWithPreviewsAndCommitsOnce() {
+        let client = FakeNightShiftClient()
+        client.isNightShiftEnabled = true
+        client.colorTemperature = 0.2
+        client.clearRecordedWrites()
+        let manager = NightShiftManager(client: client, rampScheduler: ImmediateRampScheduler())
+
+        manager.applyWorkspacePolicyDecision(.applyStrength(0.8))
+
+        XCTAssertEqual(client.previewValues.count, 89)
+        XCTAssertEqual(client.colorTemperature, 0.8)
+        XCTAssertEqual(client.colorTemperatureWrites, [0.8])
+    }
+
+    func testSmallStrengthChangeIsAppliedDirectly() {
+        let client = FakeNightShiftClient()
+        client.isNightShiftEnabled = true
+        client.colorTemperature = 0.5
+        client.clearRecordedWrites()
+        let manager = NightShiftManager(client: client, rampScheduler: ImmediateRampScheduler())
+
+        manager.applyWorkspacePolicyDecision(.applyStrength(0.51))
+
+        XCTAssertTrue(client.previewValues.isEmpty)
+        XCTAssertEqual(client.colorTemperatureWrites, [0.51])
+    }
+
+    func testFadeStopsWhenNightShiftTurnsOff() {
+        let client = FakeNightShiftClient()
+        client.isNightShiftEnabled = true
+        client.colorTemperature = 0.2
+        client.onPreview = { if client.previewValues.count == 10 { client.isNightShiftEnabled = false } }
+        client.clearRecordedWrites()
+        let manager = NightShiftManager(client: client, rampScheduler: ImmediateRampScheduler())
+
+        manager.applyWorkspacePolicyDecision(.applyStrength(0.8))
+
+        XCTAssertEqual(client.previewValues.count, 10)
+        XCTAssertTrue(client.colorTemperatureWrites.isEmpty, "An interrupted fade commits nothing")
+    }
 }
 
 private final class FakeNightShiftClient: NightShiftSystemControlling {
     var supportsNightShift: Bool = true
     var isNightShiftEnabled: Bool = false
-    var colorTemperature: Float = 0
+    var colorTemperature: Float = 0 {
+        didSet { colorTemperatureWrites.append(colorTemperature) }
+    }
+    private(set) var colorTemperatureWrites: [Float] = []
+    private(set) var previewValues: [Float] = []
+    var onPreview: (() -> Void)?
+
+    func clearRecordedWrites() {
+        colorTemperatureWrites.removeAll()
+    }
     var schedule: ScheduleType = .off
     var scheduledState: Bool = false
 
@@ -168,7 +228,8 @@ private final class FakeNightShiftClient: NightShiftSystemControlling {
     private(set) var setToScheduleCallCount: Int = 0
 
     func previewColorTemperature(_ value: Float) {
-        colorTemperature = value
+        previewValues.append(value)
+        onPreview?()
     }
 
     func setNightShiftEnabled(_ newValue: Bool) {
@@ -182,5 +243,18 @@ private final class FakeNightShiftClient: NightShiftSystemControlling {
 
     func setStatusNotificationBlock(_ block: @escaping () -> Void) {
         _ = block
+    }
+}
+
+private final class ImmediateRampScheduler: StrengthRampScheduling {
+    private final class Handle: WorkspaceRefreshTimer {
+        func invalidate() {}
+    }
+
+    func run(_ values: [Float], interval: TimeInterval, step: @escaping (Float) -> Bool) -> WorkspaceRefreshTimer {
+        for value in values where !step(value) {
+            break
+        }
+        return Handle()
     }
 }
