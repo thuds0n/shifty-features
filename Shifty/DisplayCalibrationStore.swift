@@ -12,7 +12,11 @@ final class UserDefaultsDisplayCalibrationStore: DisplayCalibrationStoring {
         static let selectiveIDs = "selectiveShiftDisplayIDs"
     }
 
-    private var defaults: UserDefaults { .standard }
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
 
     var selectiveShiftDisplayIDs: Set<String> {
         get { Set(defaults.stringArray(forKey: Keys.selectiveIDs) ?? []) }

@@ -28,6 +28,16 @@ final class ActivityOverrideManager: ActivityOverrideManaging {
     }
 
     private var observers = [NSObjectProtocol]()
+    private let notificationCenter: NotificationCenter
+    private let frontmostBundleIdentifier: () -> String?
+
+    init(
+        notificationCenter: NotificationCenter = NSWorkspace.shared.notificationCenter,
+        frontmostBundleIdentifier: @escaping () -> String? = { NSWorkspace.shared.frontmostApplication?.bundleIdentifier }
+    ) {
+        self.notificationCenter = notificationCenter
+        self.frontmostBundleIdentifier = frontmostBundleIdentifier
+    }
 
     private let mediaBundleIdentifiers: Set<String> = [
         "org.videolan.vlc",
@@ -37,7 +47,7 @@ final class ActivityOverrideManager: ActivityOverrideManaging {
 
     func start() {
         guard observers.isEmpty else { return }
-        let centre = NSWorkspace.shared.notificationCenter
+        let centre = notificationCenter
         observers.append(centre.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification,
             object: nil,
@@ -57,18 +67,14 @@ final class ActivityOverrideManager: ActivityOverrideManaging {
 
     func stop() {
         for observer in observers {
-            NSWorkspace.shared.notificationCenter.removeObserver(observer)
+            notificationCenter.removeObserver(observer)
         }
         observers.removeAll()
         currentOverride = .none
     }
 
     private func evaluateMediaContext() {
-        guard
-            let activeApp = NSWorkspace.shared.frontmostApplication,
-            let bundleID = activeApp.bundleIdentifier,
-            mediaBundleIdentifiers.contains(bundleID)
-        else {
+        guard let bundleID = frontmostBundleIdentifier(), mediaBundleIdentifiers.contains(bundleID) else {
             currentOverride = .none
             return
         }
