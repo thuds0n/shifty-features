@@ -6,7 +6,6 @@
 //
 
 import Cocoa
-import SwiftLog
 
 
 class NightShiftManager {
@@ -37,9 +36,17 @@ class NightShiftManager {
             client.colorTemperature
         }
         set {
+            // A direct change (slider, shortcut, Shortcuts action) wins over a fade in progress.
+            cancelStrengthRamp()
             client.colorTemperature = newValue
         }
     }
+
+    private let rampScheduler: StrengthRampScheduling
+    /// The rules consulted for disable state. A closure because `RuleManager.shared`
+    /// in turn reports events to `NightShiftManager.shared`.
+    private let ruleManager: () -> RuleManager
+    private var strengthRamp: WorkspaceRefreshTimer?
     
     var schedule: ScheduleType {
         get {
@@ -62,14 +69,30 @@ class NightShiftManager {
     var isDisabledWithTimer: Bool {
         return nightShiftDisableTimerState != .off
     }
+
+    /// The output last sent to CoreBrightness, so unchanged decisions aren't re-applied.
+    private var appliedOutput: NightShiftOutput?
+
+    var policyInputs: NightShiftPolicyInputs {
+        NightShiftPolicyInputs(
+            isPaused: isDisabledWithTimer,
+            isDisableRuleActive: isDisableRuleActive,
+            manualOverride: userSet)
+    }
     
     /// When true, app or website rule has disabled Night Shift
     var isDisableRuleActive: Bool {
-        return RuleManager.shared.disableRuleIsActive
+        return ruleManager().disableRuleIsActive
     }
 
-    init(client: NightShiftSystemControlling = SystemIntegration.shared.nightShiftSystem) {
+    init(
+        client: NightShiftSystemControlling = SystemIntegration.shared.nightShiftSystem,
+        rampScheduler: StrengthRampScheduling = TimerStrengthRampScheduler(),
+        ruleManager: @escaping () -> RuleManager = { RuleManager.shared }
+    ) {
         self.client = client
+        self.rampScheduler = rampScheduler
+        self.ruleManager = ruleManager
         var prevSchedule = client.schedule
         
         updateDarkMode()
@@ -117,13 +140,13 @@ class NightShiftManager {
             switch client.schedule {
             case .off:
                 let darkModeState = isNightShiftEnabled || isDisableRuleActive || isDisabledWithTimer || userSet == .on
-                integrations.appearance.legacyDarkModeEnabled = darkModeState
+                integrations.appearance.darkModeEnabled = darkModeState
                 logw("Dark mode set to \(darkModeState)")
             case .solar:
-                integrations.appearance.legacyDarkModeEnabled = scheduledState
+                integrations.appearance.darkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             case .custom(start: _, end: _):
-                integrations.appearance.legacyDarkModeEnabled = scheduledState
+                integrations.appearance.darkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             }
         }
@@ -137,89 +160,75 @@ class NightShiftManager {
         client.previewColorTemperature(value)
     }
 
+    /// Records what an event changed, then applies the single policy decision.
     func respond(to event: NightShiftEvent) {
-        //Prevent BlueLightNotification from triggering one of these two events after every event
+        // CoreBrightness reports every change, including the ones Shifty just made.
+        // `reconcile` flags those so their echo isn't mistaken for a schedule change.
         if event == .enteredScheduledNightShift || event == .exitedScheduledNightShift {
             if userInitiatedShift {
                 userInitiatedShift = false
                 return
-            } else {
-                userInitiatedShift = false
             }
-        } else {
-            userInitiatedShift = true
         }
-        
+
         switch event {
-        case .enteredScheduledNightShift:
-            userSet = .notSet
-            if isDisabledWithTimer || isDisableRuleActive {
-                client.setNightShiftEnabled(false)
-            }
-        case .exitedScheduledNightShift:
+        case .enteredScheduledNightShift, .exitedScheduledNightShift, .scheduleChanged:
             userSet = .notSet
         case .userEnabledNightShift:
             userSet = .on
-            nightShiftDisableTimerState = .off
-            
+            cancelDisableTimer()
             if isDisableRuleActive {
-                RuleManager.shared.removeRulesForCurrentState()
+                ruleManager().removeRulesForCurrentState()
             }
-            client.setNightShiftEnabled(true)
         case .userDisabledNightShift:
-            client.setNightShiftEnabled(false)
             userSet = .off
         case .nightShiftDisableRuleActivated:
-            client.setNightShiftEnabled(false)
             if UserDefaults.standard.bool(forKey: Keys.trueToneControl) {
                 integrations.trueTone.isEnabled = false
             }
         case .nightShiftDisableRuleDeactivated:
-            if !isDisabledWithTimer && !isDisableRuleActive {
-                switch userSet {
-                case .notSet:
-                    client.setToSchedule()
-                case .on:
-                    client.setNightShiftEnabled(true)
-                case .off:
-                    client.setNightShiftEnabled(false)
-                }
-            }
-            
             if !isDisableRuleActive && UserDefaults.standard.bool(forKey: Keys.trueToneControl) {
                 integrations.trueTone.isEnabled = true
             }
-        case .nightShiftEnableRuleActivated:
-            switch userSet {
-            case .on, .notSet:
-                client.setNightShiftEnabled(true)
-            case .off:
-                client.setNightShiftEnabled(false)
-            }
-        case .nightShiftEnableRuleDeactivated:
-            if isDisabledWithTimer || isDisableRuleActive {
-                client.setNightShiftEnabled(false)
-            } else {
-                client.setToSchedule()
-            }
-        case .nightShiftDisableTimerStarted:
+        case .nightShiftEnableRuleActivated, .nightShiftEnableRuleDeactivated,
+             .nightShiftDisableTimerStarted, .nightShiftDisableTimerEnded:
+            break
+        }
+
+        reconcile(force: event == .scheduleChanged)
+        logw("Responded to event: \(event)")
+    }
+
+    /// Applies `NightShiftPolicy` to CoreBrightness when the decision changes, or when
+    /// the system has drifted from a forced on/off (for example, a schedule start
+    /// during a pause).
+    private func reconcile(force: Bool = false) {
+        let output = NightShiftPolicy.output(for: policyInputs)
+        let expectedState: Bool
+        switch output {
+        case .on:
+            expectedState = true
+        case .off:
+            expectedState = false
+        case .followSchedule:
+            expectedState = client.scheduledState
+        }
+
+        let clientMatches = output == .followSchedule || client.isNightShiftEnabled == expectedState
+        guard force || output != appliedOutput || !clientMatches else { return }
+        appliedOutput = output
+
+        if client.isNightShiftEnabled != expectedState {
+            userInitiatedShift = true
+        }
+        switch output {
+        case .on:
+            client.setNightShiftEnabled(true)
+        case .off:
             client.setNightShiftEnabled(false)
-        case .nightShiftDisableTimerEnded:
-            if !isDisableRuleActive {
-                switch userSet {
-                case .notSet:
-                    client.setToSchedule()
-                case .on:
-                    client.setNightShiftEnabled(true)
-                case .off:
-                    client.setNightShiftEnabled(false)
-                }
-            }
-        case .scheduleChanged:
-            userSet = .notSet
+        case .followSchedule:
             client.setToSchedule()
         }
-        logw("Responded to event: \(event)")
     }
     
     
@@ -229,6 +238,7 @@ class NightShiftManager {
                 withTimeInterval: timeInterval,
                 repeats: false,
                 block: { _ in
+                    self.nightShiftDisableTimer = nil
                     self.nightShiftDisableTimerState = .off
                     self.respond(to: .nightShiftDisableTimerEnded)
                 })
@@ -252,8 +262,67 @@ class NightShiftManager {
     }
     
     func invalidateDisableTimer() {
-        nightShiftDisableTimerState = .off
+        guard cancelDisableTimer() else { return }
         respond(to: .nightShiftDisableTimerEnded)
+    }
+
+    /// Stops any running pause timer without reapplying the policy.
+    @discardableResult
+    private func cancelDisableTimer() -> Bool {
+        guard nightShiftDisableTimer != nil || nightShiftDisableTimerState != .off else { return false }
+        nightShiftDisableTimer = nil
+        nightShiftDisableTimerState = .off
+        return true
+    }
+
+    func applyWorkspacePolicyDecision(_ decision: WorkspacePolicyDecision) {
+        switch decision {
+        case .noChange:
+            return
+        case .applyStrength(let strength):
+            rampStrength(to: strength)
+        }
+    }
+
+    /// Fades to `target` using previews for the in-between steps and commits only the
+    /// final value. The fade stops if Night Shift turns off or pauses part-way through.
+    private func rampStrength(to target: Float) {
+        cancelStrengthRamp()
+        let values = StrengthRamp.values(from: client.colorTemperature, to: target)
+        guard !values.isEmpty else {
+            client.colorTemperature = target
+            return
+        }
+        strengthRamp = rampScheduler.run(values, interval: StrengthRamp.stepInterval) { [weak self] value in
+            guard let self, self.client.isNightShiftEnabled else {
+                self?.strengthRamp = nil
+                return false
+            }
+            if value == values.last {
+                self.client.colorTemperature = value
+                self.strengthRamp = nil
+            } else {
+                self.client.previewColorTemperature(value)
+            }
+            return true
+        }
+    }
+
+    private func cancelStrengthRamp() {
+        strengthRamp?.invalidate()
+        strengthRamp = nil
+    }
+
+    var isPaused: Bool {
+        isDisabledWithTimer
+    }
+
+    func pause(for duration: TimeInterval) {
+        setDisableTimer(forTimeInterval: duration)
+    }
+
+    func resumeFromPause() {
+        invalidateDisableTimer()
     }
 }
 
@@ -281,16 +350,4 @@ enum DisableTimer: Equatable {
     case off
     case hour(endDate: Date)
     case custom(endDate: Date)
-    
-    static func == (lhs: DisableTimer, rhs: DisableTimer) -> Bool {
-        switch (lhs, rhs) {
-        case (.off, .off):
-            return true
-        case (let .hour(leftDate), let .hour(rightDate)),
-             (let .custom(leftDate), let .custom(rightDate)):
-            return leftDate == rightDate
-        default:
-            return false
-        }
-    }
 }

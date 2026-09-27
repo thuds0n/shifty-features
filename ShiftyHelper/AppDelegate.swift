@@ -50,7 +50,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             components.append("Shifty")
             
             let newPath = NSString.path(withComponents: components)
-            NSWorkspace.shared.launchApplication(newPath)
+            let appURL = URL(fileURLWithPath: newPath)
+            let configuration = NSWorkspace.OpenConfiguration()
+            NSWorkspace.shared.openApplication(at: appURL, configuration: configuration) { _, error in
+                if let error {
+                    print("Failed to open main app: \(error.localizedDescription)")
+                }
+            }
         } else {
             NSApp.terminate(self)
         }
@@ -63,4 +69,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
 }
-

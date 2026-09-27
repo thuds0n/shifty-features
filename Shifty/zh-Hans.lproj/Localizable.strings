@@ -9,30 +9,30 @@
 "general.ok" = "好";
 "general.cancel" = "取消";
 
-"menu.toggle_on" = "打开“夜览”模式";
-"menu.toggle_off" = "关闭“夜览”模式";
-"menu.disable_for" = "为%@关闭“夜览”模式";
-"menu.disabled_for" = "已为%@关闭“夜览”模式";
-"menu.enable_for" = "为%@开启“夜览”模式";
-"menu.enabled_for" = "已为%@开启“夜览”模式";
-
-"menu.disable_running_app" = "当运行%@时禁用";
-"menu.disabled_running_app" = "已在运行%@时禁用";
-"menu.disable_fullscreen" = "仅在全屏模式下禁用";
-
 "menu.disable_hour" = "关闭一个小时";
-"menu.disabled_hour" = "已关闭一个小时";
 "menu.disable_custom" = "在自定义时间段内关闭“夜览”模式...";
-"menu.disabled_custom" = "在自定义时间段内关闭“夜览”模式";
 "menu.allow_browser_automation" = "允许调节在%@中访问网站的色温";
 
-"menu.true_tone_on" = "开启“原彩显示”";
-"menu.true_tone_off" = "关闭“原彩显示”";
 "menu.true_tone_unavailable" = "“原彩显示”不可用";
 "menu.true_tone_disabled_for" = "已为%@禁用“原彩显示”";
 
 "menu.preferences" = "偏好设置...";
 "menu.quit" = "退出 Shifty 夜览管家";
+
+"menu.circadian.phase.daylight" = "日光";
+"menu.circadian.phase.evening" = "傍晚";
+"menu.circadian.phase.deep_night" = "深夜";
+"menu.circadian.paused" = "已暂停";
+"menu.circadian.next_format" = "%2$@ 进入%1$@";
+"menu.pause" = "暂停";
+"menu.pause_custom" = "自定时长…";
+"menu.resume_now" = "立即恢复";
+"menu.rules_for" = "%@ 的规则";
+"menu.rules.header" = "关闭“夜览”";
+"menu.rule.app_in_front" = "当%@位于前台时";
+"menu.rule.app_open" = "当%@打开时";
+"menu.rule.on_site" = "在%@上";
+"menu.rule.except_on_site" = "%@除外";
 
 "description.enabled" = "已启用";
 "description.enabled_sunrise" = "已在日出前启用";
@@ -44,9 +44,71 @@
 "prefs.general" = "通用";
 "prefs.shortcuts" = "快捷键";
 "prefs.about" = "关于";
+"prefs.rules" = "规则";
 
-"alert.version_message" = "“夜览”模式不能与此版本的 macOS 配合使用。";
-"alert.version_informative" = "“夜览”模式要求 macOS 10.12.4 或更高版本。更新你的 Mac 到 macOS 10.12.4 或更高版本以使用 Shifty 夜览管家。";
+"prefs.general.section.application" = "应用程序";
+"prefs.general.launch_at_login" = "登录时启动 Shifty 夜览管家";
+"prefs.general.quick_toggle" = "单击状态图标以切换“夜览”模式";
+"prefs.general.switch_icon" = "停用时切换菜单栏图标";
+"prefs.general.section.display" = "显示";
+"prefs.general.sync_dark_mode" = "将深色模式与“夜览”同步";
+"prefs.general.show_kelvin" = "在菜单滑块中显示开尔文值";
+"prefs.general.section.website_shifting" = "网站色温调节";
+"prefs.general.enable_website_shifting" = "启用网站色温调节";
+"prefs.general.website_shifting_footer" = "监控浏览器，以便按网站停用“夜览”模式。需要辅助功能访问权限。";
+"prefs.general.section.true_tone" = "原彩显示";
+"prefs.general.disable_true_tone" = "根据“夜览”规则停用“原彩显示”";
+"prefs.general.true_tone_footer" = "当应用程序或网站规则停用“夜览”时，也会关闭“原彩显示”。";
+"prefs.general.section.night_shift_schedule" = "“夜览”设定时间";
+"prefs.general.schedule" = "设定时间";
+"prefs.general.schedule.off" = "关闭";
+"prefs.general.schedule.solar" = "日落到日出";
+"prefs.general.schedule.custom" = "自定义";
+"prefs.general.schedule.from" = "从";
+"prefs.general.schedule.to" = "到";
+
+"prefs.rules.active_app" = "当前应用程序";
+"prefs.rules.when_running" = "运行时";
+"prefs.rules.websites" = "网站";
+"prefs.rules.domain_disabled" = "已停用域名";
+"prefs.rules.subdomain_disabled" = "已停用子域名";
+"prefs.rules.subdomain_enabled" = "已启用子域名";
+"prefs.rules.remove" = "删除规则";
+"prefs.rules.active_app_footer" = "当这些应用程序位于前台时，“夜览”会关闭。";
+"prefs.rules.when_running_footer" = "当这些应用程序正在运行时，“夜览”会关闭。";
+"prefs.rules.websites_footer" = "启用网站色温调节后，在受支持的浏览器中生效。";
+"prefs.rules.empty_title" = "没有规则";
+"prefs.rules.empty_message" = "使用 Shifty 菜单为当前应用程序或网站关闭“夜览”。";
+
+"prefs.shortcuts.section.night_shift" = "夜览";
+"prefs.shortcuts.toggle_night_shift" = "切换“夜览”模式";
+"prefs.shortcuts.warmer" = "更暖";
+"prefs.shortcuts.cooler" = "更冷";
+"prefs.shortcuts.section.disable_rules" = "停用规则";
+"prefs.shortcuts.disable_app" = "为应用程序停用";
+"prefs.shortcuts.disable_domain" = "为域名停用";
+"prefs.shortcuts.disable_subdomain" = "为子域名停用";
+"prefs.shortcuts.disable_hour" = "停用一小时";
+"prefs.shortcuts.disable_custom" = "在自定义时间内停用";
+"prefs.shortcuts.section.true_tone" = "原彩显示";
+"prefs.shortcuts.toggle_true_tone" = "切换“原彩显示”";
+"prefs.shortcuts.section.dark_mode" = "深色模式";
+"prefs.shortcuts.toggle_dark_mode" = "切换深色模式";
+"prefs.shortcuts.recorder.record" = "录制快捷键";
+"prefs.shortcuts.recorder.type_shortcut" = "键入快捷键…";
+"prefs.shortcuts.recorder.recording" = "正在录制";
+"prefs.shortcuts.recorder.not_set" = "未设置";
+"prefs.shortcuts.recorder.clear" = "清除快捷键";
+"prefs.shortcuts.recorder.help_format" = "%@：按空格键或 Return 键开始录制。按 Delete 键清除。";
+
+"prefs.about.version_format" = "版本 %@";
+"prefs.about.check_updates" = "检查更新";
+"prefs.about.visit_website" = "访问网站";
+"prefs.about.send_feedback" = "发送反馈";
+"prefs.about.donate" = "捐赠";
+"prefs.about.help_translate" = "协助翻译";
+"prefs.about.credits" = "致谢名单";
+"prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3 许可证";
 
 "alert.hardware_message" = "你的 Mac 不支持“夜览”模式。";
 "alert.hardware_informative" = "需要新款 Mac，才能启用“夜览”模式与 Shifty 夜览管家。";
@@ -54,22 +116,17 @@
 "alert.accessibility_disabled_message" = "已禁用 Shifty 夜览管家的辅助功能权限";
 "alert.accessibility_disabled_informative" = "您必须先授权 Shifty 夜览管家通过“辅助功能”控制您的电脑，才能调节网站色温。您可在系统偏好设置的安全性与隐私面板中提供授权。";
 
-
 "alert.open_preferences" = "打开系统偏好设置";
 "alert.not_now" = "以后再说";
 "alert.close" = "关闭";
 
-
-
-"analytics.includes_list_title" = "哪些数据会被收集？";
-"analytics.includes_list_1" = "包含崩溃原因的诊断信息";
-"analytics.includes_list_2" = "Shifty 夜览管家中各个功能的用量数据";
-"analytics.includes_list_3" = "不导致应用程序崩溃的其他问题的相关信息";
-
-"analytics.doesnt_include_list_title" = "哪些数据不会被收集？";
-"analytics.doesnt_include_list_1" = "您授权 Shifty 夜览管家访问的敏感信息（例如网站色温调节的相应网址）";
-"analytics.doesnt_include_list_2" = "设备 ID 等一系列能被用于回溯个人身份的信息";
-
-"analytics.data_usage_list_title" = "收集的数据将有哪些用途？";
-"analytics.data_usage_list_1" = "任何数据都不会被出售至第三方（况且也不会有第三方想要购买）";
-"analytics.data_usage_list_2" = "帮助解决问题并完善 Shifty 夜览管家";
+"prefs.circadian" = "昼夜节律";
+"prefs.circadian.enable" = "昼夜节律模式";
+"prefs.circadian.enable_footer" = "根据你的起床和就寝时间，在晚间逐渐让屏幕变暖。";
+"prefs.circadian.section.schedule" = "时间表";
+"prefs.circadian.wake_time" = "起床时间";
+"prefs.circadian.bedtime" = "就寝时间";
+"prefs.circadian.wind_down" = "傍晚开始";
+"prefs.circadian.before_bedtime_format" = "就寝前 %@";
+"prefs.circadian.section.warmth" = "暖度";
+"prefs.circadian.night_warmth" = "夜间暖度";

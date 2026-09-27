@@ -6,38 +6,29 @@
 //
 
 import Foundation
-import SwiftLog
 
-enum State {
+enum TrueToneState {
     case unsupported
     case unavailable
     case enabled
     case disabled
 }
 
-@available(macOS 10.14, *)
 extension CBTrueToneClient {
     static var shared = CBTrueToneClient()
-    
-    var isTrueToneSupported: Bool {
-        supported()
-    }
-    
-    var isTrueToneAvailable: Bool {
-        available()
-    }
-    
+
+    var isTrueToneSupported: Bool { supported() }
+    var isTrueToneAvailable: Bool { available() }
+
     var isTrueToneEnabled: Bool {
-        get {
-            enabled()
-        }
+        get { enabled() }
         set {
             setEnabled(newValue)
             logw("True Tone set to \(newValue)")
         }
     }
-    
-    var state: State {
+
+    var state: TrueToneState {
         if !isTrueToneSupported { return .unsupported }
         else if !isTrueToneAvailable { return .unavailable }
         else if isTrueToneEnabled { return .enabled }

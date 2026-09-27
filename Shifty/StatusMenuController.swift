@@ -7,12 +7,21 @@
 //
 
 import Cocoa
-import MASShortcut
-import AXSwift
-import SwiftLog
 
+@MainActor
 class StatusMenuController: NSObject, NSMenuDelegate {
     let integrations = SystemIntegration.shared
+
+    private var circadianModeMenuItem = NSMenuItem()
+    private var darkModeMenuItem = NSMenuItem()
+    private var disableForMenuItem = NSMenuItem()
+    private var disableFor10MenuItem = NSMenuItem()
+    private var disableFor30MenuItem = NSMenuItem()
+    private var disableFor60MenuItem = NSMenuItem()
+    private var disableForCustomMenuItem = NSMenuItem()
+    private var disableForResumeMenuItem = NSMenuItem()
+    private let rulesMenuItem = NSMenuItem()
+    private let rulesWebSeparator = NSMenuItem.separator()
 
     @IBOutlet weak var statusMenu: NSMenu!
     @IBOutlet weak var powerMenuItem: NSMenuItem!
@@ -41,12 +50,8 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     }
 
     var preferencesWindow: NSWindowController!
-    var prefGeneral: PrefGeneralViewController!
     var prefShortcuts: PrefShortcutsViewController!
     var customTimeWindow: CustomTimeWindow!
-    
-    var nightShiftSwitchView: NSView?
-    var trueToneSwitchView: NSView?
     
     let calendar = NSCalendar(identifier: .gregorian)!
     
@@ -54,63 +59,23 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     //MARK: Menu life cycle
 
     override func awakeFromNib() {
-        Log.logger.directory = "~/Library/Logs/Shifty"
-        #if DEBUG
-            Log.logger.name = "Shifty-debug"
-        #else
-            Log.logger.name = "Shifty"
-        #endif
-        //Edit printToConsole parameter in Edit Scheme > Run > Arguments > Environment Variables
-        Log.logger.printToConsole = ProcessInfo.processInfo.environment["print_log"] == "true"
-
-        
-        
         statusMenu.delegate = self
         customTimeWindow = CustomTimeWindow()
         
         
 
-        let prefWindow = (NSApplication.shared.delegate as? AppDelegate)?.preferenceWindowController
-        prefGeneral = prefWindow?.viewControllers.compactMap { childViewController in
-            return childViewController as? PrefGeneralViewController
-        }.first
-        prefShortcuts = prefWindow?.viewControllers.compactMap { childViewController in
-            return childViewController as? PrefShortcutsViewController
-        }.first
+        prefShortcuts = PrefShortcutsViewController()
         
         descriptionMenuItem.isEnabled = false
         sliderMenuItem.view = sliderView
         
-        if #available(macOS 11.0, *) {
-            nightShiftSwitchView = SwitchView(title: "Night Shift", onSwitchToggle: { isSwitchEnabled in
-                NightShiftManager.shared.isNightShiftEnabled = isSwitchEnabled
-                self.updateMenuItems()
-            })
-            guard let nightShiftSwitchView = nightShiftSwitchView else { return }
-            
-            nightShiftSwitchView.frame = CGRect(
-                x: 0, y: 0,
-                width: statusMenu.size.width,
-                height: nightShiftSwitchView.fittingSize.height)
-            powerMenuItem.view = nightShiftSwitchView
-            
-            trueToneSwitchView = SwitchView(title: "True Tone", onSwitchToggle: { isSwitchEnabled in
-                self.integrations.trueTone.isEnabled = isSwitchEnabled
-                self.updateMenuItems()
-            })
-            guard let trueToneSwitchView = trueToneSwitchView else { return }
-            
-            trueToneSwitchView.frame = CGRect(
-                x: 0, y: 0,
-                width: statusMenu.size.width,
-                height: trueToneSwitchView.fittingSize.height)
-        }
-
         disableHourMenuItem.title = NSLocalizedString("menu.disable_hour", comment: "Disable for an hour")
         disableCustomMenuItem.title = NSLocalizedString("menu.disable_custom", comment: "Disable for custom time...")
         preferencesMenuItem.title = NSLocalizedString("menu.preferences", comment: "Preferences...")
         quitMenuItem.title = NSLocalizedString("menu.quit", comment: "Quit Shifty")
-        
+        configureMenuCleanupItems()
+        configureCircadianMenuItems()
+        arrangeMenu()
 
         (NSApp.delegate as? AppDelegate)?.statusItemClicked = {
             NightShiftManager.shared.isNightShiftEnabled.toggle()
@@ -130,11 +95,10 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         assignKeyboardShortcutToMenuItem(disableCurrentAppMenuItem, userDefaultsKey: Keys.disableAppShortcut)
         assignKeyboardShortcutToMenuItem(disableDomainMenuItem, userDefaultsKey: Keys.disableDomainShortcut)
         assignKeyboardShortcutToMenuItem(disableSubdomainMenuItem, userDefaultsKey: Keys.disableSubdomainShortcut)
-        assignKeyboardShortcutToMenuItem(disableHourMenuItem, userDefaultsKey: Keys.disableHourShortcut)
-        assignKeyboardShortcutToMenuItem(disableCustomMenuItem, userDefaultsKey: Keys.disableCustomShortcut)
+        assignKeyboardShortcutToMenuItem(disableFor60MenuItem, userDefaultsKey: Keys.disableHourShortcut)
+        assignKeyboardShortcutToMenuItem(disableForCustomMenuItem, userDefaultsKey: Keys.disableCustomShortcut)
         assignKeyboardShortcutToMenuItem(trueToneMenuItem, userDefaultsKey: Keys.toggleTrueToneShortcut)
 
-        Event.menuOpened.record()
     }
     
     
@@ -168,89 +132,51 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         }
         
         sliderView.shiftSlider.floatValue = NightShiftManager.shared.colorTemperature * 100
+        sliderView.showsKelvinValue = UserDefaults.standard.bool(forKey: Keys.showKelvinInMenuSlider)
+        sliderView.refreshKelvinLabel()
         
         
         // MARK: toggle Night Shift
-        if NightShiftManager.shared.isNightShiftEnabled {
-            powerMenuItem.title = NSLocalizedString("menu.toggle_off", comment: "Turn off Night Shift")
-            sliderView.shiftSlider.isEnabled = true
-        } else {
-            powerMenuItem.title = NSLocalizedString("menu.toggle_on", comment: "Turn on Night Shift")
-            sliderView.shiftSlider.isEnabled = false
-        }
-        
-        if #available(macOS 11.0, *) {
-            if let nightShiftSwitchView = nightShiftSwitchView as? SwitchView {
-                nightShiftSwitchView.switchState = NightShiftManager.shared.isNightShiftEnabled
-            }
-            if integrations.trueTone.isSupportedAndAvailable {
-                trueToneMenuItem.view = trueToneSwitchView
-                if let trueToneSwitchView = trueToneSwitchView as? SwitchView {
-                    trueToneSwitchView.switchState = integrations.trueTone.isEnabled
-                }
-            } else {
-                trueToneMenuItem.view = nil
-            }
-        }
+        powerMenuItem.title = "Night Shift"
+        powerMenuItem.state = NightShiftManager.shared.isNightShiftEnabled ? .on : .off
+        sliderView.shiftSlider.isEnabled = NightShiftManager.shared.isNightShiftEnabled
         
         
-        //MARK: disable for app
-        if RuleManager.shared.isDisabledForCurrentApp {
-            disableCurrentAppMenuItem.state = .on
-            disableCurrentAppMenuItem.title = String(format: NSLocalizedString("menu.disabled_for", comment: "Disabled for %@"), currentAppName)
-        } else {
-            disableCurrentAppMenuItem.state = .off
-            disableCurrentAppMenuItem.title = String(format: NSLocalizedString("menu.disable_for", comment: "Disable for %@"), currentAppName)
-        }
-        
-        if let currentApp = RuleManager.shared.currentApp,
-           RuleManager.shared.isDisabledWhenRunningApp(currentApp)
-        {
-            disableRunningAppMenuItem.state = .on
-            disableRunningAppMenuItem.title = String(format: NSLocalizedString(
-                "menu.disabled_for_running_app",
-                comment: "Disabled when %@ is running"), currentAppName)
+        // MARK: rules for the current app and website
+        // The "Rules for <app>" submenu names the app and starts with a "Turn Off Night
+        // Shift" header, so each item reads as a condition and its checkmark shows the rule.
+        disableCurrentAppMenuItem.state = RuleManager.shared.isDisabledForCurrentApp ? .on : .off
+        disableCurrentAppMenuItem.title = String(
+            format: NSLocalizedString("menu.rule.app_in_front", comment: "Rule condition: while <app> is the frontmost app"),
+            currentAppName)
+
+        if let currentApp = RuleManager.shared.currentApp {
+            disableRunningAppMenuItem.state = RuleManager.shared.isDisabledWhenRunningApp(currentApp) ? .on : .off
         } else {
             disableRunningAppMenuItem.state = .off
-            disableRunningAppMenuItem.title = String(format: NSLocalizedString(
-                "menu.disable_for_running_app",
-                comment: "Disable when %@ is running"), currentAppName)
         }
-        
-        
-        // MARK: disable for domain
-        if BrowserManager.shared.hasValidDomain {
-            disableDomainMenuItem.isHidden = false
-            if RuleManager.shared.isDisabledForDomain {
-                disableDomainMenuItem.state = .on
-                disableDomainMenuItem.title = String(format: NSLocalizedString("menu.disabled_for", comment: "Disabled for %@"), currentDomain ?? "")
-            } else {
-                disableDomainMenuItem.state = .off
-                disableDomainMenuItem.title = String(format: NSLocalizedString("menu.disable_for", comment: "Disable for %@"), currentDomain ?? "")
-            }
+        disableRunningAppMenuItem.title = String(
+            format: NSLocalizedString("menu.rule.app_open", comment: "Rule condition: while <app> is open, even in the background"),
+            currentAppName)
+
+        disableDomainMenuItem.isHidden = !BrowserManager.shared.hasValidDomain
+        disableDomainMenuItem.state = RuleManager.shared.isDisabledForDomain ? .on : .off
+        disableDomainMenuItem.title = String(
+            format: NSLocalizedString("menu.rule.on_site", comment: "Rule condition: on <website>"),
+            currentDomain ?? "")
+
+        // When the whole domain is already off, the subdomain item becomes an exception.
+        disableSubdomainMenuItem.isHidden = !BrowserManager.shared.hasValidSubdomain
+        if RuleManager.shared.isDisabledForDomain {
+            disableSubdomainMenuItem.state = RuleManager.shared.ruleForCurrentSubdomain == .enabled ? .on : .off
+            disableSubdomainMenuItem.title = String(
+                format: NSLocalizedString("menu.rule.except_on_site", comment: "Rule exception: keep Night Shift on for <subdomain>"),
+                currentSubdomain ?? "")
         } else {
-            disableDomainMenuItem.isHidden = true
-        }
-        
-        
-        // MARK: disable for subdomain
-        if BrowserManager.shared.hasValidSubdomain {
-            disableSubdomainMenuItem.isHidden = false
-            if RuleManager.shared.ruleForCurrentSubdomain == .enabled {
-                disableSubdomainMenuItem.state = .on
-                disableSubdomainMenuItem.title = String(format: NSLocalizedString("menu.enabled_for", comment: "Enabled for %@"), currentSubdomain ?? "")
-            } else if RuleManager.shared.ruleForCurrentSubdomain == .disabled {
-                disableSubdomainMenuItem.state = .on
-                disableSubdomainMenuItem.title = String(format: NSLocalizedString("menu.disabled_for", comment: "Disabled for %@"), currentSubdomain ?? "")
-            } else if RuleManager.shared.isDisabledForDomain {
-                disableSubdomainMenuItem.state = .off
-                disableSubdomainMenuItem.title = String(format: NSLocalizedString("menu.enable_for", comment: "Enable for %@"), currentSubdomain ?? "")
-            } else {
-                disableSubdomainMenuItem.state = .off
-                disableSubdomainMenuItem.title = String(format: NSLocalizedString("menu.disable_for", comment: "Disable for %@"), currentSubdomain ?? "")
-            }
-        } else {
-            disableSubdomainMenuItem.isHidden = true
+            disableSubdomainMenuItem.state = RuleManager.shared.ruleForCurrentSubdomain == .disabled ? .on : .off
+            disableSubdomainMenuItem.title = String(
+                format: NSLocalizedString("menu.rule.on_site", comment: "Rule condition: on <website>"),
+                currentSubdomain ?? "")
         }
         
         
@@ -266,33 +192,12 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         }
         
         
+        updateRulesMenuItem(currentAppName: currentAppName)
+
+
         // MARK: disable timer
-        switch NightShiftManager.shared.nightShiftDisableTimerState {
-        case .off:
-            disableHourMenuItem.state = .off
-            disableHourMenuItem.isEnabled = true
-            disableHourMenuItem.title = NSLocalizedString("menu.disable_hour", comment: "Disable for an hour")
-            
-            disableCustomMenuItem.state = .off
-            disableCustomMenuItem.isEnabled = true
-            disableCustomMenuItem.title = NSLocalizedString("menu.disable_custom", comment: "Disable for custom time...")
-        case .hour:
-            disableHourMenuItem.state = .on
-            disableHourMenuItem.isEnabled = true
-            disableHourMenuItem.title = NSLocalizedString("menu.disabled_hour", comment: "Disabled for an hour")
-            
-            disableCustomMenuItem.state = .off
-            disableCustomMenuItem.isEnabled = false
-            disableCustomMenuItem.title = NSLocalizedString("menu.disable_custom", comment: "Disable for custom time...")
-        case .custom:
-            disableHourMenuItem.state = .off
-            disableHourMenuItem.isEnabled = false
-            disableHourMenuItem.title = NSLocalizedString("menu.disable_hour", comment: "Disable for an hour")
-            
-            disableCustomMenuItem.state = .on
-            disableCustomMenuItem.isEnabled = true
-            disableCustomMenuItem.title = NSLocalizedString("menu.disabled_custom", comment: "Disabled for custom time")
-        }
+        updateDisableForSubmenuItems()
+        updateCircadianMenuItems()
         
         
         // MARK: toggle True Tone
@@ -305,10 +210,13 @@ class StatusMenuController: NSObject, NSMenuDelegate {
                 trueToneMenuItem.isHidden = true
             case .unavailable:
                 trueToneMenuItem.isEnabled = false
+                trueToneMenuItem.state = .off
                 trueToneMenuItem.title = NSLocalizedString("menu.true_tone_unavailable", comment: "True Tone is not available")
             case .enabled:
-                trueToneMenuItem.title = NSLocalizedString("menu.true_tone_off", comment: "Turn off True Tone")
+                trueToneMenuItem.title = "True Tone"
+                trueToneMenuItem.state = .on
             case .disabled:
+                trueToneMenuItem.state = .off
                 if NightShiftManager.shared.isDisableRuleActive {
                     trueToneMenuItem.isEnabled = false
                     if RuleManager.shared.isDisabledForDomain {
@@ -319,13 +227,181 @@ class StatusMenuController: NSObject, NSMenuDelegate {
                         trueToneMenuItem.title = String(format: NSLocalizedString("menu.true_tone_disabled_for", comment: "True Tone is disabled for %@"), currentAppName)
                     }
                 } else {
-                    trueToneMenuItem.title = NSLocalizedString("menu.true_tone_on", comment: "Turn on True Tone")
+                    trueToneMenuItem.title = "True Tone"
                 }
             }
         } else {
             trueToneMenuItem.isHidden = true
         }
+
+        updateDarkModeMenuItem()
     }
+
+    private func configureMenuCleanupItems() {
+        configureDarkModeMenuItem()
+        configureDisableForSubmenu()
+    }
+
+    private func configureDarkModeMenuItem() {
+        guard statusMenu.index(of: darkModeMenuItem) == -1 else { return }
+
+        darkModeMenuItem = NSMenuItem(
+            title: "Dark Mode",
+            action: #selector(toggleDarkModeFromMenu(_:)),
+            keyEquivalent: "")
+        darkModeMenuItem.target = self
+
+        let insertIndex = max(statusMenu.index(of: trueToneMenuItem) + 1, 0)
+        statusMenu.insertItem(darkModeMenuItem, at: insertIndex)
+        updateDarkModeMenuItem()
+    }
+
+    private func updateDarkModeMenuItem() {
+        let isDark = integrations.appearance.darkModeEnabled
+        darkModeMenuItem.title = "Dark Mode"
+        darkModeMenuItem.state = isDark ? .on : .off
+    }
+
+    private func configureDisableForSubmenu() {
+        guard statusMenu.index(of: disableForMenuItem) == -1 else { return }
+
+        let pauseTitle = NSLocalizedString("menu.pause", comment: "Submenu for pausing Night Shift for a while")
+        disableForMenuItem = NSMenuItem(title: pauseTitle, action: nil, keyEquivalent: "")
+        let disableSubmenu = NSMenu(title: pauseTitle)
+
+        disableFor10MenuItem = NSMenuItem(title: pauseDurationTitle(minutes: 10), action: #selector(disableTenMinutes(_:)), keyEquivalent: "")
+        disableFor30MenuItem = NSMenuItem(title: pauseDurationTitle(minutes: 30), action: #selector(disableThirtyMinutes(_:)), keyEquivalent: "")
+        disableFor60MenuItem = NSMenuItem(title: pauseDurationTitle(minutes: 60), action: #selector(disableSixtyMinutes(_:)), keyEquivalent: "")
+        disableForCustomMenuItem = NSMenuItem(
+            title: NSLocalizedString("menu.pause_custom", comment: "Pause Night Shift for a custom duration"),
+            action: #selector(disableCustomTime(_:)),
+            keyEquivalent: "")
+        disableForResumeMenuItem = NSMenuItem(
+            title: NSLocalizedString("menu.resume_now", comment: "End a timed pause now"),
+            action: #selector(resumeNightShiftNow(_:)),
+            keyEquivalent: "")
+        [disableFor10MenuItem, disableFor30MenuItem, disableFor60MenuItem, disableForCustomMenuItem, disableForResumeMenuItem].forEach {
+            $0.target = self
+        }
+
+        disableSubmenu.addItem(disableFor10MenuItem)
+        disableSubmenu.addItem(disableFor30MenuItem)
+        disableSubmenu.addItem(disableFor60MenuItem)
+        disableSubmenu.addItem(.separator())
+        disableSubmenu.addItem(disableForCustomMenuItem)
+        disableSubmenu.addItem(.separator())
+        disableSubmenu.addItem(disableForResumeMenuItem)
+        disableForMenuItem.submenu = disableSubmenu
+
+        let insertionIndex = max(statusMenu.index(of: disableHourMenuItem), 0)
+        statusMenu.insertItem(disableForMenuItem, at: insertionIndex)
+        disableHourMenuItem.isHidden = true
+        disableCustomMenuItem.isHidden = true
+        updateDisableForSubmenuItems()
+    }
+
+    private func updateDisableForSubmenuItems() {
+        disableFor10MenuItem.state = .off
+        disableFor30MenuItem.state = .off
+        disableFor60MenuItem.state = .off
+        disableForCustomMenuItem.state = .off
+
+        switch NightShiftManager.shared.nightShiftDisableTimerState {
+        case .off:
+            disableForResumeMenuItem.isEnabled = false
+        case .hour:
+            disableFor60MenuItem.state = .on
+            disableForResumeMenuItem.isEnabled = true
+        case .custom:
+            disableForCustomMenuItem.state = .on
+            disableForResumeMenuItem.isEnabled = true
+        }
+        disableForMenuItem.state = disableForResumeMenuItem.isEnabled ? .on : .off
+    }
+
+    private func pauseDurationTitle(minutes: Int) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .full
+        formatter.allowedUnits = [.hour, .minute]
+        return formatter.string(from: TimeInterval(minutes * 60)) ?? "\(minutes)"
+    }
+
+    /// Lays the menu out as: Night Shift and strength, Circadian Mode, pause and
+    /// per-app/site rules, display toggles, then app commands. Items come from the
+    /// xib and from code, so the order is set once here rather than by insertion.
+    private func arrangeMenu() {
+        let rulesSubmenu = NSMenu()
+        rulesSubmenu.addItem(.sectionHeader(title: NSLocalizedString(
+            "menu.rules.header", comment: "Heading of the per-app rules submenu")))
+        for item in [disableCurrentAppMenuItem!, disableRunningAppMenuItem!, rulesWebSeparator,
+                     disableDomainMenuItem!, disableSubdomainMenuItem!, enableBrowserAutomationMenuItem!] {
+            item.menu?.removeItem(item)
+            item.indentationLevel = 0
+            rulesSubmenu.addItem(item)
+        }
+        rulesMenuItem.submenu = rulesSubmenu
+
+        let layout: [NSMenuItem] = [
+            powerMenuItem, descriptionMenuItem,
+            .separator(),
+            sliderMenuItem,
+            .separator(),
+            circadianModeMenuItem,
+            .separator(),
+            disableForMenuItem, rulesMenuItem,
+            .separator(),
+            trueToneMenuItem, darkModeMenuItem,
+            .separator(),
+            preferencesMenuItem, quitMenuItem,
+            // Superseded by the Pause submenu; kept for their outlets and hidden.
+            disableHourMenuItem, disableCustomMenuItem
+        ]
+        statusMenu.removeAllItems()
+        layout.forEach(statusMenu.addItem)
+    }
+
+    private func updateRulesMenuItem(currentAppName: String) {
+        rulesMenuItem.isHidden = RuleManager.shared.currentApp == nil
+        rulesMenuItem.title = String(
+            format: NSLocalizedString("menu.rules_for", comment: "Submenu of Night Shift rules for the current app, e.g. Rules for Safari"),
+            currentAppName.trimmingCharacters(in: .whitespaces))
+
+        let ruleItems = [disableCurrentAppMenuItem!, disableRunningAppMenuItem!, disableDomainMenuItem!, disableSubdomainMenuItem!]
+        rulesMenuItem.state = ruleItems.contains { !$0.isHidden && $0.state == .on } ? .on : .off
+        rulesWebSeparator.isHidden = [disableDomainMenuItem!, disableSubdomainMenuItem!, enableBrowserAutomationMenuItem!]
+            .allSatisfy(\.isHidden)
+    }
+
+    private func configureCircadianMenuItems() {
+        guard statusMenu.index(of: circadianModeMenuItem) == -1 else { return }
+
+        circadianModeMenuItem = NSMenuItem(
+            title: "Circadian Mode",
+            action: #selector(toggleCircadianMode(_:)),
+            keyEquivalent: "")
+        circadianModeMenuItem.target = self
+
+        let insertionIndex = max(statusMenu.index(of: disableHourMenuItem), 0)
+        statusMenu.insertItem(.separator(), at: insertionIndex)
+        statusMenu.insertItem(circadianModeMenuItem, at: insertionIndex + 1)
+
+        updateCircadianMenuItems()
+    }
+
+    private func updateCircadianMenuItems() {
+        let enabled = UserDefaults.standard.bool(forKey: Keys.isCircadianModeEnabled)
+        circadianModeMenuItem.state = enabled ? .on : .off
+
+        let statusText = enabled
+            ? CircadianWorkspaceCoordinator.shared.currentStatus().displayText(timeFormatter: .circadianTime)
+            : nil
+        if #available(macOS 14.4, *) {
+            circadianModeMenuItem.subtitle = statusText
+        } else {
+            circadianModeMenuItem.toolTip = statusText
+        }
+    }
+
     
     
     
@@ -435,10 +511,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         }
 
         if let data = value as? Data {
-            if #available(macOS 10.13, *) {
-                return try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
-            }
-            return NSKeyedUnarchiver.unarchiveObject(with: data) as? MASShortcut
+            return try? NSKeyedUnarchiver.unarchivedObject(ofClass: MASShortcut.self, from: data)
         }
 
         return nil
@@ -451,6 +524,12 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     @IBAction func power(_ sender: Any) {
         NightShiftManager.shared.isNightShiftEnabled.toggle()
     }
+
+    @objc private func toggleDarkModeFromMenu(_ sender: Any) {
+        let currentState = integrations.appearance.darkModeEnabled
+        integrations.appearance.darkModeEnabled = !currentState
+        updateDarkModeMenuItem()
+    }
     
     
     
@@ -462,7 +541,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         } else {
             RuleManager.shared.addCurrentAppDisableRule(forApp: currentApp)
         }
-        Event.disableForCurrentApp(state: (sender as? NSMenuItem)?.state == .on).record()
     }
     
     @IBAction func disableForRunningApp(_ sender: Any) {
@@ -516,6 +594,22 @@ class StatusMenuController: NSObject, NSMenuDelegate {
             NightShiftManager.shared.invalidateDisableTimer()
         }
     }
+
+    @objc private func disableTenMinutes(_ sender: Any) {
+        NightShiftManager.shared.setDisableTimer(forTimeInterval: 10 * 60)
+    }
+
+    @objc private func disableThirtyMinutes(_ sender: Any) {
+        NightShiftManager.shared.setDisableTimer(forTimeInterval: 30 * 60)
+    }
+
+    @objc private func disableSixtyMinutes(_ sender: Any) {
+        NightShiftManager.shared.setDisableTimer(forTimeInterval: 60 * 60)
+    }
+
+    @objc private func resumeNightShiftNow(_ sender: Any) {
+        NightShiftManager.shared.invalidateDisableTimer()
+    }
     
     
 
@@ -542,14 +636,20 @@ class StatusMenuController: NSObject, NSMenuDelegate {
             integrations.trueTone.isEnabled = !enabled
         }
     }
-    
+
+    @objc private func toggleCircadianMode(_ sender: Any) {
+        let currentlyEnabled = UserDefaults.standard.bool(forKey: Keys.isCircadianModeEnabled)
+        UserDefaults.standard.set(!currentlyEnabled, forKey: Keys.isCircadianModeEnabled)
+        CircadianWorkspaceCoordinator.shared.applyNow()
+        updateCircadianMenuItems()
+    }
+
     
 
     @IBAction func preferencesClicked(_ sender: NSMenuItem) {
         NSApp.activate(ignoringOtherApps: true)
         (NSApp.delegate as? AppDelegate)?.preferenceWindowController.showWindow(sender)
 
-        Event.preferencesWindowOpened.record()
     }
     
     
@@ -558,7 +658,6 @@ class StatusMenuController: NSObject, NSMenuDelegate {
         NightShiftManager.shared.respond(to: .nightShiftDisableTimerEnded)
         NightShiftManager.shared.respond(to: .nightShiftDisableRuleDeactivated)
 
-        Event.quitShifty.record()
         NotificationCenter.default.post(name: .terminateApp, object: self)
         
         NSApp.terminate(self)

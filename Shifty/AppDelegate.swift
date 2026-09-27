@@ -7,11 +7,10 @@
 //
 
 import Cocoa
-import MASPreferences_Shifty
-import SwiftLog
 import Intents
 
 @NSApplicationMain
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     let prefs = UserDefaults.standard
@@ -20,13 +19,49 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var statusItemClicked: (() -> Void)?
     private var suppressStatusToggleUntil: Date = .distantPast
+    private let circadianCoordinator = CircadianWorkspaceCoordinator.shared
 
     lazy var preferenceWindowController: PrefWindowController = {
+        // Every pane shares one size so switching tabs doesn't resize the window.
+        let paneSize = PrefWindowController.paneSize
+
+        let general = HostedPreferencePane(
+            identifier: "general",
+            image: NSImage(systemSymbolName: "gearshape", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.general", comment: "General"),
+            size: paneSize,
+            rootView: PrefGeneralView())
+
+        let circadian = HostedPreferencePane(
+            identifier: "circadian",
+            image: NSImage(systemSymbolName: "sun.horizon", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.circadian", comment: "Circadian"),
+            size: paneSize,
+            rootView: PrefCircadianView())
+
+        let shortcuts = HostedPreferencePane(
+            identifier: "shortcuts",
+            image: NSImage(systemSymbolName: "command", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.shortcuts", comment: "Shortcuts"),
+            size: paneSize,
+            rootView: PrefShortcutsView())
+
+        let rules = HostedPreferencePane(
+            identifier: "rules",
+            image: NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.rules", comment: "Rules"),
+            size: paneSize,
+            rootView: PrefRulesView())
+
+        let about = HostedPreferencePane(
+            identifier: "about",
+            image: NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.about", comment: "About"),
+            size: paneSize,
+            rootView: PrefAboutView())
+
         return PrefWindowController(
-            viewControllers: [
-                PrefGeneralViewController(),
-                PrefShortcutsViewController(),
-                PrefAboutViewController()],
+            viewControllers: [general, circadian, shortcuts, rules, about],
             title: NSLocalizedString("prefs.title", comment: "Preferences"))
     }()
 
@@ -36,17 +71,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         _ = PrefManager.shared
 
-        #if !DEBUG
-        integrations.appInstall.moveToApplicationsFolderIfNecessary()
-        #endif
-        
         UserDefaults.standard.register(defaults: ["NSApplicationCrashOnExceptions": true])
         
         let userDefaults = UserDefaults.standard
-        
-        if userDefaults.bool(forKey: Keys.analyticsPermission) {
-            integrations.telemetry.start()
-        }
         
         // Initialize Sparkle
         integrations.updater.initialize()
@@ -56,14 +83,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         userDefaults.set(versionObject as? String ?? "", forKey: Keys.lastInstalledShiftyVersion)
         
         
-        Event.appLaunched(preferredLocalization: Bundle.main.preferredLocalizations.first ?? "").record()
-
         logw("")
         logw("App launched")
         logw("macOS \(ProcessInfo().operatingSystemVersionString)")
         logw("Shifty Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
 
-        verifyOperatingSystemVersion()
         verifySupportsNightShift()
 
         let launcherAppIdentifier = "io.natethompson.ShiftyHelper"
@@ -80,7 +104,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled)
             && !integrations.permissions.isAccessibilityTrusted(prompt: false)
         {
-            Event.accessibilityRevokedAlertShown.record()
             logw("Accessibility permissions revoked while app was not running")
             showAccessibilityDeniedAlert()
             UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
@@ -94,6 +117,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         updateMenuBarIcon()
         setStatusToggle()
+        circadianCoordinator.start()
         
         NightShiftManager.shared.onNightShiftChange {
             self.updateMenuBarIcon()
@@ -115,26 +139,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     //MARK: Called after application launch
     
-    func verifyOperatingSystemVersion() {
-        if !ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 12, patchVersion: 4)) {
-            Event.oldMacOSVersion(version: ProcessInfo().operatingSystemVersionString).record()
-            logw("Operating system version not supported")
-            NSApplication.shared.activate(ignoringOtherApps: true)
-            
-            let alert: NSAlert = NSAlert()
-            alert.messageText = NSLocalizedString("alert.version_message", comment: "This version of macOS does not support Night Shift")
-            alert.informativeText = NSLocalizedString("alert.version_informative", comment: "Update your Mac to version 10.12.4 or higher to use Shifty.")
-            alert.alertStyle = NSAlert.Style.warning
-            alert.addButton(withTitle: NSLocalizedString("general.ok", comment: "OK"))
-            alert.runModal()
-            
-            NSApplication.shared.terminate(self)
-        }
-    }
-    
     func verifySupportsNightShift() {
         if !integrations.nightShiftSystem.supportsNightShift {
-            Event.unsupportedHardware.record()
             logw("System does not support Night Shift")
             NSApplication.shared.activate(ignoringOtherApps: true)
             
@@ -179,15 +185,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func observeAccessibilityApiNotifications() {
-        DistributedNotificationCenter.default().addObserver(forName: NSNotification.Name("com.apple.accessibility.api"), object: nil, queue: nil) { _ in
-            logw("Accessibility permissions changed: \(self.integrations.permissions.isAccessibilityTrusted(prompt: false))")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                if self.integrations.permissions.isAccessibilityTrusted(prompt: false) {
-                    UserDefaults.standard.set(true, forKey: Keys.isWebsiteControlEnabled)
-                } else {
-                    UserDefaults.standard.set(false, forKey: Keys.isWebsiteControlEnabled)
-                }
-            })
+        DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name("com.apple.accessibility.api"),
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                guard let self else { return }
+                let isTrusted = self.integrations.permissions.isAccessibilityTrusted(prompt: false)
+                logw("Accessibility permissions changed: \(isTrusted)")
+                UserDefaults.standard.set(isTrusted, forKey: Keys.isWebsiteControlEnabled)
+            }
         }
     }
     
@@ -253,11 +261,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
+        circadianCoordinator.stop()
         logw("App terminated")
     }
     
     
-    @available(macOS 12.0, *)
     func application(_ application: NSApplication, handlerFor intent: INIntent) -> Any? {
         if intent is GetNightShiftStateIntent {
             return GetNightShiftStateIntentHandler()

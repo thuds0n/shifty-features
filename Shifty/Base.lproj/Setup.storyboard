@@ -657,49 +657,18 @@ DQ
                                     <constraint firstAttribute="trailing" secondItem="8NH-cV-yLc" secondAttribute="trailing" id="wYc-PN-18G"/>
                                 </constraints>
                             </customView>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RjY-FG-DwV">
-                                <rect key="frame" x="18" y="83" width="378" height="18"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="410" id="Sdu-dz-hVT"/>
-                                </constraints>
-                                <buttonCell key="cell" type="check" title="Share anonymous crash data and analytics with developer" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="fkJ-8D-Xr2">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xvQ-7Q-Jp7">
-                                <rect key="frame" x="32" y="53" width="102" height="27"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="xRu-v5-MUf"/>
-                                </constraints>
-                                <buttonCell key="cell" type="push" title="More info..." bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="njq-rZ-B3n">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu" size="11"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="analyticsDetailClicked:" target="j1O-j4-Iou" id="HdD-q6-FZd"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="xvQ-7Q-Jp7" firstAttribute="top" secondItem="RjY-FG-DwV" secondAttribute="bottom" constant="8" id="AP9-2C-HBw"/>
                             <constraint firstItem="22i-XU-Ifo" firstAttribute="leading" secondItem="lIO-UQ-KPf" secondAttribute="leading" constant="20" id="EdZ-qf-UaG"/>
-                            <constraint firstItem="RjY-FG-DwV" firstAttribute="leading" secondItem="lIO-UQ-KPf" secondAttribute="leading" constant="20" id="GHG-PW-5Dd"/>
                             <constraint firstAttribute="trailing" secondItem="BGI-WD-n0c" secondAttribute="trailing" constant="20" id="HeB-OH-Ew9"/>
-                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RjY-FG-DwV" secondAttribute="trailing" constant="20" id="Hza-KA-xkm"/>
-                            <constraint firstItem="xvQ-7Q-Jp7" firstAttribute="leading" secondItem="RjY-FG-DwV" secondAttribute="leading" constant="18" id="Khi-5p-Usx"/>
                             <constraint firstItem="BGI-WD-n0c" firstAttribute="leading" secondItem="lIO-UQ-KPf" secondAttribute="leading" constant="20" id="Mr1-ue-C1g"/>
                             <constraint firstAttribute="bottom" secondItem="r6Q-C0-71a" secondAttribute="bottom" constant="20" id="d5v-PD-J6s"/>
                             <constraint firstItem="BGI-WD-n0c" firstAttribute="top" secondItem="lIO-UQ-KPf" secondAttribute="top" id="hvF-Rj-WOz"/>
-                            <constraint firstItem="RjY-FG-DwV" firstAttribute="top" secondItem="BGI-WD-n0c" secondAttribute="bottom" constant="20" id="ocT-yt-fjv"/>
+                            <constraint firstItem="22i-XU-Ifo" firstAttribute="top" secondItem="BGI-WD-n0c" secondAttribute="bottom" constant="20" id="N6k-GG-Rkg"/>
                             <constraint firstAttribute="bottom" secondItem="22i-XU-Ifo" secondAttribute="bottom" constant="20" id="vYO-58-ogE"/>
                             <constraint firstAttribute="trailing" secondItem="r6Q-C0-71a" secondAttribute="trailing" constant="20" id="voS-U5-Y7n"/>
-                            <constraint firstItem="22i-XU-Ifo" firstAttribute="top" secondItem="xvQ-7Q-Jp7" secondAttribute="bottom" constant="20" id="xV4-Fn-Ziu"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="analyticsPermissionButton" destination="RjY-FG-DwV" id="3gO-e7-d4O"/>
-                    </connections>
                 </viewController>
                 <customObject id="sJx-Mk-SiO" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController representsSharedInstance="YES" id="ct8-NV-t6V"/>

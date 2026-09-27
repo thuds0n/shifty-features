@@ -27,28 +27,8 @@ extension BrightnessSystemClient {
     var sunrise: Date? {
         sunriseSunsetProperty(forKey: "sunrise") as? Date
     }
-    
+
     var sunset: Date? {
         sunriseSunsetProperty(forKey: "sunset") as? Date
-    }
-    
-    var nextSunrise: Date? {
-        sunriseSunsetProperty(forKey: "nextSunrise") as? Date
-    }
-    
-    var nextSunset: Date? {
-        sunriseSunsetProperty(forKey: "nextSunset") as? Date
-    }
-    
-    var previousSunrise: Date? {
-        sunriseSunsetProperty(forKey: "previousSunrise") as? Date
-    }
-    
-    var previousSunset: Date? {
-        sunriseSunsetProperty(forKey: "previousSunset") as? Date
-    }
-    
-    var isDaylight: Bool? {
-        sunriseSunsetProperty(forKey: "isDaylight") as? Bool
     }
 }

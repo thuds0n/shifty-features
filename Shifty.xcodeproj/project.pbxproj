@@ -3,12 +3,22 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */; };
-		41A3780894178C5C601604C7 /* Pods_ShiftyHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 060A0A5282083B67EEC6C05D /* Pods_ShiftyHelper.framework */; };
+		A19F00012A8A000100000001 /* CircadianWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */; };
+		A19F00032A8A000100000003 /* PreferenceAccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */; };
+		A19F00102A8A001000000010 /* SystemIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00112A8A001000000011 /* SystemIntegration.swift */; };
+		A19F00122A8A001000000012 /* CircadianSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00132A8A001000000013 /* CircadianSchedule.swift */; };
+		A19F00142A8A001000000014 /* WorkspacePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00152A8A001000000015 /* WorkspacePolicy.swift */; };
+		A19F00162A8A001000000016 /* ActivityOverrideManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00172A8A001000000017 /* ActivityOverrideManager.swift */; };
+		A19F00182A8A001000000018 /* DisplayCalibrationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00192A8A001000000019 /* DisplayCalibrationStore.swift */; };
+		A19F001A2A8A00100000001A /* CircadianAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F001B2A8A00100000001B /* CircadianAutomation.swift */; };
+		A19F001C2A8A00100000001C /* CLITransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F001D2A8A00100000001D /* CLITransport.swift */; };
+		A19F001E2A8A00100000001E /* CircadianWorkspaceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F001F2A8A00100000001F /* CircadianWorkspaceCoordinator.swift */; };
+		A19F00202A8A002000000020 /* CircadianWorkspaceCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19F00212A8A002000000021 /* CircadianWorkspaceCoordinatorTests.swift */; };
 		43041CC5207DB9FF0076E75C /* CoreBrightness.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43041CC4207DB9FF0076E75C /* CoreBrightness.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		431B7B5D2167C8740039D085 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A934002164019300AFB708 /* Security.framework */; };
 		433AD3011F2CED1F0003FBCD /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 433AD3001F2CED1F0003FBCD /* dsa_pub.pem */; };
@@ -20,8 +30,8 @@
 		4368E3031EBEBA6C00D53310 /* PrefManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4368E3021EBEBA6C00D53310 /* PrefManager.swift */; };
 		437556B41FF745A6001951AB /* Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437556B31FF745A6001951AB /* Setup.swift */; };
 		437556B61FF746BD001951AB /* SlideSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437556B51FF746BD001951AB /* SlideSegue.swift */; };
-		437B7179273E0889006AD485 /* SwitchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437B7178273E0889006AD485 /* SwitchView.swift */; };
 		437D7E161EC015CB00544FC8 /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437D7E151EC015CB00544FC8 /* SliderView.swift */; };
+		A1C0DE000000000000000002 /* PrefCircadianView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000001 /* PrefCircadianView.swift */; };
 		4394DDA91EBE376F00F22908 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4394DDA21EBE376F00F22908 /* AppDelegate.swift */; };
 		4394DDAA1EBE376F00F22908 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4394DDA31EBE376F00F22908 /* Assets.xcassets */; };
 		4394DDAD1EBE376F00F22908 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4394DDA81EBE376F00F22908 /* StatusMenuController.swift */; };
@@ -44,24 +54,24 @@
 		43CA44ED26DB53ED00537DED /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 43CA44EB26DB53ED00537DED /* Intents.intentdefinition */; };
 		43CA44EE26DB53ED00537DED /* IntentHandlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CA44EC26DB53ED00537DED /* IntentHandlers.swift */; };
 		43CA44F026DB53FB00537DED /* DateTime+Shifty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CA44EF26DB53FB00537DED /* DateTime+Shifty.swift */; };
-		43CE525A20379A16002EBF61 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CE525920379A16002EBF61 /* Event.swift */; };
 		43CE525C2037B720002EBF61 /* ScriptingBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CE525B2037B720002EBF61 /* ScriptingBridge.swift */; };
-		43D5C2161FC2CA1300AF88E0 /* PrefGeneralViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C2181FC2CA1300AF88E0 /* PrefGeneralViewController.xib */; };
-		43D5C21B1FC2CAC300AF88E0 /* PrefShortcutsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C21D1FC2CAC300AF88E0 /* PrefShortcutsViewController.xib */; };
-		43D5C21E1FC2CACA00AF88E0 /* PrefAboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C2201FC2CACA00AF88E0 /* PrefAboutViewController.xib */; };
 		43D5C2211FC2CACF00AF88E0 /* CustomTimeWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C2231FC2CACF00AF88E0 /* CustomTimeWindow.xib */; };
 		43D5C2301FC2CECC00AF88E0 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C2321FC2CECC00AF88E0 /* Localizable.strings */; };
 		43D5C2391FC35FB500AF88E0 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D5C2381FC35FB500AF88E0 /* MainMenu.xib */; };
-		43F971B62156CA80001DBD45 /* AnalyticsDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43F971B52156CA80001DBD45 /* AnalyticsDetailView.xib */; };
-		43F971B82156DD24001DBD45 /* AnalyticsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F971B72156DD24001DBD45 /* AnalyticsDetailViewController.swift */; };
 		43F974E72213D9D200224CF4 /* AppleEventsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F974E62213D9D200224CF4 /* AppleEventsManager.m */; };
 		43FC498C1FF8936F00CD3196 /* credits.rtfd in Resources */ = {isa = PBXBuildFile; fileRef = 43FC498B1FF8936E00CD3196 /* credits.rtfd */; };
 		4960957E200EB9CD00D966CA /* RuleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4960957D200EB9CD00D966CA /* RuleManager.swift */; };
 		497B2395200B576700669DDE /* NightShiftManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497B2392200B576700669DDE /* NightShiftManager.swift */; };
 		497B2396200B576700669DDE /* NotificationName+Shifty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497B2393200B576700669DDE /* NotificationName+Shifty.swift */; };
-		8E3964AC80CB6F3E95236E90 /* libPods-ShiftyTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDFE83ED0DA11EB5AA0929DD /* libPods-ShiftyTests.a */; };
 		8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F689588C441301528A1021 /* RuleManagerTests.swift */; };
-		B2FB1D17C62BCFBF11038F46 /* Pods_Shifty.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0B4370CFA537EB219F40DC7 /* Pods_Shifty.framework */; };
+		A1C0DE000000000000000042 /* HardwareNightShiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000041 /* HardwareNightShiftTests.swift */; };
+		A1C0DE000000000000000032 /* ScenarioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000031 /* ScenarioTests.swift */; };
+		A1C0DE000000000000000022 /* BrowserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000021 /* BrowserTests.swift */; };
+		A1C0DE000000000000000012 /* ActivityAndCalibrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000011 /* ActivityAndCalibrationTests.swift */; };
+		F1A2B3C4D5E6000100000001 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6000100000002 /* Log.swift */; };
+		F1A2B3C4D5E600010000000D /* DomainParser in Frameworks */ = {isa = PBXBuildFile; productRef = F1A2B3C4D5E600010000000E /* DomainParser */; };
+		F1A2B3C4D5E6000100000007 /* AXSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F1A2B3C4D5E6000100000008 /* AXSwift */; };
+		F1A2B3C4D5E6000100000009 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F1A2B3C4D5E600010000000A /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,11 +98,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		060A0A5282083B67EEC6C05D /* Pods_ShiftyHelper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShiftyHelper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D7D6B6AABE9375D5C12A7FB /* Pods-ShiftyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyTests/Pods-ShiftyTests.release.xcconfig"; sourceTree = "<group>"; };
-		2821B5B49DA564B493882989 /* Pods-Shifty.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shifty.release.xcconfig"; path = "Pods/Target Support Files/Pods-Shifty/Pods-Shifty.release.xcconfig"; sourceTree = "<group>"; };
-		29F60FAC8CB1FBE7394EF114 /* Pods-ShiftyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyTests/Pods-ShiftyTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightShiftManagerTests.swift; sourceTree = "<group>"; };
+		A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianWorkspaceTests.swift; sourceTree = "<group>"; };
+		A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceAccessibilityTests.swift; sourceTree = "<group>"; };
+		A19F00112A8A001000000011 /* SystemIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SystemIntegration.swift; path = Shifty/SystemIntegration.swift; sourceTree = "<group>"; };
+		A19F00132A8A001000000013 /* CircadianSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CircadianSchedule.swift; path = Shifty/CircadianSchedule.swift; sourceTree = "<group>"; };
+		A19F00152A8A001000000015 /* WorkspacePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WorkspacePolicy.swift; path = Shifty/WorkspacePolicy.swift; sourceTree = "<group>"; };
+		A19F00172A8A001000000017 /* ActivityOverrideManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityOverrideManager.swift; path = Shifty/ActivityOverrideManager.swift; sourceTree = "<group>"; };
+		A19F00192A8A001000000019 /* DisplayCalibrationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DisplayCalibrationStore.swift; path = Shifty/DisplayCalibrationStore.swift; sourceTree = "<group>"; };
+		A19F001B2A8A00100000001B /* CircadianAutomation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CircadianAutomation.swift; path = Shifty/CircadianAutomation.swift; sourceTree = "<group>"; };
+		A19F001D2A8A00100000001D /* CLITransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CLITransport.swift; path = Shifty/CLITransport.swift; sourceTree = "<group>"; };
+		A19F001F2A8A00100000001F /* CircadianWorkspaceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CircadianWorkspaceCoordinator.swift; path = Shifty/CircadianWorkspaceCoordinator.swift; sourceTree = "<group>"; };
+		A19F00212A8A002000000021 /* CircadianWorkspaceCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircadianWorkspaceCoordinatorTests.swift; sourceTree = "<group>"; };
 		43041CB3207DB3440076E75C /* SkyLight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SkyLight.framework; sourceTree = "<group>"; };
 		43041CC4207DB9FF0076E75C /* CoreBrightness.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBrightness.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/PrivateFrameworks/CoreBrightness.framework; sourceTree = DEVELOPER_DIR; };
 		43099BA81FC67B5000A0720B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/CustomTimeWindow.strings"; sourceTree = "<group>"; };
@@ -126,11 +143,7 @@
 		4345ABA92165DB1700E2B7C7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4345ABAA2165DB1700E2B7C7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4345ABAB2165DB1700E2B7C7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = Shifty/de.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
-		434DE5C221614954002AB147 /* MASPreferences.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MASPreferences.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		434DE5C42161495F002AB147 /* MASShortcut.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MASShortcut.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		434DE5C621614969002AB147 /* PublicSuffix.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PublicSuffix.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		434DE5C821614979002AB147 /* Sparkle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Sparkle.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		434DE5CA21614984002AB147 /* SwiftLog.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftLog.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A2B3C4D5E6000100000002 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Log.swift; path = Shifty/Log.swift; sourceTree = "<group>"; };
 		4350191C1F21E99F0001324F /* CustomTimeWindow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomTimeWindow.swift; path = Shifty/CustomTimeWindow.swift; sourceTree = "<group>"; };
 		4351C7801FB5737900788CC9 /* PrefGeneralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrefGeneralViewController.swift; path = Shifty/PrefGeneralViewController.swift; sourceTree = "<group>"; };
 		4353E56322136937008A26C4 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -139,8 +152,8 @@
 		436A0F3C1FBE913600E77D41 /* ShiftyAppcast.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ShiftyAppcast.xml; sourceTree = "<group>"; };
 		437556B31FF745A6001951AB /* Setup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Setup.swift; path = Shifty/Setup.swift; sourceTree = "<group>"; };
 		437556B51FF746BD001951AB /* SlideSegue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SlideSegue.swift; path = Shifty/SlideSegue.swift; sourceTree = "<group>"; };
-		437B7178273E0889006AD485 /* SwitchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchView.swift; sourceTree = "<group>"; };
 		437D7E151EC015CB00544FC8 /* SliderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SliderView.swift; path = Shifty/SliderView.swift; sourceTree = "<group>"; };
+		A1C0DE000000000000000001 /* PrefCircadianView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrefCircadianView.swift; path = Shifty/PrefCircadianView.swift; sourceTree = "<group>"; };
 		4394DDA21EBE376F00F22908 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Shifty/AppDelegate.swift; sourceTree = "<group>"; };
 		4394DDA31EBE376F00F22908 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Shifty/Assets.xcassets; sourceTree = "<group>"; };
 		4394DDA41EBE376F00F22908 /* CBBlueLightClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CBBlueLightClient.h; path = Shifty/CBBlueLightClient.h; sourceTree = "<group>"; };
@@ -174,37 +187,29 @@
 		43CA44EC26DB53ED00537DED /* IntentHandlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = IntentHandlers.swift; path = Shifty/IntentHandlers.swift; sourceTree = "<group>"; };
 		43CA44EF26DB53FB00537DED /* DateTime+Shifty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "DateTime+Shifty.swift"; path = "Shifty/DateTime+Shifty.swift"; sourceTree = "<group>"; };
 		43CC9E431EBAB19300983528 /* Shifty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shifty.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		43CE525920379A16002EBF61 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Event.swift; path = Shifty/Event.swift; sourceTree = "<group>"; };
 		43CE525B2037B720002EBF61 /* ScriptingBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScriptingBridge.swift; path = Shifty/ScriptingBridge.swift; sourceTree = "<group>"; };
-		43D5C2171FC2CA1300AF88E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefGeneralViewController.xib; sourceTree = "<group>"; };
-		43D5C21C1FC2CAC300AF88E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefShortcutsViewController.xib; sourceTree = "<group>"; };
 		43D5C2221FC2CACF00AF88E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/CustomTimeWindow.xib; sourceTree = "<group>"; };
 		43D5C2311FC2CECC00AF88E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		43D5C2381FC35FB500AF88E0 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainMenu.xib; path = Shifty/MainMenu.xib; sourceTree = "<group>"; };
 		43D5C2441FC3A9A100AF88E0 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Shifty/Info.plist; sourceTree = "<group>"; };
-		43DE369B2288EDE40089AA90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PrefAboutViewController.xib; sourceTree = "<group>"; };
 		43DE369D2288EDF70089AA90 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PrefAboutViewController.strings"; sourceTree = "<group>"; };
 		43DE369F2288EDF90089AA90 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/PrefAboutViewController.strings; sourceTree = "<group>"; };
 		43DE36A12288EDFC0089AA90 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefAboutViewController.strings; sourceTree = "<group>"; };
 		43DE36A32288EDFD0089AA90 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/PrefAboutViewController.strings; sourceTree = "<group>"; };
 		43F71DB0213F48DA004F7E2B /* CBTrueToneClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CBTrueToneClient.h; path = Shifty/CBTrueToneClient.h; sourceTree = "<group>"; };
-		43F971B52156CA80001DBD45 /* AnalyticsDetailView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = AnalyticsDetailView.xib; path = Shifty/AnalyticsDetailView.xib; sourceTree = "<group>"; };
-		43F971B72156DD24001DBD45 /* AnalyticsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnalyticsDetailViewController.swift; path = Shifty/AnalyticsDetailViewController.swift; sourceTree = "<group>"; };
 		43F974E62213D9D200224CF4 /* AppleEventsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AppleEventsManager.m; path = Shifty/AppleEventsManager.m; sourceTree = "<group>"; };
 		43F974EB221463C700224CF4 /* AppleEventsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppleEventsManager.h; path = Shifty/AppleEventsManager.h; sourceTree = "<group>"; };
 		43FC498B1FF8936E00CD3196 /* credits.rtfd */ = {isa = PBXFileReference; lastKnownFileType = wrapper.rtfd; path = credits.rtfd; sourceTree = "<group>"; };
-		43FFD9402161655000DD6C83 /* AXSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AXSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4960957D200EB9CD00D966CA /* RuleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RuleManager.swift; path = Shifty/RuleManager.swift; sourceTree = "<group>"; };
 		497B2392200B576700669DDE /* NightShiftManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NightShiftManager.swift; path = Shifty/NightShiftManager.swift; sourceTree = "<group>"; };
 		497B2393200B576700669DDE /* NotificationName+Shifty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NotificationName+Shifty.swift"; path = "Shifty/NotificationName+Shifty.swift"; sourceTree = "<group>"; };
 		5D74F3DCD01690542A47CF13 /* ShiftyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShiftyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D67B7B95C7943A624FA6BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A54D41077F4E0570C078BAA2 /* Pods-ShiftyHelper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyHelper.release.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyHelper/Pods-ShiftyHelper.release.xcconfig"; sourceTree = "<group>"; };
-		AD3D5B933E033908748B2739 /* Pods-ShiftyHelper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShiftyHelper.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ShiftyHelper/Pods-ShiftyHelper.debug.xcconfig"; sourceTree = "<group>"; };
-		B6B7E4937719E29B5C367EB3 /* Pods-Shifty.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shifty.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shifty/Pods-Shifty.debug.xcconfig"; sourceTree = "<group>"; };
 		B7F689588C441301528A1021 /* RuleManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleManagerTests.swift; sourceTree = "<group>"; };
-		D0B4370CFA537EB219F40DC7 /* Pods_Shifty.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shifty.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FDFE83ED0DA11EB5AA0929DD /* libPods-ShiftyTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShiftyTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1C0DE000000000000000041 /* HardwareNightShiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareNightShiftTests.swift; sourceTree = "<group>"; };
+		A1C0DE000000000000000031 /* ScenarioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioTests.swift; sourceTree = "<group>"; };
+		A1C0DE000000000000000021 /* BrowserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserTests.swift; sourceTree = "<group>"; };
+		A1C0DE000000000000000011 /* ActivityAndCalibrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityAndCalibrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,7 +217,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41A3780894178C5C601604C7 /* Pods_ShiftyHelper.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,8 +228,10 @@
 				431B7B5D2167C8740039D085 /* Security.framework in Frameworks */,
 				43C0838C1F19AEF900E73B84 /* ServiceManagement.framework in Frameworks */,
 				43041CC5207DB9FF0076E75C /* CoreBrightness.framework in Frameworks */,
-				B2FB1D17C62BCFBF11038F46 /* Pods_Shifty.framework in Frameworks */,
 				43CA44E126DB292F00537DED /* SkyLight.framework in Frameworks */,
+				F1A2B3C4D5E6000100000007 /* AXSwift in Frameworks */,
+				F1A2B3C4D5E6000100000009 /* Sparkle in Frameworks */,
+				F1A2B3C4D5E600010000000D /* DomainParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,44 +239,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E3964AC80CB6F3E95236E90 /* libPods-ShiftyTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2BAD531907046BA9FADE44E3 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				AD3D5B933E033908748B2739 /* Pods-ShiftyHelper.debug.xcconfig */,
-				A54D41077F4E0570C078BAA2 /* Pods-ShiftyHelper.release.xcconfig */,
-				B6B7E4937719E29B5C367EB3 /* Pods-Shifty.debug.xcconfig */,
-				2821B5B49DA564B493882989 /* Pods-Shifty.release.xcconfig */,
-				29F60FAC8CB1FBE7394EF114 /* Pods-ShiftyTests.debug.xcconfig */,
-				1D7D6B6AABE9375D5C12A7FB /* Pods-ShiftyTests.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		433EE8501EBD8ECA007EA870 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				43CA44E026DB292F00537DED /* SkyLight.framework */,
 				4353E56322136937008A26C4 /* CoreServices.framework */,
 				43A934002164019300AFB708 /* Security.framework */,
-				434DE5C621614969002AB147 /* PublicSuffix.framework */,
 				43041CC4207DB9FF0076E75C /* CoreBrightness.framework */,
 				43041CB3207DB3440076E75C /* SkyLight.framework */,
 				43C0838B1F19AEF900E73B84 /* ServiceManagement.framework */,
-				434DE5C221614954002AB147 /* MASPreferences.framework */,
-				43FFD9402161655000DD6C83 /* AXSwift.framework */,
-				434DE5C42161495F002AB147 /* MASShortcut.framework */,
-				434DE5C821614979002AB147 /* Sparkle.framework */,
-				434DE5CA21614984002AB147 /* SwiftLog.framework */,
-				D0B4370CFA537EB219F40DC7 /* Pods_Shifty.framework */,
-				060A0A5282083B67EEC6C05D /* Pods_ShiftyHelper.framework */,
-				FDFE83ED0DA11EB5AA0929DD /* libPods-ShiftyTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -280,11 +263,8 @@
 			children = (
 				4368E3021EBEBA6C00D53310 /* PrefManager.swift */,
 				4351C7801FB5737900788CC9 /* PrefGeneralViewController.swift */,
-				43D5C2181FC2CA1300AF88E0 /* PrefGeneralViewController.xib */,
 				43B9DE131FB5924F002C4C29 /* PrefShortcutsViewController.swift */,
-				43D5C21D1FC2CAC300AF88E0 /* PrefShortcutsViewController.xib */,
 				43B9DE191FB592AE002C4C29 /* PrefAboutViewController.swift */,
-				43D5C2201FC2CACA00AF88E0 /* PrefAboutViewController.xib */,
 			);
 			name = Preferences;
 			sourceTree = "<group>";
@@ -292,6 +272,7 @@
 		436A0F391FBE90BF00E77D41 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				F1A2B3C4D5E6000100000002 /* Log.swift */,
 				43C0838D1F19BA6900E73B84 /* Shifty.entitlements */,
 				4394DDAE1EBE379900F22908 /* Shifty-Bridging-Header.h */,
 				4394DDA41EBE376F00F22908 /* CBBlueLightClient.h */,
@@ -304,7 +285,6 @@
 				43F974E62213D9D200224CF4 /* AppleEventsManager.m */,
 				497B2393200B576700669DDE /* NotificationName+Shifty.swift */,
 				43CA44EF26DB53FB00537DED /* DateTime+Shifty.swift */,
-				43CE525920379A16002EBF61 /* Event.swift */,
 				437556B51FF746BD001951AB /* SlideSegue.swift */,
 				43CE525B2037B720002EBF61 /* ScriptingBridge.swift */,
 				43CA44EB26DB53ED00537DED /* Intents.intentdefinition */,
@@ -319,7 +299,7 @@
 				4394DDA21EBE376F00F22908 /* AppDelegate.swift */,
 				4394DDA81EBE376F00F22908 /* StatusMenuController.swift */,
 				437D7E151EC015CB00544FC8 /* SliderView.swift */,
-				437B7178273E0889006AD485 /* SwitchView.swift */,
+				A1C0DE000000000000000001 /* PrefCircadianView.swift */,
 				43D5C2381FC35FB500AF88E0 /* MainMenu.xib */,
 				4350191C1F21E99F0001324F /* CustomTimeWindow.swift */,
 				43D5C2231FC2CACF00AF88E0 /* CustomTimeWindow.xib */,
@@ -327,8 +307,6 @@
 				43AA23CD1FFAC69A001DDF5A /* AccessibilityWindow.xib */,
 				43AA23C61FFABCD2001DDF5A /* AccessibilityView.swift */,
 				43B6125A1FFC297400724DAE /* AccessibilityView.xib */,
-				43F971B72156DD24001DBD45 /* AnalyticsDetailViewController.swift */,
-				43F971B52156CA80001DBD45 /* AnalyticsDetailView.xib */,
 				437556B31FF745A6001951AB /* Setup.swift */,
 				43B6125F1FFC298200724DAE /* Setup.storyboard */,
 			);
@@ -376,6 +354,14 @@
 		43CA44E826DB450A00537DED /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				A19F00112A8A001000000011 /* SystemIntegration.swift */,
+				A19F00132A8A001000000013 /* CircadianSchedule.swift */,
+				A19F00152A8A001000000015 /* WorkspacePolicy.swift */,
+				A19F00172A8A001000000017 /* ActivityOverrideManager.swift */,
+				A19F00192A8A001000000019 /* DisplayCalibrationStore.swift */,
+				A19F001B2A8A00100000001B /* CircadianAutomation.swift */,
+				A19F001D2A8A00100000001D /* CLITransport.swift */,
+				A19F001F2A8A00100000001F /* CircadianWorkspaceCoordinator.swift */,
 				497B2392200B576700669DDE /* NightShiftManager.swift */,
 				435F0383208027C600ABA2EB /* BrowserManager.swift */,
 				4960957D200EB9CD00D966CA /* RuleManager.swift */,
@@ -391,7 +377,6 @@
 				E49A6B9CF9AC8A75FD7C9792 /* ShiftyTests */,
 				43CC9E441EBAB19300983528 /* Products */,
 				433EE8501EBD8ECA007EA870 /* Frameworks */,
-				2BAD531907046BA9FADE44E3 /* Pods */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 0;
@@ -410,8 +395,15 @@
 			isa = PBXGroup;
 			children = (
 				6D67B7B95C7943A624FA6BC6 /* Info.plist */,
+				A19F00022A8A000100000002 /* CircadianWorkspaceTests.swift */,
+				A19F00212A8A002000000021 /* CircadianWorkspaceCoordinatorTests.swift */,
+				A19F00042A8A000100000004 /* PreferenceAccessibilityTests.swift */,
 				3AD3A872CE95136824A90DF4 /* NightShiftManagerTests.swift */,
 				B7F689588C441301528A1021 /* RuleManagerTests.swift */,
+				A1C0DE000000000000000041 /* HardwareNightShiftTests.swift */,
+				A1C0DE000000000000000031 /* ScenarioTests.swift */,
+				A1C0DE000000000000000021 /* BrowserTests.swift */,
+				A1C0DE000000000000000011 /* ActivityAndCalibrationTests.swift */,
 			);
 			path = ShiftyTests;
 			sourceTree = "<group>";
@@ -423,7 +415,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43C7A4911F19F2CB00A697C0 /* Build configuration list for PBXNativeTarget "ShiftyHelper" */;
 			buildPhases = (
-				F2E31D5662768A6309520DCF /* [CP] Check Pods Manifest.lock */,
 				43C7A4811F19F2CB00A697C0 /* Sources */,
 				43C7A4821F19F2CB00A697C0 /* Frameworks */,
 				43C7A4831F19F2CB00A697C0 /* Resources */,
@@ -441,18 +432,21 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 43CC9E521EBAB19300983528 /* Build configuration list for PBXNativeTarget "Shifty" */;
 			buildPhases = (
-				2AA597D2F11C551A7DFB4836 /* [CP] Check Pods Manifest.lock */,
 				43CC9E3F1EBAB19300983528 /* Sources */,
 				43CC9E401EBAB19300983528 /* Frameworks */,
 				43CC9E411EBAB19300983528 /* Resources */,
 				43C083891F19AEA600E73B84 /* CopyFiles */,
-				9A4D576B732E974148CA96C9 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Shifty;
+			packageProductDependencies = (
+				F1A2B3C4D5E6000100000008 /* AXSwift */,
+				F1A2B3C4D5E600010000000A /* Sparkle */,
+				F1A2B3C4D5E600010000000E /* DomainParser */,
+			);
 			productName = "Night-Shift-Tool";
 			productReference = 43CC9E431EBAB19300983528 /* Shifty.app */;
 			productType = "com.apple.product-type.application";
@@ -461,7 +455,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 90A08B891E05AEF3320F7D55 /* Build configuration list for PBXNativeTarget "ShiftyTests" */;
 			buildPhases = (
-				5E11D0D615BBFCDF484EDDA0 /* [CP] Check Pods Manifest.lock */,
 				5A44CCFAD263DFC6BE2800A3 /* Sources */,
 				CF22B744A8AE710517572F2E /* Frameworks */,
 				F08574B4968F942370382A24 /* Resources */,
@@ -534,6 +527,11 @@
 			);
 			mainGroup = 43CC9E3A1EBAB19300983528;
 			productRefGroup = 43CC9E441EBAB19300983528 /* Products */;
+			packageReferences = (
+				F1A2B3C4D5E600010000000B /* XCRemoteSwiftPackageReference "AXSwift" */,
+				F1A2B3C4D5E600010000000C /* XCRemoteSwiftPackageReference "Sparkle" */,
+				F1A2B3C4D5E600010000000F /* XCRemoteSwiftPackageReference "SwiftDomainParser" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -559,16 +557,12 @@
 			files = (
 				43B6125D1FFC298200724DAE /* Setup.storyboard in Resources */,
 				43FC498C1FF8936F00CD3196 /* credits.rtfd in Resources */,
-				43D5C2161FC2CA1300AF88E0 /* PrefGeneralViewController.xib in Resources */,
 				43AA23CF1FFAC69A001DDF5A /* AccessibilityWindow.xib in Resources */,
 				433AD3011F2CED1F0003FBCD /* dsa_pub.pem in Resources */,
 				4394DDAA1EBE376F00F22908 /* Assets.xcassets in Resources */,
 				43B612581FFC297400724DAE /* AccessibilityView.xib in Resources */,
 				43D5C2301FC2CECC00AF88E0 /* Localizable.strings in Resources */,
-				43D5C21E1FC2CACA00AF88E0 /* PrefAboutViewController.xib in Resources */,
 				43D5C2211FC2CACF00AF88E0 /* CustomTimeWindow.xib in Resources */,
-				43F971B62156CA80001DBD45 /* AnalyticsDetailView.xib in Resources */,
-				43D5C21B1FC2CAC300AF88E0 /* PrefShortcutsViewController.xib in Resources */,
 				43D5C2391FC35FB500AF88E0 /* MainMenu.xib in Resources */,
 				43965AC31FC68A19001A076D /* InfoPlist.strings in Resources */,
 				43B6126C1FFC413A00724DAE /* Localizable.stringsdict in Resources */,
@@ -584,97 +578,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		2AA597D2F11C551A7DFB4836 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Shifty-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5E11D0D615BBFCDF484EDDA0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ShiftyTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9A4D576B732E974148CA96C9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Shifty/Pods-Shifty-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/AXSwift/AXSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/LetsMove/LetsMove.framework",
-				"${BUILT_PRODUCTS_DIR}/MASPreferences+Shifty/MASPreferences_Shifty.framework",
-				"${BUILT_PRODUCTS_DIR}/MASShortcut/MASShortcut.framework",
-				"${BUILT_PRODUCTS_DIR}/PublicSuffix/PublicSuffix.framework",
-				"${PODS_ROOT}/Sparkle/Sparkle.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftLog/SwiftLog.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AXSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LetsMove.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MASPreferences_Shifty.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MASShortcut.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PublicSuffix.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftLog.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Shifty/Pods-Shifty-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F2E31D5662768A6309520DCF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ShiftyHelper-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		43C7A4811F19F2CB00A697C0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -688,6 +591,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A19F00102A8A001000000010 /* SystemIntegration.swift in Sources */,
+				A19F00122A8A001000000012 /* CircadianSchedule.swift in Sources */,
+				A19F00142A8A001000000014 /* WorkspacePolicy.swift in Sources */,
+				A19F00162A8A001000000016 /* ActivityOverrideManager.swift in Sources */,
+				A19F00182A8A001000000018 /* DisplayCalibrationStore.swift in Sources */,
+				A19F001A2A8A00100000001A /* CircadianAutomation.swift in Sources */,
+				A19F001C2A8A00100000001C /* CLITransport.swift in Sources */,
+				A19F001E2A8A00100000001E /* CircadianWorkspaceCoordinator.swift in Sources */,
 				43A8E69C2141DF7C00BD3870 /* CBTrueToneClient+Shifty.swift in Sources */,
 				433E60EC207D9995007BB55F /* BrightnessSystemClient+Shifty.swift in Sources */,
 				497B2396200B576700669DDE /* NotificationName+Shifty.swift in Sources */,
@@ -697,24 +608,23 @@
 				437556B61FF746BD001951AB /* SlideSegue.swift in Sources */,
 				4368E3031EBEBA6C00D53310 /* PrefManager.swift in Sources */,
 				437D7E161EC015CB00544FC8 /* SliderView.swift in Sources */,
+				A1C0DE000000000000000002 /* PrefCircadianView.swift in Sources */,
 				497B2395200B576700669DDE /* NightShiftManager.swift in Sources */,
 				4351C7811FB5737900788CC9 /* PrefGeneralViewController.swift in Sources */,
 				4960957E200EB9CD00D966CA /* RuleManager.swift in Sources */,
 				43CE525C2037B720002EBF61 /* ScriptingBridge.swift in Sources */,
 				437556B41FF745A6001951AB /* Setup.swift in Sources */,
 				4394DDAD1EBE376F00F22908 /* StatusMenuController.swift in Sources */,
-				43CE525A20379A16002EBF61 /* Event.swift in Sources */,
 				43B9DE1B1FB592AE002C4C29 /* PrefAboutViewController.swift in Sources */,
-				437B7179273E0889006AD485 /* SwitchView.swift in Sources */,
 				43F974E72213D9D200224CF4 /* AppleEventsManager.m in Sources */,
 				4350191D1F21E99F0001324F /* CustomTimeWindow.swift in Sources */,
-				43F971B82156DD24001DBD45 /* AnalyticsDetailViewController.swift in Sources */,
 				43B9DE151FB5924F002C4C29 /* PrefShortcutsViewController.swift in Sources */,
 				4394DDA91EBE376F00F22908 /* AppDelegate.swift in Sources */,
 				43CA44EE26DB53ED00537DED /* IntentHandlers.swift in Sources */,
 				435F0384208027C600ABA2EB /* BrowserManager.swift in Sources */,
 				43AA23CE1FFAC69A001DDF5A /* AccessibilityWindow.swift in Sources */,
 				43CA44EA26DB53DA00537DED /* CBBlueLightClient+Shifty.swift in Sources */,
+				F1A2B3C4D5E6000100000001 /* Log.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -722,8 +632,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A19F00012A8A000100000001 /* CircadianWorkspaceTests.swift in Sources */,
+				A19F00202A8A002000000020 /* CircadianWorkspaceCoordinatorTests.swift in Sources */,
+				A19F00032A8A000100000003 /* PreferenceAccessibilityTests.swift in Sources */,
 				2537F0887286CEE5F4AF7690 /* NightShiftManagerTests.swift in Sources */,
 				8FE8C3075CCAD9AADD7518F8 /* RuleManagerTests.swift in Sources */,
+				A1C0DE000000000000000042 /* HardwareNightShiftTests.swift in Sources */,
+				A1C0DE000000000000000032 /* ScenarioTests.swift in Sources */,
+				A1C0DE000000000000000022 /* BrowserTests.swift in Sources */,
+				A1C0DE000000000000000012 /* ActivityAndCalibrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -789,45 +706,6 @@
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
 		};
-		43D5C2181FC2CA1300AF88E0 /* PrefGeneralViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				43D5C2171FC2CA1300AF88E0 /* Base */,
-				43099BA91FC67B5100A0720B /* zh-Hans */,
-				4345ABA62165DB1600E2B7C7 /* de */,
-				430E217622630361008E2874 /* fr */,
-				430E217F22630370008E2874 /* ru */,
-			);
-			name = PrefGeneralViewController.xib;
-			path = Shifty;
-			sourceTree = "<group>";
-		};
-		43D5C21D1FC2CAC300AF88E0 /* PrefShortcutsViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				43D5C21C1FC2CAC300AF88E0 /* Base */,
-				43099BAA1FC67B5100A0720B /* zh-Hans */,
-				4345ABA72165DB1600E2B7C7 /* de */,
-				430E217722630361008E2874 /* fr */,
-				430E218022630370008E2874 /* ru */,
-			);
-			name = PrefShortcutsViewController.xib;
-			path = Shifty;
-			sourceTree = "<group>";
-		};
-		43D5C2201FC2CACA00AF88E0 /* PrefAboutViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				43DE369B2288EDE40089AA90 /* Base */,
-				43DE369D2288EDF70089AA90 /* zh-Hans */,
-				43DE369F2288EDF90089AA90 /* de */,
-				43DE36A12288EDFC0089AA90 /* fr */,
-				43DE36A32288EDFD0089AA90 /* ru */,
-			);
-			name = PrefAboutViewController.xib;
-			path = Shifty;
-			sourceTree = "<group>";
-		};
 		43D5C2231FC2CACF00AF88E0 /* CustomTimeWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -859,7 +737,6 @@
 /* Begin XCBuildConfiguration section */
 		28A63F7BDB7C4F7C438131C8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 29F60FAC8CB1FBE7394EF114 /* Pods-ShiftyTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -867,7 +744,7 @@
 				DEVELOPMENT_TEAM = 9P4QP4BFR9;
 				INFOPLIST_FILE = ShiftyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.natethompson.ShiftyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -875,7 +752,6 @@
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Shifty.app/Contents/MacOS/Shifty";
 				TEST_TARGET_NAME = Shifty;
 			};
@@ -883,7 +759,6 @@
 		};
 		43C7A4921F19F2CB00A697C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AD3D5B933E033908748B2739 /* Pods-ShiftyHelper.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ShiftyHelper/ShiftyHelper.entitlements;
@@ -907,7 +782,6 @@
 		};
 		43C7A4931F19F2CB00A697C0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A54D41077F4E0570C078BAA2 /* Pods-ShiftyHelper.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ShiftyHelper/ShiftyHelper.entitlements;
@@ -980,7 +854,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -1034,7 +908,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -1043,7 +917,6 @@
 		};
 		43CC9E531EBAB19300983528 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B6B7E4937719E29B5C367EB3 /* Pods-Shifty.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Shifty/Shifty.entitlements;
@@ -1064,7 +937,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Shifty/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.natethompson.Shifty;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1076,7 +949,6 @@
 		};
 		43CC9E541EBAB19300983528 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2821B5B49DA564B493882989 /* Pods-Shifty.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Shifty/Shifty.entitlements;
@@ -1096,7 +968,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Shifty/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.natethompson.Shifty;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1108,7 +980,6 @@
 		};
 		AB60BB49C8BB5CCE6EDC191E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1D7D6B6AABE9375D5C12A7FB /* Pods-ShiftyTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -1116,7 +987,7 @@
 				DEVELOPMENT_TEAM = 9P4QP4BFR9;
 				INFOPLIST_FILE = ShiftyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.natethompson.ShiftyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1166,6 +1037,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F1A2B3C4D5E600010000000B /* XCRemoteSwiftPackageReference "AXSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tmandry/AXSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
+		F1A2B3C4D5E600010000000C /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		F1A2B3C4D5E600010000000F /* XCRemoteSwiftPackageReference "SwiftDomainParser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Dashlane/SwiftDomainParser";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F1A2B3C4D5E6000100000008 /* AXSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A2B3C4D5E600010000000B /* XCRemoteSwiftPackageReference "AXSwift" */;
+			productName = AXSwift;
+		};
+		F1A2B3C4D5E600010000000A /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A2B3C4D5E600010000000C /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+		F1A2B3C4D5E600010000000E /* DomainParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A2B3C4D5E600010000000F /* XCRemoteSwiftPackageReference "SwiftDomainParser" */;
+			productName = DomainParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 43CC9E3B1EBAB19300983528 /* Project object */;
 }

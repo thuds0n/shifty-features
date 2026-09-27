@@ -9,30 +9,30 @@
 "general.ok" = "ОК";
 "general.cancel" = "Отмена";
 
-"menu.toggle_on" = "Включить Night Shift";
-"menu.toggle_off" = "Выключить Night Shift";
-"menu.disable_for" = "Выключить для %@";
-"menu.disabled_for" = "Выключено для %@";
-"menu.enable_for" = "Включить для %@";
-"menu.enabled_for" = "Включено для %@";
-
-"menu.disable_running_app" = "Выключить, когда %@ работает";
-"menu.disabled_running_app" = "Выключено, когда %@ работает";
-"menu.disable_fullscreen" = "Только на полном экране";
-
 "menu.disable_hour" = "Выключить на час";
-"menu.disabled_hour" = "Выключено на час";
 "menu.disable_custom" = "Выключить на своё время...";
-"menu.disabled_custom" = "Выключено на своё время";
 "menu.allow_browser_automation" = "Разрешить переключение на сайте %@";
 
-"menu.true_tone_on" = "Включить True Tone";
-"menu.true_tone_off" = "Выключить True Tone";
 "menu.true_tone_unavailable" = "True Tone не доступен";
 "menu.true_tone_disabled_for" = "True Tone выключен для %@";
 
 "menu.preferences" = "Настройки...";
 "menu.quit" = "Завершить Shifty";
+
+"menu.circadian.phase.daylight" = "Дневной свет";
+"menu.circadian.phase.evening" = "Вечер";
+"menu.circadian.phase.deep_night" = "Глубокая ночь";
+"menu.circadian.paused" = "Приостановлено";
+"menu.circadian.next_format" = "%1$@ в %2$@";
+"menu.pause" = "Приостановить";
+"menu.pause_custom" = "Другое время…";
+"menu.resume_now" = "Возобновить сейчас";
+"menu.rules_for" = "Правила для %@";
+"menu.rules.header" = "Отключать Night Shift";
+"menu.rule.app_in_front" = "Когда %@ на переднем плане";
+"menu.rule.app_open" = "Когда %@ открыто";
+"menu.rule.on_site" = "На %@";
+"menu.rule.except_on_site" = "Кроме %@";
 
 "description.enabled" = "Включено";
 "description.enabled_sunrise" = "Включено до восхода солнца";
@@ -44,9 +44,71 @@
 "prefs.general" = "Главное";
 "prefs.shortcuts" = "Сокращения";
 "prefs.about" = "О программе";
+"prefs.rules" = "Правила";
 
-"alert.version_message" = "Эта версия macOS не поддерживает Night Shift";
-"alert.version_informative" = "Обновите свой Мак до версии 10.12.4 или выше для пользования Shifty.";
+"prefs.general.section.application" = "Приложение";
+"prefs.general.launch_at_login" = "Запускать Shifty при входе";
+"prefs.general.quick_toggle" = "Нажмите значок состояния, чтобы переключить Night Shift";
+"prefs.general.switch_icon" = "Менять значок в строке меню при отключении";
+"prefs.general.section.display" = "Дисплей";
+"prefs.general.sync_dark_mode" = "Синхронизировать тёмный режим с Night Shift";
+"prefs.general.show_kelvin" = "Показывать значения в кельвинах в ползунке меню";
+"prefs.general.section.website_shifting" = "Переключение на сайтах";
+"prefs.general.enable_website_shifting" = "Включить переключение на сайтах";
+"prefs.general.website_shifting_footer" = "Отслеживает браузер, чтобы отключать Night Shift для отдельных сайтов. Требуется доступ к Универсальному доступу.";
+"prefs.general.section.true_tone" = "True Tone";
+"prefs.general.disable_true_tone" = "Отключать True Tone по правилам Night Shift";
+"prefs.general.true_tone_footer" = "True Tone выключается, когда Night Shift отключён правилом приложения или сайта.";
+"prefs.general.section.night_shift_schedule" = "Расписание Night Shift";
+"prefs.general.schedule" = "Расписание";
+"prefs.general.schedule.off" = "Выключено";
+"prefs.general.schedule.solar" = "От заката до рассвета";
+"prefs.general.schedule.custom" = "Пользовательское";
+"prefs.general.schedule.from" = "С";
+"prefs.general.schedule.to" = "До";
+
+"prefs.rules.active_app" = "Активное приложение";
+"prefs.rules.when_running" = "Во время работы";
+"prefs.rules.websites" = "Сайты";
+"prefs.rules.domain_disabled" = "Домен отключён";
+"prefs.rules.subdomain_disabled" = "Субдомен отключён";
+"prefs.rules.subdomain_enabled" = "Субдомен включён";
+"prefs.rules.remove" = "Удалить правило";
+"prefs.rules.active_app_footer" = "Night Shift отключается, пока одно из этих приложений активно.";
+"prefs.rules.when_running_footer" = "Night Shift отключается, пока запущено одно из этих приложений.";
+"prefs.rules.websites_footer" = "Действует в поддерживаемых браузерах, если включено переключение на сайтах.";
+"prefs.rules.empty_title" = "Нет правил";
+"prefs.rules.empty_message" = "Отключите Night Shift для текущего приложения или сайта в меню Shifty.";
+
+"prefs.shortcuts.section.night_shift" = "Night Shift";
+"prefs.shortcuts.toggle_night_shift" = "Переключить Night Shift";
+"prefs.shortcuts.warmer" = "Теплее";
+"prefs.shortcuts.cooler" = "Холоднее";
+"prefs.shortcuts.section.disable_rules" = "Правила отключения";
+"prefs.shortcuts.disable_app" = "Отключить для приложения";
+"prefs.shortcuts.disable_domain" = "Отключить для домена";
+"prefs.shortcuts.disable_subdomain" = "Отключить для субдомена";
+"prefs.shortcuts.disable_hour" = "Отключить на один час";
+"prefs.shortcuts.disable_custom" = "Отключить на выбранное время";
+"prefs.shortcuts.section.true_tone" = "True Tone";
+"prefs.shortcuts.toggle_true_tone" = "Переключить True Tone";
+"prefs.shortcuts.section.dark_mode" = "Тёмный режим";
+"prefs.shortcuts.toggle_dark_mode" = "Переключить тёмный режим";
+"prefs.shortcuts.recorder.record" = "Записать сочетание клавиш";
+"prefs.shortcuts.recorder.type_shortcut" = "Введите сочетание клавиш…";
+"prefs.shortcuts.recorder.recording" = "Запись";
+"prefs.shortcuts.recorder.not_set" = "Не задано";
+"prefs.shortcuts.recorder.clear" = "Очистить сочетание клавиш";
+"prefs.shortcuts.recorder.help_format" = "%@: нажмите Пробел или Return для записи. Нажмите Delete для очистки.";
+
+"prefs.about.version_format" = "Версия %@";
+"prefs.about.check_updates" = "Проверить обновления";
+"prefs.about.visit_website" = "Открыть сайт";
+"prefs.about.send_feedback" = "Отправить отзыв";
+"prefs.about.donate" = "Поддержать";
+"prefs.about.help_translate" = "Помочь с переводом";
+"prefs.about.credits" = "Сведения об авторах";
+"prefs.about.copyright" = "© 2017–2026 Нэйт Томпсон · Лицензия GPLv3";
 
 "alert.hardware_message" = "Ваш Мак не поддерживает Night Shift";
 "alert.hardware_informative" = "Для использования Shifty нужен Мак новее.";
@@ -54,22 +116,17 @@
 "alert.accessibility_disabled_message" = "Универсальный доступ для Shifty не предоставлен";
 "alert.accessibility_disabled_informative" = "Универсальный доступ должен быть предоставлен для использования переключения на сайтах. Обеспечьте Shifty доступ в настройках Защиты и безопасности, расположенных в Системных настройках.";
 
-
 "alert.open_preferences" = "Откройте Системные настройки";
 "alert.not_now" = "Не сейчас";
 "alert.close" = "Закрыть";
 
-
-
-"analytics.includes_list_title" = "Какие данные собираются?";
-"analytics.includes_list_1" = "Информация о том, почему приложение сломалось";
-"analytics.includes_list_2" = "Данные об использовании разных функций в Shifty";
-"analytics.includes_list_3" = "Полезная информация о случаях, которые не приводят к поломке приложения";
-
-"analytics.doesnt_include_list_title" = "Какие данные не собираются?";
-"analytics.doesnt_include_list_1" = "Деликатные данные, к которым Shifty получает доступ (например сайты, для которых Вы переключаете режим)";
-"analytics.doesnt_include_list_2" = "Любые серийные номера или персональная информация";
-
-"analytics.data_usage_list_title" = "Что происходит с данными?";
-"analytics.data_usage_list_1" = "Ничто из этих данных не будет передано третьей стороне (да никому они и не интересны в любом случае)";
-"analytics.data_usage_list_2" = "Помогает решать проблемы и делать Shifty лучше";
+"prefs.circadian" = "Циркадный";
+"prefs.circadian.enable" = "Циркадный режим";
+"prefs.circadian.enable_footer" = "Постепенно делает экран теплее в течение вечера с учётом времени пробуждения и отхода ко сну.";
+"prefs.circadian.section.schedule" = "Расписание";
+"prefs.circadian.wake_time" = "Время пробуждения";
+"prefs.circadian.bedtime" = "Время отхода ко сну";
+"prefs.circadian.wind_down" = "Начало вечера";
+"prefs.circadian.before_bedtime_format" = "За %@ до сна";
+"prefs.circadian.section.warmth" = "Теплота";
+"prefs.circadian.night_warmth" = "Теплота ночью";

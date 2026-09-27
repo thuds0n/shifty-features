@@ -1,17 +1,34 @@
-Shifty was made to expand the capabilities of the built in Night Shift feature in macOS. You can disable Night Shift for specific apps, websites, and custom time periods. It also provides easy access to a slider to fine tune your color temperature. With Shifty, Night Shift becomes a power user feature!
+# Shifty
+
+Shifty expands the built-in Night Shift feature in macOS. It can disable Night Shift for specific apps, websites and custom time periods, expose global keyboard shortcuts, synchronise Dark Mode, and fine-tune colour temperature from the menu bar.
 
 <img src='docs/en/images/shifty-screenshot-large.png' width=70%>
 
-Shifty is customizable! Make it easier to toggle Night Shift with Quick Toggle or set dark mode based on the schedule. For common Shifty actions, you can set global keyboard shortcuts.
+Shifty is being modernised into a contextual circadian workspace optimiser. A three-phase scheduling foundation exists in the current codebase, but circadian scheduling, activity sensing, per-display calibration, App Intents and CLI tooling are not yet production-ready. The audited implementation status and delivery order live in [PLAN.md](PLAN.md).
 
 <img src="docs/en/images/prefs-general-screenshot-shadow.png" width=60%/>
 
-### System requirements:
-* macOS 10.12.4 or later
-* System meets the [requirements for Night Shift](https://support.apple.com/en-us/HT207513#requirements)
-* Website shifting supports Safari, Chrome, and Vivaldi.
+## System requirements
 
-<br>
-Shifty is free and open source, licensed under GPLv3. Feel free to make a pull request!
+- macOS 14 (Sonoma) or later.
+- A Mac that supports [Night Shift](https://support.apple.com/en-us/HT207513#requirements).
+- Accessibility and Automation permission for website shifting.
+- Website shifting supports Safari, Chrome, Chromium, Edge, Brave, Opera, Vivaldi and their variants.
+
+Shifty uses undocumented macOS display interfaces. Compatibility can change between macOS releases, so a successful build alone does not verify Night Shift or True Tone behaviour on every Mac.
+
+## Development
+
+Open `Shifty.xcodeproj` directly. Dependencies are managed with Swift Package Manager.
+
+```sh
+set -o pipefail
+xcodebuild build -project Shifty.xcodeproj -scheme Shifty -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO | xcbeautify
+
+set -o pipefail
+xcodebuild test -project Shifty.xcodeproj -scheme Shifty -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO -only-testing:ShiftyTests | xcbeautify
+```
+
+Shifty is free and open source under the GPLv3 licence. Contributions are welcome.
 
 If you'd like to help translate Shifty into other languages, you can contribute [here](https://shifty.natethompson.io/translate).

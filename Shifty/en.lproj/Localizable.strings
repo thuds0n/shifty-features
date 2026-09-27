@@ -9,32 +9,30 @@
 "general.ok" = "OK";
 "general.cancel" = "Cancel";
 
-"menu.toggle_on" = "Turn on Night Shift";
-"menu.toggle_off" = "Turn off Night Shift";
-"menu.disable_for" = "Disable for %@";
-"menu.disabled_for" = "Disabled for %@";
-"menu.disable_for_running_app" = "Disable when %@ is running";
-"menu.disabled_for_running_app" = "Disabled when %@ is running";
-"menu.enable_for" = "Enable for %@";
-"menu.enabled_for" = "Enabled for %@";
-
-"menu.disable_running_app" = "Disable when %@ is running";
-"menu.disabled_running_app" = "Disabled when %@ is running";
-"menu.disable_fullscreen" = "Only in full screen";
-
 "menu.disable_hour" = "Disable for an hour";
-"menu.disabled_hour" = "Disabled for an hour";
 "menu.disable_custom" = "Disable for custom time...";
-"menu.disabled_custom" = "Disabled for custom time";
 "menu.allow_browser_automation" = "Allow Website Shifting with %@";
 
-"menu.true_tone_on" = "Turn on True Tone";
-"menu.true_tone_off" = "Turn off True Tone";
 "menu.true_tone_unavailable" = "True Tone is not available";
 "menu.true_tone_disabled_for" = "True Tone is disabled for %@";
 
 "menu.preferences" = "Preferences...";
 "menu.quit" = "Quit Shifty";
+
+"menu.circadian.phase.daylight" = "Daylight";
+"menu.circadian.phase.evening" = "Evening";
+"menu.circadian.phase.deep_night" = "Deep Night";
+"menu.circadian.paused" = "Paused";
+"menu.circadian.next_format" = "%1$@ at %2$@";
+"menu.pause" = "Pause";
+"menu.pause_custom" = "Custom…";
+"menu.resume_now" = "Resume Now";
+"menu.rules_for" = "Rules for %@";
+"menu.rules.header" = "Turn Off Night Shift";
+"menu.rule.app_in_front" = "While %@ Is in Front";
+"menu.rule.app_open" = "While %@ Is Open";
+"menu.rule.on_site" = "On %@";
+"menu.rule.except_on_site" = "Except on %@";
 
 "description.enabled" = "Enabled";
 "description.enabled_sunrise" = "Enabled until sunrise";
@@ -46,9 +44,71 @@
 "prefs.general" = "General";
 "prefs.shortcuts" = "Shortcuts";
 "prefs.about" = "About";
+"prefs.rules" = "Rules";
 
-"alert.version_message" = "This version of macOS does not support Night Shift";
-"alert.version_informative" = "Update your Mac to version 10.12.4 or higher to use Shifty.";
+"prefs.general.section.application" = "Application";
+"prefs.general.launch_at_login" = "Launch at Login";
+"prefs.general.quick_toggle" = "Click Status Icon to Toggle Night Shift";
+"prefs.general.switch_icon" = "Switch Menu Bar Icon when Disabled";
+"prefs.general.section.display" = "Display";
+"prefs.general.sync_dark_mode" = "Sync Dark Mode with Night Shift";
+"prefs.general.show_kelvin" = "Show Kelvin Values in Menu Slider";
+"prefs.general.section.website_shifting" = "Website Shifting";
+"prefs.general.enable_website_shifting" = "Enable Website Shifting";
+"prefs.general.website_shifting_footer" = "Monitors your browser to disable Night Shift per website. Requires Accessibility access.";
+"prefs.general.section.true_tone" = "True Tone";
+"prefs.general.disable_true_tone" = "Disable True Tone with Night Shift Rules";
+"prefs.general.true_tone_footer" = "True Tone turns off when Night Shift is disabled by an app or website rule.";
+"prefs.general.section.night_shift_schedule" = "Night Shift Schedule";
+"prefs.general.schedule" = "Schedule";
+"prefs.general.schedule.off" = "Off";
+"prefs.general.schedule.solar" = "Sunset to Sunrise";
+"prefs.general.schedule.custom" = "Custom";
+"prefs.general.schedule.from" = "From";
+"prefs.general.schedule.to" = "To";
+
+"prefs.rules.active_app" = "Active App";
+"prefs.rules.when_running" = "When Running";
+"prefs.rules.websites" = "Websites";
+"prefs.rules.domain_disabled" = "Domain disabled";
+"prefs.rules.subdomain_disabled" = "Subdomain disabled";
+"prefs.rules.subdomain_enabled" = "Subdomain enabled";
+"prefs.rules.remove" = "Remove Rule";
+"prefs.rules.active_app_footer" = "Night Shift turns off while one of these apps is in front.";
+"prefs.rules.when_running_footer" = "Night Shift turns off while any of these apps is running.";
+"prefs.rules.websites_footer" = "Applies in supported browsers when Website Shifting is on.";
+"prefs.rules.empty_title" = "No Rules";
+"prefs.rules.empty_message" = "Use the Shifty menu to turn Night Shift off for the app or website you’re using.";
+
+"prefs.shortcuts.section.night_shift" = "Night Shift";
+"prefs.shortcuts.toggle_night_shift" = "Toggle Night Shift";
+"prefs.shortcuts.warmer" = "Warmer";
+"prefs.shortcuts.cooler" = "Cooler";
+"prefs.shortcuts.section.disable_rules" = "Disable Rules";
+"prefs.shortcuts.disable_app" = "Disable for App";
+"prefs.shortcuts.disable_domain" = "Disable for Domain";
+"prefs.shortcuts.disable_subdomain" = "Disable for Subdomain";
+"prefs.shortcuts.disable_hour" = "Disable for One Hour";
+"prefs.shortcuts.disable_custom" = "Disable for Custom Time";
+"prefs.shortcuts.section.true_tone" = "True Tone";
+"prefs.shortcuts.toggle_true_tone" = "Toggle True Tone";
+"prefs.shortcuts.section.dark_mode" = "Dark Mode";
+"prefs.shortcuts.toggle_dark_mode" = "Toggle Dark Mode";
+"prefs.shortcuts.recorder.record" = "Record Shortcut";
+"prefs.shortcuts.recorder.type_shortcut" = "Type Shortcut…";
+"prefs.shortcuts.recorder.recording" = "Recording";
+"prefs.shortcuts.recorder.not_set" = "Not set";
+"prefs.shortcuts.recorder.clear" = "Clear shortcut";
+"prefs.shortcuts.recorder.help_format" = "%@: Press Space or Return to record. Press Delete to clear.";
+
+"prefs.about.version_format" = "Version %@";
+"prefs.about.check_updates" = "Check for Updates";
+"prefs.about.visit_website" = "Visit Website";
+"prefs.about.send_feedback" = "Send Feedback";
+"prefs.about.donate" = "Donate";
+"prefs.about.help_translate" = "Help Translate";
+"prefs.about.credits" = "Credits";
+"prefs.about.copyright" = "© 2017–2026 Nate Thompson · GPLv3 Licence";
 
 "alert.hardware_message" = "Your Mac does not support Night Shift";
 "alert.hardware_informative" = "A newer Mac is required to use Shifty.";
@@ -56,23 +116,17 @@
 "alert.accessibility_disabled_message" = "Accessibility permissions for Shifty have been disabled";
 "alert.accessibility_disabled_informative" = "Accessibility control must be allowed to enable Website Shifting. Grant access to Shifty in Security & Privacy preferences, located in System Preferences.";
 
-
 "alert.open_preferences" = "Open System Preferences";
 "alert.not_now" = "Not now";
 "alert.close" = "Close";
 
-
-
-"analytics.includes_list_title" = "What data is collected?";
-"analytics.includes_list_1" = "Information about what caused a crash";
-"analytics.includes_list_2" = "Data about the usage of various features in Shifty";
-"analytics.includes_list_3" = "Useful information about issues that don’t cause the app to crash";
-
-"analytics.doesnt_include_list_title" = "What data isn't collected?";
-"analytics.doesnt_include_list_1" = "Sensitive data Shifty is granted permission to access (e.g. web addresses used for Website Shifting)";
-"analytics.doesnt_include_list_2" = "Any device IDs or personally identifiable information";
-
-"analytics.data_usage_list_title" = "What happens to the data?";
-"analytics.data_usage_list_1" = "None of this data is sold to anyone (and nobody would want to buy it anyways)";
-"analytics.data_usage_list_2" = "Helps to resolve problems and make Shifty better";
-
+"prefs.circadian" = "Circadian";
+"prefs.circadian.enable" = "Circadian Mode";
+"prefs.circadian.enable_footer" = "Gradually warms the display through the evening, based on when you wake up and go to bed.";
+"prefs.circadian.section.schedule" = "Schedule";
+"prefs.circadian.wake_time" = "Wake time";
+"prefs.circadian.bedtime" = "Bedtime";
+"prefs.circadian.wind_down" = "Evening begins";
+"prefs.circadian.before_bedtime_format" = "%@ before bedtime";
+"prefs.circadian.section.warmth" = "Warmth";
+"prefs.circadian.night_warmth" = "Night warmth";

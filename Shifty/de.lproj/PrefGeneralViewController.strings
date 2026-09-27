@@ -37,7 +37,6 @@
 /* Class = "NSTextFieldCell"; title = "to:"; ObjectID = "aNq-H7-I2m"; */
 "aNq-H7-I2m.title" = "bis:";
 
-/* Class = "NSButtonCell"; title = "Share anonymous crash data and analytics"; ObjectID = "ar0-8I-WmN"; */
 "ar0-8I-WmN.title" = "Anonyme Absturz- und Analysedaten teilen";
 
 /* Class = "NSButtonCell"; title = "Launch Shifty at login"; ObjectID = "bxC-lM-Pei"; */
