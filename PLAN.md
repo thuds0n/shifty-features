@@ -22,7 +22,7 @@ This remains a direct-download macOS utility. Shifty currently depends on undocu
 |---|---|---|
 | Debug build | Implemented | Native arm64 build succeeded with code signing disabled |
 | Release build | Implemented | Universal arm64/x86_64 Release build succeeded with code signing disabled |
-| Unit tests | Implemented, growing | 50 tests pass: 28 circadian/workspace, 14 `NightShiftManager`/policy/ramp, 6 `RuleManager` and 2 preference localisation/accessibility tests |
+| Unit tests | Implemented, growing | 51 tests pass: 28 circadian/workspace, 14 `NightShiftManager`/policy/ramp, 7 `RuleManager` and 2 preference localisation/accessibility tests |
 | Xcode static analysis | Implemented | `xcodebuild analyze` succeeded |
 | Swift 5 complete-concurrency diagnostics | Pending | Build succeeds but reports extensive isolation and `Sendable` warnings |
 | Swift 6 build | Blocked | Fails first in AXSwift 0.3.2; application isolation errors remain behind it |
