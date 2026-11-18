@@ -8,18 +8,35 @@
 
 import Cocoa
 import Intents
+import SwiftUI
 
 @NSApplicationMain
 @MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+    static let isUnitTestHost: Bool = {
+        #if DEBUG
+        ProcessInfo.processInfo.environment["SHIFTY_UNIT_TEST_HOST"] == "1"
+        #else
+        false
+        #endif
+    }()
+
+    static var preferencesTestProfile: UUID? {
+        #if DEBUG
+        ProcessInfo.processInfo.environment["SHIFTY_PREFERENCES_TEST_PROFILE"].flatMap(UUID.init(uuidString:))
+        #else
+        nil
+        #endif
+    }
+
     let prefs = UserDefaults.standard
-    let integrations = SystemIntegration.shared
+    lazy var integrations = SystemIntegration.shared
     @IBOutlet weak var statusMenu: NSMenu!
-    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    lazy var statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var statusItemClicked: (() -> Void)?
     private var suppressStatusToggleUntil: Date = .distantPast
-    private let circadianCoordinator = CircadianWorkspaceCoordinator.shared
+    private lazy var circadianCoordinator = CircadianWorkspaceCoordinator.shared
 
     lazy var preferenceWindowController: PrefWindowController = {
         // Every pane shares one size so switching tabs doesn't resize the window.
@@ -37,7 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             image: NSImage(systemSymbolName: "sun.horizon", accessibilityDescription: nil),
             label: NSLocalizedString("prefs.circadian", comment: "Circadian"),
             size: paneSize,
-            rootView: PrefCircadianView())
+            rootView: PrefCircadianView(coordinator: circadianCoordinator))
 
         let shortcuts = HostedPreferencePane(
             identifier: "shortcuts",
@@ -69,6 +86,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var setupWindowController: NSWindowController!
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        #if DEBUG
+        if let profile = Self.preferencesTestProfile {
+            showTestPreferences(profile: profile)
+            return
+        }
+        #endif
+        guard !Self.isUnitTestHost else { return }
         _ = PrefManager.shared
 
         UserDefaults.standard.register(defaults: ["NSApplicationCrashOnExceptions": true])
@@ -261,6 +285,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
+        guard !Self.isUnitTestHost, Self.preferencesTestProfile == nil else { return }
         circadianCoordinator.stop()
         logw("App terminated")
     }
@@ -291,3 +316,61 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return nil
     }
 }
+
+#if DEBUG
+private extension AppDelegate {
+    func showTestPreferences(profile: UUID) {
+        let suite = "ShiftyUITests.\(profile.uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        if ProcessInfo.processInfo.environment["SHIFTY_RESET_TEST_PROFILE"] == "1" {
+            defaults.removePersistentDomain(forName: suite)
+        }
+        let pane: NSViewController & PreferencesPane
+        if ProcessInfo.processInfo.environment["SHIFTY_PREFERENCES_TEST_PANE"] == "shortcuts" {
+            pane = HostedPreferencePane(
+                identifier: "shortcuts", image: NSImage(systemSymbolName: "keyboard", accessibilityDescription: nil),
+                label: NSLocalizedString("prefs.shortcuts", comment: "Shortcuts"), size: PrefWindowController.paneSize,
+                rootView: PrefShortcutsView(defaults: defaults, showsTrueTone: true))
+        } else {
+            pane = makeTestCircadianPane(defaults: defaults)
+        }
+        preferenceWindowController = PrefWindowController(
+            viewControllers: [pane], title: NSLocalizedString("prefs.title", comment: "Preferences"),
+            remembersPosition: false)
+        preferenceWindowController.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func makeTestCircadianPane(defaults: UserDefaults) -> NSViewController & PreferencesPane {
+        defaults.register(defaults: [Keys.isCircadianModeEnabled: true])
+        let coordinator = CircadianWorkspaceCoordinator(
+            transition: CircadianTransitionEngine(),
+            activityOverride: ActivityOverrideManager(notificationCenter: NotificationCenter(), frontmostBundleIdentifier: { nil }),
+            automationBridge: DisabledCircadianAutomationBridge(),
+            nightShift: PreferencesTestDisplay(),
+            modeStore: UserDefaultsCircadianModeStore(defaults: defaults),
+            configurationStore: UserDefaultsCircadianConfigurationStore(defaults: defaults),
+            clock: PreferencesTestClock())
+        return HostedPreferencePane(
+            identifier: "circadian", image: NSImage(systemSymbolName: "sun.horizon", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.circadian", comment: "Circadian"), size: PrefWindowController.paneSize,
+            rootView: PrefCircadianView(coordinator: coordinator).defaultAppStorage(defaults))
+    }
+}
+
+private struct PreferencesTestClock: WorkspaceClock {
+    let now = Calendar.current.date(from: DateComponents(year: 2026, month: 8, day: 9, hour: 21))!
+}
+
+private final class PreferencesTestDisplay: WorkspaceNightShiftControlling {
+    var currentWorkspaceOutput = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.5)
+    var isPaused = false
+
+    func applyWorkspacePolicyDecision(_ decision: WorkspacePolicyDecision) {
+        if case .applyStrength(let strength) = decision { currentWorkspaceOutput.colorTemperature = strength }
+    }
+
+    func pause(for duration: TimeInterval) { isPaused = true }
+    func resumeFromPause() { isPaused = false }
+}
+#endif

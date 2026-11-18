@@ -57,7 +57,7 @@ struct PrefCircadianView: View {
     @State private var configuration = CircadianCurveConfiguration.default
     @State private var hasLoaded = false
 
-    private var coordinator: CircadianWorkspaceCoordinator { .shared }
+    let coordinator: CircadianWorkspaceCoordinator
 
     var body: some View {
         Form {
@@ -65,9 +65,9 @@ struct PrefCircadianView: View {
                 Toggle("prefs.circadian.enable", isOn: $isEnabled)
                     .onChange(of: isEnabled) { _, _ in coordinator.applyNow() }
 
-                TimelineView(.everyMinute) { context in
+                TimelineView(.everyMinute) { _ in
                     VStack(alignment: .leading, spacing: 6) {
-                        CircadianScheduleStrip(configuration: configuration, now: context.date)
+                        CircadianScheduleStrip(configuration: configuration, now: coordinator.now)
                         if isEnabled {
                             Text(coordinator.currentStatus().displayText(timeFormatter: .circadianTime))
                                 .font(.callout)
@@ -84,6 +84,7 @@ struct PrefCircadianView: View {
             Section("prefs.circadian.section.schedule") {
                 DatePicker("prefs.circadian.wake_time", selection: timeBinding(\.wakeTime), displayedComponents: .hourAndMinute)
                 DatePicker("prefs.circadian.bedtime", selection: timeBinding(\.bedtime), displayedComponents: .hourAndMinute)
+                    .accessibilityIdentifier("circadian.bedtime")
                 Picker("prefs.circadian.wind_down", selection: binding(\.eveningLeadTime)) {
                     ForEach(windDownChoices, id: \.self) { leadTime in
                         Text(windDownLabel(leadTime)).tag(leadTime)

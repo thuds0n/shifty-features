@@ -3,6 +3,11 @@ import XCTest
 @testable import Shifty
 
 final class PreferenceAccessibilityTests: XCTestCase {
+    @MainActor
+    func testSchemeUsesTheIsolatedAppHost() {
+        XCTAssertTrue(AppDelegate.isUnitTestHost)
+    }
+
     private let preferenceKeys = [
         "prefs.rules",
         "prefs.general.section.application",
@@ -113,12 +118,11 @@ final class PreferenceAccessibilityTests: XCTestCase {
 
     func testShortcutRecorderSupportsKeyboardRecordingAndClearing() throws {
         let defaultsKey = "PreferenceAccessibilityTests.shortcut"
-        UserDefaults.standard.removeObject(forKey: defaultsKey)
-        defer { UserDefaults.standard.removeObject(forKey: defaultsKey) }
+        let defaults = try makeIsolatedDefaults()
 
         let recorder = MASShortcutView()
         recorder.accessibilityLabelText = "Toggle Night Shift"
-        recorder.setAssociatedUserDefaultsKey(defaultsKey, with: MASDictionaryTransformer())
+        recorder.setAssociatedUserDefaultsKey(defaultsKey, with: MASDictionaryTransformer(), defaults: defaults)
 
         XCTAssertTrue(recorder.acceptsFirstResponder)
         XCTAssertEqual(recorder.accessibilityRole(), .button)
@@ -132,11 +136,11 @@ final class PreferenceAccessibilityTests: XCTestCase {
 
         recorder.keyDown(with: try keyEvent(keyCode: kVK_ANSI_A, modifiers: .command))
         XCTAssertEqual(recorder.shortcutValue?.displayString, "⌘A")
-        XCTAssertNotNil(UserDefaults.standard.dictionary(forKey: defaultsKey))
+        XCTAssertNotNil(defaults.dictionary(forKey: defaultsKey))
 
         recorder.keyDown(with: try keyEvent(keyCode: kVK_ForwardDelete))
         XCTAssertNil(recorder.shortcutValue)
-        XCTAssertNil(UserDefaults.standard.object(forKey: defaultsKey))
+        XCTAssertNil(defaults.object(forKey: defaultsKey))
     }
 
     private func keyEvent(

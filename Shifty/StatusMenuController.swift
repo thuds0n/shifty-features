@@ -10,7 +10,7 @@ import Cocoa
 
 @MainActor
 class StatusMenuController: NSObject, NSMenuDelegate {
-    let integrations = SystemIntegration.shared
+    lazy var integrations = SystemIntegration.shared
 
     private var circadianModeMenuItem = NSMenuItem()
     private var darkModeMenuItem = NSMenuItem()
@@ -59,6 +59,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     //MARK: Menu life cycle
 
     override func awakeFromNib() {
+        guard !AppDelegate.isUnitTestHost, AppDelegate.preferencesTestProfile == nil else { return }
         statusMenu.delegate = self
         customTimeWindow = CustomTimeWindow()
         

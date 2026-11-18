@@ -177,6 +177,8 @@ final class CircadianWorkspaceCoordinator {
         transition.configuration = configurationStore.configuration
     }
 
+    var now: Date { clock.now }
+
     var configuration: CircadianCurveConfiguration {
         transition.configuration
     }

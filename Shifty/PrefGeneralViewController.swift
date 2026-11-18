@@ -82,7 +82,7 @@ class PrefWindowController: NSWindowController {
     private let tabController: PreferencesTabViewController
     var viewControllers: [NSViewController] { paneViewControllers }
 
-    init(viewControllers: [NSViewController & PreferencesPane], title: String) {
+    init(viewControllers: [NSViewController & PreferencesPane], title: String, remembersPosition: Bool = true) {
         self.paneViewControllers = viewControllers
         self.preferencesTitle = title
         self.tabController = PreferencesTabViewController(panes: viewControllers)
@@ -97,7 +97,7 @@ class PrefWindowController: NSWindowController {
 
         // Start centred, then remember wherever the user moves it.
         window.center()
-        window.setFrameAutosaveName("PreferencesWindow")
+        if remembersPosition { window.setFrameAutosaveName("PreferencesWindow") }
     }
 
     required init?(coder: NSCoder) {

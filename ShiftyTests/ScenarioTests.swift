@@ -5,26 +5,23 @@ import XCTest
 /// `CircadianWorkspaceCoordinator` together. Only the system edges are faked:
 /// CoreBrightness, the clock, the frontmost app and the current website.
 final class ScenarioTests: XCTestCase {
-    private static let suiteName = "ScenarioTests"
-
     private var client: ScenarioNightShiftClient!
     private var context: FakeRuleContext!
-    private var defaults: UserDefaults!
+    private var pauseTimer: ManualPauseTimer!
     private var rules: RuleManager!
     private var nightShift: NightShiftManager!
 
-    override func setUp() {
-        super.setUp()
-        UserDefaults.standard.set(false, forKey: Keys.trueToneControl)
-        UserDefaults.standard.set(false, forKey: Keys.isDarkModeSyncEnabled)
-        defaults = UserDefaults(suiteName: Self.suiteName)
-        defaults.removePersistentDomain(forName: Self.suiteName)
-
+    override func setUpWithError() throws {
+        let defaults = try makeIsolatedDefaults()
+        pauseTimer = ManualPauseTimer()
         client = ScenarioNightShiftClient()
         context = FakeRuleContext()
         nightShift = NightShiftManager(
             client: client,
             rampScheduler: ImmediateScenarioRampScheduler(),
+            defaults: defaults,
+            makePauseTimer: pauseTimer.schedule,
+            wakeNotificationCenter: NotificationCenter(),
             ruleManager: { [unowned self] in self.rules })
         rules = RuleManager(
             defaults: defaults,
@@ -37,7 +34,6 @@ final class ScenarioTests: XCTestCase {
 
     override func tearDown() {
         nightShift.invalidateDisableTimer()
-        defaults.removePersistentDomain(forName: Self.suiteName)
         rules = nil
         nightShift = nil
         super.tearDown()
@@ -49,7 +45,7 @@ final class ScenarioTests: XCTestCase {
         client.scheduledState = true
         client.isNightShiftEnabled = true
 
-        startPause(minutes: 10)
+        nightShift.pause(for: 600)
         XCTAssertTrue(nightShift.isPaused)
         XCTAssertFalse(client.isNightShiftEnabled)
 
@@ -66,12 +62,28 @@ final class ScenarioTests: XCTestCase {
         context.frontmost = "com.example.editor"
         rules.addCurrentAppDisableRule(bundleIdentifier: "com.example.editor")
 
-        startPause(minutes: 10)
+        nightShift.pause(for: 600)
         rules.removeCurrentAppDisableRule(bundleIdentifier: "com.example.editor")
 
         XCTAssertFalse(client.isNightShiftEnabled, "The pause still holds after the rule is removed")
         nightShift.resumeFromPause()
         XCTAssertTrue(client.isNightShiftEnabled, "Resuming hands back to the schedule")
+    }
+
+    func testPauseExpiryDefersToAnActiveRuleThenHandsBackToTheSchedule() {
+        client.scheduledState = true
+        client.isNightShiftEnabled = true
+        context.frontmost = "com.example.editor"
+        nightShift.pause(for: 600)
+        rules.addCurrentAppDisableRule(bundleIdentifier: "com.example.editor")
+
+        pauseTimer.deliverExpiry()
+
+        XCTAssertFalse(nightShift.isPaused)
+        XCTAssertFalse(client.isNightShiftEnabled, "The rule still applies after the pause expires")
+        XCTAssertTrue(client.strengthWrites.isEmpty)
+        switchTo("com.apple.finder")
+        XCTAssertTrue(client.isNightShiftEnabled, "The schedule applies again after leaving the rule")
     }
 
     // MARK: App rules
@@ -195,13 +207,6 @@ final class ScenarioTests: XCTestCase {
 
     // MARK: Helpers
 
-    private func startPause(minutes: Int) {
-        let started = expectation(description: "Pause started")
-        nightShift.pause(for: TimeInterval(minutes * 60))
-        DispatchQueue.main.async { started.fulfill() }
-        wait(for: [started], timeout: 1)
-    }
-
     private func switchTo(_ bundleIdentifier: String) {
         context.frontmost = bundleIdentifier
         rules.evaluateCurrentContext()
@@ -273,7 +278,7 @@ private final class ScenarioNightShiftClient: NightShiftSystemControlling {
     }
 }
 
-private final class FakeRuleContext: RuleContextProviding {
+final class FakeRuleContext: RuleContextProviding {
     var frontmost: String?
     var running: [String] = []
     var website = WebsiteContext(domain: nil, subdomain: nil)
