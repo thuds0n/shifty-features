@@ -555,13 +555,7 @@ class StatusMenuController: NSObject, NSMenuDelegate {
     }
 
     @IBAction func disableForDomain(_ sender: Any) {
-        guard let currentDomain = BrowserManager.shared.currentDomain else { return }
-        
-        if RuleManager.shared.isDisabledForDomain {
-            RuleManager.shared.removeDomainDisableRule(forDomain: currentDomain)
-        } else {
-            RuleManager.shared.addDomainDisableRule(forDomain: currentDomain)
-        }
+        RuleManager.shared.toggleCurrentDomainDisableRule()
     }
     
     

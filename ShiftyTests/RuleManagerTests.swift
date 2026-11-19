@@ -39,11 +39,14 @@ final class RuleManagerTests: XCTestCase {
         XCTAssertEqual(events, [.nightShiftDisableRuleDeactivated])
     }
 
-    func testAddAndRemoveDomainDisableRuleUpdatesRulesAndEmitsEvents() {
-        let manager = makeManager()
+    func testTogglingCurrentDomainDisableRuleUpdatesRulesAndEmitsEvents() {
+        let context = FakeRuleContext()
+        context.website = WebsiteContext(domain: "example.com", subdomain: "www.example.com")
+        let manager = makeManager(context: context)
 
-        manager.addDomainDisableRule(forDomain: "example.com")
-        manager.removeDomainDisableRule(forDomain: "example.com")
+        manager.toggleCurrentDomainDisableRule()
+        XCTAssertTrue(manager.isDisabledForDomain)
+        manager.toggleCurrentDomainDisableRule()
 
         XCTAssertFalse(manager.browserRules.contains(BrowserRule(type: .domain, host: "example.com")))
         XCTAssertEqual(events, [.nightShiftDisableRuleActivated, .nightShiftDisableRuleDeactivated])
@@ -87,10 +90,10 @@ final class RuleManagerTests: XCTestCase {
         wait(for: [posted], timeout: 1)
     }
 
-    private func makeManager() -> RuleManager {
+    private func makeManager(context: FakeRuleContext = FakeRuleContext()) -> RuleManager {
         RuleManager(
             defaults: defaults,
-            context: FakeRuleContext(),
+            context: context,
             notificationCenter: NotificationCenter()
         ) { [weak self] event in
             self?.events.append(event)

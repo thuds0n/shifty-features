@@ -91,31 +91,41 @@ struct WebsiteContext: Equatable {
 
 class BrowserManager {
     static var shared = BrowserManager()
-    let integrations = SystemIntegration.shared
+    private let currentApplication: () -> NSRunningApplication?
+    private let isWebsiteShiftingEnabled: () -> Bool
+
+    init(currentApplication: @escaping () -> NSRunningApplication? = { NSWorkspace.shared.menuBarOwningApplication },
+         isWebsiteShiftingEnabled: @escaping () -> Bool = { UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled) }) {
+        self.currentApplication = currentApplication
+        self.isWebsiteShiftingEnabled = isWebsiteShiftingEnabled
+    }
 
     private let domainParser = try? DomainParser()
 
     private var browserObserver: Observer?
     private var observedApp: Application?
     private var focusedWindow: UIElement?
+    private var browserWatchID: UUID?
+    private var refreshQueued = false
 
-    private var cachedBrowsers: [SupportedBrowserID: BrowserProtocol] = [:]
+    private var cachedBrowsers: [SupportedBrowserID: (pid: pid_t, browser: BrowserProtocol)] = [:]
     
     
     var currentURL: URL? {
-        if !UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled) {
+        if !isWebsiteShiftingEnabled() {
             return nil
         }
-        guard let application = RuleManager.shared.currentApp,
+        guard let application = currentApplication(),
             let browserID = SupportedBrowserID(application) else {
                 return nil
         }
         
-        if let cachedBrowser = cachedBrowsers[browserID] {
-            return url(for: cachedBrowser, withBundleID: browserID)
+        let pid = application.processIdentifier
+        if let cached = cachedBrowsers[browserID], cached.pid == pid {
+            return url(for: cached.browser, withBundleID: browserID)
             
-        } else if let browser = SBApplication(bundleIdentifier: browserID.rawValue) {
-            cachedBrowsers[browserID] = browser
+        } else if let browser = SBApplication(processIdentifier: pid) {
+            cachedBrowsers[browserID] = (pid, browser)
             return url(for: browser, withBundleID: browserID)
         } else {
             return nil
@@ -141,11 +151,11 @@ class BrowserManager {
     
     
     var currentAppIsSupportedBrowser: Bool {
-        if !UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled) {
+        if !isWebsiteShiftingEnabled() {
             return false
         }
         
-        guard let currentApp = RuleManager.shared.currentApp else { return false }
+        guard let currentApp = currentApplication() else { return false }
         return SupportedBrowserID(currentApp) != nil
     }
     
@@ -155,9 +165,9 @@ class BrowserManager {
     /// Blocks main thread if user is prompted for consent.
     /// I don't think this is currently an issue since the prompt will appear when the browser becomes the current app.
     var permissionToAutomateCurrentApp: PrivacyConsentState {
-        guard let bundleID = RuleManager.shared.currentApp?.bundleIdentifier else { return .undetermined }
+        guard let bundleID = currentApplication()?.bundleIdentifier else { return .undetermined }
 
-        return integrations.permissions.automationConsent(forBundleIdentifier: bundleID)
+        return SystemIntegration.shared.permissions.automationConsent(forBundleIdentifier: bundleID)
     }
     
     
@@ -175,12 +185,16 @@ class BrowserManager {
     
     
     func updateForSupportedBrowser() {
-        guard let pid = NSWorkspace.shared.menuBarOwningApplication?.processIdentifier else { return }
-        
-        if UserDefaults.standard.bool(forKey: Keys.isWebsiteControlEnabled) {
-            tryStartBrowserWatcher(repeatCount: 0, processIdentifier: pid, callback: fireNightShiftEvent)
-            fireNightShiftEvent()
-        }
+        watchCurrentBrowser { [weak self] in self?.fireNightShiftEvent() }
+    }
+
+    func watchCurrentBrowser(onWebsiteChange: @escaping () -> Void) {
+        stopBrowserWatcher()
+        guard isWebsiteShiftingEnabled(), let app = currentApplication(), let browser = SupportedBrowserID(app) else { return }
+        let watchID = UUID()
+        browserWatchID = watchID
+        tryStartBrowserWatcher(watchID, browser: browser, pid: app.processIdentifier, retries: 10, onWebsiteChange)
+        onWebsiteChange()
     }
     
     private func fireNightShiftEvent() {
@@ -191,26 +205,20 @@ class BrowserManager {
     
     
     
-    // When browser is launching, we're not able to add a notification right away, so we need to try again.
+    // A newly launched browser may not expose its accessibility elements yet.
     private func tryStartBrowserWatcher(
-        repeatCount: Int,
-        processIdentifier: pid_t,
-        callback: @escaping () -> Void)
-    {
-        let maxTries = 10
-        
+        _ watchID: UUID, browser: SupportedBrowserID, pid: pid_t, retries: Int, _ callback: @escaping () -> Void
+    ) {
+        guard isCurrentWatch(watchID, pid: pid) else { return }
         do {
-            try startBrowserWatcher(processIdentifier, callback: callback)
-        } catch let error {
-            if repeatCount < maxTries {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.tryStartBrowserWatcher(
-                        repeatCount: repeatCount + 1,
-                        processIdentifier: processIdentifier,
-                        callback: callback)
+            try startBrowserWatcher(watchID, browser: browser, pid: pid, callback)
+        } catch {
+            if retries > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.tryStartBrowserWatcher(watchID, browser: browser, pid: pid, retries: retries - 1, callback)
                 }
             } else {
-                logw("Error: Could not watch app [\(processIdentifier)]: \(error)")
+                logw("Error: Could not watch app [\(pid)]: \(error)")
             }
         }
     }
@@ -218,47 +226,65 @@ class BrowserManager {
     
     
     private func startBrowserWatcher(
-        _ processIdentifier: pid_t,
-        callback: @escaping () -> Void) throws
-    {
-        guard let observedApp = Application(forProcessID: processIdentifier) else { return }
-        
-        browserObserver = observedApp.createObserver { (
-            observer: Observer,
-            element: UIElement,
-            event: AXNotification,
-            info: [String: AnyObject]?) in
-            
-            switch event {
-            case .valueChanged, .uiElementDestroyed:
-                if element == self.focusedWindow {
-                    fallthrough
-                }
-                if let role = try? element.role(), role == .staticText {
-                    fallthrough
-                }
-            case .focusedWindowChanged:
-                do {
-                    self.focusedWindow  = try observedApp.attribute(.focusedWindow)
-                } catch {
-                    logw("Error: Unable to obtain focused window: \(error)")
-                }
-                DispatchQueue.main.async {
-                    callback()
-                }
-            default:
-                logw("Error: Unexpected notification \(event) received")
+        _ watchID: UUID, browser: SupportedBrowserID, pid: pid_t, _ callback: @escaping () -> Void
+    ) throws {
+        guard let app = Application(forProcessID: pid) else { return }
+        let observer = try Observer(processID: pid) { [weak self] _, element, event, _ in
+            guard let self, self.isCurrentWatch(watchID, pid: pid) else { return }
+            guard event == .focusedWindowChanged || element == self.focusedWindow
+                    || (try? element.role()) == .staticText
+                    || (event == .valueChanged && self.isChromeToolbarField(element, browser: browser)) else { return }
+
+            self.focusedWindow = try? app.attribute(.focusedWindow)
+            guard !self.refreshQueued else { return }
+            self.refreshQueued = true
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.browserWatchID == watchID else { return }
+                self.refreshQueued = false
+                guard self.isCurrentWatch(watchID, pid: pid) else { return }
+                callback()
             }
         }
-        try browserObserver?.addNotification(.valueChanged, forElement: observedApp)
-        try browserObserver?.addNotification(.focusedWindowChanged, forElement: observedApp)
-        try browserObserver?.addNotification(.uiElementDestroyed, forElement: observedApp)
-        focusedWindow = try observedApp.attribute(.focusedWindow)
+        try observer.addNotification(.valueChanged, forElement: app)
+        try observer.addNotification(.focusedWindowChanged, forElement: app)
+        try observer.addNotification(.uiElementDestroyed, forElement: app)
+        focusedWindow = try app.attribute(.focusedWindow)
+        observedApp = app
+        browserObserver = observer
+    }
+
+    private func isCurrentWatch(_ watchID: UUID, pid: pid_t) -> Bool {
+        browserWatchID == watchID && isWebsiteShiftingEnabled() && currentApplication()?.processIdentifier == pid
+    }
+
+    private func isChromeToolbarField(_ element: UIElement, browser: SupportedBrowserID) -> Bool {
+        switch browser {
+        case .chrome, .chromeCanary, .chromium: break
+        default: return false
+        }
+        guard let role = try? element.role(), role == .textField || role == .comboBox else { return false }
+
+        // Chrome updates the toolbar field when the selected tab changes.
+        // Ignore fields inside a page, including those in web toolbars.
+        var node = element
+        var inToolbar = false
+        for _ in 0..<8 {
+            guard let parent: UIElement = try? node.attribute(.parent),
+                  let role: String = try? parent.attribute(.role),
+                  role != "AXWebArea" else { return false }
+            if role == Role.window.rawValue { return inToolbar }
+            inToolbar = inToolbar || role == Role.toolbar.rawValue
+            node = parent
+        }
+        return false
     }
     
     
     
     func stopBrowserWatcher() {
+        browserWatchID = nil
+        refreshQueued = false
+        focusedWindow = nil
         guard let browserObserver = browserObserver else { return }
         
         if let observedApp = observedApp {
@@ -271,7 +297,6 @@ class BrowserManager {
             }
             self.observedApp = nil
         }
-        focusedWindow = nil
         browserObserver.stop()
         self.browserObserver = nil
     }
@@ -327,7 +352,7 @@ class BrowserManager {
     
     
     private func safariFullScreenURL(for browser: BrowserProtocol) throws -> URL? {
-        guard let app = RuleManager.shared.currentApp,
+        guard let app = currentApplication(),
             let axapp = Application(app),
             let axwin: UIElement = try axapp.attribute(.focusedWindow),
             let axwin_children: [UIElement] = try axwin.arrayAttribute(.children)
