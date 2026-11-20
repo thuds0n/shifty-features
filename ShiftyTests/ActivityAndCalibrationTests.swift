@@ -89,19 +89,10 @@ final class ActivityOverrideManagerTests: XCTestCase {
 }
 
 final class DisplayCalibrationStoreTests: XCTestCase {
-    private static let suiteName = "DisplayCalibrationStoreTests"
     private var defaults: UserDefaults!
 
-    override func setUp() {
-        super.setUp()
-        defaults = UserDefaults(suiteName: Self.suiteName)
-        defaults.removePersistentDomain(forName: Self.suiteName)
-    }
-
-    override func tearDown() {
-        defaults.removePersistentDomain(forName: Self.suiteName)
-        defaults = nil
-        super.tearDown()
+    override func setUpWithError() throws {
+        defaults = try makeIsolatedDefaults()
     }
 
     func testDefaultsAreEmpty() {

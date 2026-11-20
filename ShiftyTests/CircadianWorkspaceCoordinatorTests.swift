@@ -121,6 +121,14 @@ final class CircadianWorkspaceCoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testIdleCLIPayloadIsAValidPropertyListAndOmitsSuspendReason() {
+        let payload = makeFixture().coordinator.currentCLIStatePayload()
+
+        XCTAssertTrue(PropertyListSerialization.propertyList(payload, isValidFor: .binary))
+        XCTAssertNil(payload["suspendReason"])
+    }
+
+    @MainActor
     private func makeFixture(
         isEnabled: Bool = true,
         configuration: CircadianCurveConfiguration = .default,

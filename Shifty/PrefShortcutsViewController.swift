@@ -11,8 +11,20 @@ import SwiftUI
 
 // MARK: - PrefShortcutsView
 
+private struct ShortcutDefaultsKey: EnvironmentKey {
+    static let defaultValue = UserDefaults.standard
+}
+
+private extension EnvironmentValues {
+    var shortcutDefaults: UserDefaults {
+        get { self[ShortcutDefaultsKey.self] }
+        set { self[ShortcutDefaultsKey.self] = newValue }
+    }
+}
+
 struct PrefShortcutsView: View {
-    private let integrations = SystemIntegration.shared
+    var defaults: UserDefaults = .standard
+    var showsTrueTone: Bool? = nil
 
     var body: some View {
         Form {
@@ -30,7 +42,7 @@ struct PrefShortcutsView: View {
                 ShortcutRow("prefs.shortcuts.disable_custom", key: Keys.disableCustomShortcut)
             }
 
-            if integrations.trueTone.state != .unsupported {
+            if showsTrueTone ?? (SystemIntegration.shared.trueTone.state != .unsupported) {
                 Section("prefs.shortcuts.section.true_tone") {
                     ShortcutRow("prefs.shortcuts.toggle_true_tone", key: Keys.toggleTrueToneShortcut)
                 }
@@ -41,6 +53,7 @@ struct PrefShortcutsView: View {
             }
         }
         .formStyle(.grouped)
+        .environment(\.shortcutDefaults, defaults)
     }
 }
 
@@ -78,13 +91,14 @@ struct ShortcutRecorderView: NSViewRepresentable {
     /// Wide enough for the longest localised prompt ("Записать сочетание клавиш").
     static let width: CGFloat = 200
 
+    @Environment(\.shortcutDefaults) private var defaults
     let defaultsKey: String
     let accessibilityLabel: String
 
     func makeNSView(context: Context) -> MASShortcutView {
         let view = MASShortcutView()
         view.accessibilityLabelText = accessibilityLabel
-        view.setAssociatedUserDefaultsKey(defaultsKey, with: MASDictionaryTransformer())
+        view.setAssociatedUserDefaultsKey(defaultsKey, with: MASDictionaryTransformer(), defaults: defaults)
         return view
     }
 
@@ -343,6 +357,7 @@ final class MASShortcutView: NSView {
         }
     }
 
+    private var defaults = UserDefaults.standard
     private var defaultsKey: String?
     private var transformer: ValueTransformer?
     private let label = NSTextField(labelWithString: "")
@@ -369,7 +384,10 @@ final class MASShortcutView: NSView {
         NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 1), xRadius: 6, yRadius: 6).fill()
     }
 
-    func setAssociatedUserDefaultsKey(_ key: String, with transformer: Any?) {
+    func setAssociatedUserDefaultsKey(
+        _ key: String, with transformer: Any?, defaults: UserDefaults = .standard
+    ) {
+        self.defaults = defaults
         defaultsKey = key
         self.transformer = transformer as? ValueTransformer
         loadShortcut()
@@ -496,7 +514,7 @@ final class MASShortcutView: NSView {
 
     private func loadShortcut() {
         guard let defaultsKey else { return }
-        let value = UserDefaults.standard.object(forKey: defaultsKey)
+        let value = defaults.object(forKey: defaultsKey)
 
         if let dictionary = value as? [String: Any],
            let transformed = transformer?.transformedValue(dictionary) as? MASShortcut {
@@ -514,9 +532,9 @@ final class MASShortcutView: NSView {
     private func saveShortcut() {
         guard let defaultsKey else { return }
         if let shortcutValue, let dictionary = transformer?.reverseTransformedValue(shortcutValue) {
-            UserDefaults.standard.set(dictionary, forKey: defaultsKey)
+            defaults.set(dictionary, forKey: defaultsKey)
         } else {
-            UserDefaults.standard.removeObject(forKey: defaultsKey)
+            defaults.removeObject(forKey: defaultsKey)
         }
     }
 

@@ -12,7 +12,7 @@ import XCTest
 ///         -scheme Shifty -destination 'platform=macOS' \
 ///         -only-testing:ShiftyTests/HardwareNightShiftTests | xcbeautify
 final class HardwareNightShiftTests: XCTestCase {
-    private let client = CoreBrightnessNightShiftClient.shared
+    private lazy var client = CoreBrightnessNightShiftClient.shared
     private var savedEnabled = false
     private var savedStrength: Float = 0
     private var savedSchedule: ScheduleType = .off

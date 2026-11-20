@@ -252,6 +252,15 @@ class RuleManager {
         return disabledDomain
     }
     
+    func toggleCurrentDomainDisableRule() {
+        guard let domain = context.website.domain else { return }
+        if browserRules.contains(BrowserRule(type: .domain, host: domain)) {
+            removeDomainDisableRule(forDomain: domain)
+        } else {
+            addDomainDisableRule(forDomain: domain)
+        }
+    }
+
     func addDomainDisableRule(forDomain domain: String) {
         let rule = BrowserRule(type: .domain, host: domain)
         browserRules.insert(rule)

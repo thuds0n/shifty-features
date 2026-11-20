@@ -82,7 +82,7 @@ class PrefWindowController: NSWindowController {
     private let tabController: PreferencesTabViewController
     var viewControllers: [NSViewController] { paneViewControllers }
 
-    init(viewControllers: [NSViewController & PreferencesPane], title: String) {
+    init(viewControllers: [NSViewController & PreferencesPane], title: String, remembersPosition: Bool = true) {
         self.paneViewControllers = viewControllers
         self.preferencesTitle = title
         self.tabController = PreferencesTabViewController(panes: viewControllers)
@@ -97,7 +97,7 @@ class PrefWindowController: NSWindowController {
 
         // Start centred, then remember wherever the user moves it.
         window.center()
-        window.setFrameAutosaveName("PreferencesWindow")
+        if remembersPosition { window.setFrameAutosaveName("PreferencesWindow") }
     }
 
     required init?(coder: NSCoder) {
@@ -300,6 +300,7 @@ private enum ScheduleMode: Hashable {
 // MARK: - PrefRulesView
 
 struct PrefRulesView: View {
+    let ruleManager: RuleManager
     @State private var currentAppRules: [AppRule] = []
     @State private var runningAppRules: [AppRule] = []
     @State private var browserRules: [BrowserRule] = []
@@ -321,7 +322,7 @@ struct PrefRulesView: View {
             }
         }
         .onAppear(perform: loadRules)
-        .onReceive(NotificationCenter.default.publisher(for: RuleManager.rulesDidChangeNotification)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: RuleManager.rulesDidChangeNotification, object: ruleManager)) { _ in
             loadRules()
         }
     }
@@ -331,7 +332,7 @@ struct PrefRulesView: View {
             if !currentAppRules.isEmpty {
                 Section {
                     ForEach(currentAppRules, id: \.bundleIdentifier) { rule in
-                        appRuleRow(rule) { RuleManager.shared.removeCurrentAppDisableRule(rule) }
+                        appRuleRow(rule) { ruleManager.removeCurrentAppDisableRule(rule) }
                     }
                 } header: {
                     Label("prefs.rules.active_app", systemImage: "macwindow")
@@ -343,7 +344,7 @@ struct PrefRulesView: View {
             if !runningAppRules.isEmpty {
                 Section {
                     ForEach(runningAppRules, id: \.bundleIdentifier) { rule in
-                        appRuleRow(rule) { RuleManager.shared.removeRunningAppDisableRule(rule) }
+                        appRuleRow(rule) { ruleManager.removeRunningAppDisableRule(rule) }
                     }
                 } header: {
                     Label("prefs.rules.when_running", systemImage: "app.badge")
@@ -390,7 +391,7 @@ struct PrefRulesView: View {
 
     @ViewBuilder
     private func browserRuleRow(_ rule: BrowserRule) -> some View {
-        let remove = { RuleManager.shared.removeBrowserRule(rule) }
+        let remove = { ruleManager.removeBrowserRule(rule) }
         HStack(spacing: 10) {
             Image(systemName: iconName(for: rule.type))
                 .foregroundStyle(tint(for: rule.type))
@@ -440,9 +441,9 @@ struct PrefRulesView: View {
     }
 
     private func loadRules() {
-        currentAppRules = RuleManager.shared.currentAppDisableRuleSnapshot
-        runningAppRules = RuleManager.shared.runningAppDisableRuleSnapshot
-        browserRules = RuleManager.shared.browserRuleSnapshot
+        currentAppRules = ruleManager.currentAppDisableRuleSnapshot
+        runningAppRules = ruleManager.runningAppDisableRuleSnapshot
+        browserRules = ruleManager.browserRuleSnapshot
     }
 
     private func resolveIcon(for bundleIdentifier: String) -> NSImage? {

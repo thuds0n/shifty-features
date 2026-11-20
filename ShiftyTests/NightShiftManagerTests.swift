@@ -1,18 +1,40 @@
+import AppKit
 import XCTest
 @testable import Shifty
 
 final class NightShiftManagerTests: XCTestCase {
-    private var defaults: UserDefaults { UserDefaults.standard }
+    private var defaults: UserDefaults!
+    private var pauseTimer: ManualPauseTimer!
+    private var wakeNotifications: NotificationCenter!
 
-    override func setUp() {
-        super.setUp()
-        defaults.set(false, forKey: Keys.trueToneControl)
-        defaults.set(false, forKey: Keys.isDarkModeSyncEnabled)
+    override func setUpWithError() throws {
+        defaults = try makeIsolatedDefaults()
+        pauseTimer = ManualPauseTimer()
+        wakeNotifications = NotificationCenter()
+    }
+
+    private func makeManager(
+        client: FakeNightShiftClient,
+        rampScheduler: StrengthRampScheduling = TimerStrengthRampScheduler()
+    ) -> NightShiftManager {
+        let rules = RuleManager(
+            defaults: defaults,
+            context: FakeRuleContext(),
+            notificationCenter: NotificationCenter()
+        ) { _ in }
+        return NightShiftManager(
+            client: client,
+            rampScheduler: rampScheduler,
+            defaults: defaults,
+            makePauseTimer: pauseTimer.schedule,
+            wakeNotificationCenter: wakeNotifications,
+            ruleManager: { rules }
+        )
     }
 
     func testUserEnabledNightShiftSetsClientStateAndUserSet() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
+        let manager = makeManager(client: client)
 
         manager.respond(to: .userEnabledNightShift)
 
@@ -23,7 +45,7 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testUserDisabledNightShiftSetsClientStateAndUserSet() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
+        let manager = makeManager(client: client)
 
         manager.respond(to: .userDisabledNightShift)
 
@@ -33,7 +55,7 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testDisableRuleDeactivatedRestoresScheduleWhenUserNotSet() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
+        let manager = makeManager(client: client)
         manager.userSet = .notSet
         manager.nightShiftDisableTimerState = .off
 
@@ -44,28 +66,80 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testInvalidatingDisableTimerCancelsItsLaterRestoreEvent() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
-        let timerStarted = expectation(description: "Disable timer started")
+        let manager = makeManager(client: client)
 
-        manager.setDisableTimer(forTimeInterval: 0.1)
-        DispatchQueue.main.async {
-            timerStarted.fulfill()
-        }
-        wait(for: [timerStarted], timeout: 1)
-
+        manager.pause(for: 600)
+        XCTAssertTrue(manager.isPaused)
         manager.invalidateDisableTimer()
 
+        XCTAssertFalse(pauseTimer.timer.isValid)
         XCTAssertNil(manager.nightShiftDisableTimer)
         XCTAssertEqual(manager.nightShiftDisableTimerState, .off)
         XCTAssertEqual(client.setToScheduleCallCount, 1)
 
-        let timerWouldHaveFired = expectation(description: "Cancelled timer did not fire")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            timerWouldHaveFired.fulfill()
-        }
-        wait(for: [timerWouldHaveFired], timeout: 1)
-
+        pauseTimer.deliverExpiry()
         XCTAssertEqual(client.setToScheduleCallCount, 1)
+    }
+
+    func testWakeReconcilesAnActivePauseAgainstTheSchedule() {
+        let client = FakeNightShiftClient()
+        let manager = makeManager(client: client)
+        manager.pause(for: 600)
+        client.scheduledState = true
+        client.isNightShiftEnabled = true
+
+        wakeNotifications.post(name: NSWorkspace.didWakeNotification, object: nil)
+
+        XCTAssertTrue(manager.isPaused)
+        XCTAssertFalse(client.isNightShiftEnabled)
+    }
+
+    func testWakeRepairsDriftWithAnUnchangedFollowScheduleDecision() {
+        let client = FakeNightShiftClient()
+        client.scheduledState = true
+        client.isNightShiftEnabled = true
+        let manager = makeManager(client: client)
+        manager.respond(to: .scheduleChanged)
+
+        client.isNightShiftEnabled = false
+        wakeNotifications.post(name: NSWorkspace.didWakeNotification, object: nil)
+
+        XCTAssertTrue(manager.isNightShiftEnabled)
+        XCTAssertEqual(client.setToScheduleCallCount, 2)
+
+        wakeNotifications.post(name: NSWorkspace.didWakeNotification, object: nil)
+        XCTAssertEqual(client.setToScheduleCallCount, 2, "An already-correct wake needs no write")
+    }
+
+    func testWakeDuringPauseDropsManualChoiceWhenScheduleStarts() {
+        let client = FakeNightShiftClient()
+        let manager = makeManager(client: client)
+        manager.setNightShiftEnabled(to: false)
+        manager.pause(for: 600)
+
+        client.scheduledState = true
+        wakeNotifications.post(name: NSWorkspace.didWakeNotification, object: nil)
+
+        XCTAssertTrue(manager.isPaused)
+        XCTAssertFalse(client.isNightShiftEnabled)
+        XCTAssertEqual(manager.userSet, .notSet)
+        pauseTimer.deliverExpiry()
+        XCTAssertTrue(client.isNightShiftEnabled)
+    }
+
+    func testWakeDuringPauseKeepsManualChoiceWhenScheduleDoesNotChange() {
+        let client = FakeNightShiftClient()
+        client.scheduledState = true
+        client.isNightShiftEnabled = true
+        let manager = makeManager(client: client)
+        manager.setNightShiftEnabled(to: false)
+        manager.pause(for: 600)
+
+        wakeNotifications.post(name: NSWorkspace.didWakeNotification, object: nil)
+        pauseTimer.deliverExpiry()
+
+        XCTAssertEqual(manager.userSet, .off)
+        XCTAssertFalse(client.isNightShiftEnabled)
     }
 
     // MARK: Policy precedence
@@ -87,7 +161,7 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testScheduleStartDuringAPauseIsForcedBackOff() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
+        let manager = makeManager(client: client)
         manager.nightShiftDisableTimerState = .custom(endDate: Date().addingTimeInterval(600))
         manager.respond(to: .nightShiftDisableTimerStarted)
 
@@ -101,7 +175,7 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testUnchangedDecisionDoesNotCallCoreBrightnessAgain() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
+        let manager = makeManager(client: client)
 
         manager.respond(to: .userDisabledNightShift)
         manager.respond(to: .nightShiftEnableRuleDeactivated)
@@ -113,7 +187,7 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testScheduleChangeAlwaysHandsControlBackToTheSchedule() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
+        let manager = makeManager(client: client)
         manager.respond(to: .nightShiftDisableRuleDeactivated)
 
         manager.respond(to: .scheduleChanged)
@@ -124,11 +198,9 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testTurningNightShiftOnCancelsARunningPause() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
-        let timerStarted = expectation(description: "Disable timer started")
-        manager.setDisableTimer(forTimeInterval: 600)
-        DispatchQueue.main.async { timerStarted.fulfill() }
-        wait(for: [timerStarted], timeout: 1)
+        let manager = makeManager(client: client)
+        manager.pause(for: 600)
+        XCTAssertTrue(manager.isPaused)
 
         manager.respond(to: .userEnabledNightShift)
 
@@ -139,19 +211,16 @@ final class NightShiftManagerTests: XCTestCase {
 
     func testPauseHoldsAgainstOtherEventsAndEndsBackOnTheManualChoice() {
         let client = FakeNightShiftClient()
-        let manager = NightShiftManager(client: client)
+        let manager = makeManager(client: client)
         manager.respond(to: .userEnabledNightShift)
-        let paused = expectation(description: "Pause started")
         manager.pause(for: 600)
-        DispatchQueue.main.async { paused.fulfill() }
-        wait(for: [paused], timeout: 1)
         XCTAssertTrue(manager.isPaused)
         XCTAssertFalse(client.isNightShiftEnabled)
 
         manager.respond(to: .nightShiftDisableRuleDeactivated)
         XCTAssertFalse(client.isNightShiftEnabled, "Other events must not end the pause early")
 
-        manager.resumeFromPause()
+        pauseTimer.deliverExpiry()
         XCTAssertFalse(manager.isPaused)
         XCTAssertTrue(client.isNightShiftEnabled, "The manual on made before the pause still applies")
     }
@@ -171,7 +240,7 @@ final class NightShiftManagerTests: XCTestCase {
         client.isNightShiftEnabled = true
         client.colorTemperature = 0.2
         client.clearRecordedWrites()
-        let manager = NightShiftManager(client: client, rampScheduler: ImmediateRampScheduler())
+        let manager = makeManager(client: client, rampScheduler: ImmediateRampScheduler())
 
         manager.applyWorkspacePolicyDecision(.applyStrength(0.8))
 
@@ -185,7 +254,7 @@ final class NightShiftManagerTests: XCTestCase {
         client.isNightShiftEnabled = true
         client.colorTemperature = 0.5
         client.clearRecordedWrites()
-        let manager = NightShiftManager(client: client, rampScheduler: ImmediateRampScheduler())
+        let manager = makeManager(client: client, rampScheduler: ImmediateRampScheduler())
 
         manager.applyWorkspacePolicyDecision(.applyStrength(0.51))
 
@@ -199,12 +268,30 @@ final class NightShiftManagerTests: XCTestCase {
         client.colorTemperature = 0.2
         client.onPreview = { if client.previewValues.count == 10 { client.isNightShiftEnabled = false } }
         client.clearRecordedWrites()
-        let manager = NightShiftManager(client: client, rampScheduler: ImmediateRampScheduler())
+        let manager = makeManager(client: client, rampScheduler: ImmediateRampScheduler())
 
         manager.applyWorkspacePolicyDecision(.applyStrength(0.8))
 
         XCTAssertEqual(client.previewValues.count, 10)
         XCTAssertTrue(client.colorTemperatureWrites.isEmpty, "An interrupted fade commits nothing")
+    }
+
+    func testNoChangeCancelsAStartedFadeBeforeItCanCommit() {
+        let client = FakeNightShiftClient()
+        client.isNightShiftEnabled = true
+        client.colorTemperature = 0.2
+        client.clearRecordedWrites()
+        let scheduler = ManualRampScheduler()
+        let manager = makeManager(client: client, rampScheduler: scheduler)
+        manager.applyWorkspacePolicyDecision(.applyStrength(0.8))
+        scheduler.advanceOneStep()
+        XCTAssertEqual(client.previewValues.count, 1)
+
+        manager.applyWorkspacePolicyDecision(.noChange)
+        scheduler.advanceOneStep()
+
+        XCTAssertEqual(client.previewValues.count, 1)
+        XCTAssertTrue(client.colorTemperatureWrites.isEmpty)
     }
 }
 
@@ -239,6 +326,7 @@ private final class FakeNightShiftClient: NightShiftSystemControlling {
 
     func setToSchedule() {
         setToScheduleCallCount += 1
+        isNightShiftEnabled = scheduledState
     }
 
     func setStatusNotificationBlock(_ block: @escaping () -> Void) {
@@ -256,5 +344,56 @@ private final class ImmediateRampScheduler: StrengthRampScheduling {
             break
         }
         return Handle()
+    }
+}
+
+private final class ManualRampScheduler: StrengthRampScheduling, WorkspaceRefreshTimer {
+    private var remaining: ArraySlice<Float> = []
+    private var step: ((Float) -> Bool)?
+
+    func run(_ values: [Float], interval: TimeInterval, step: @escaping (Float) -> Bool) -> WorkspaceRefreshTimer {
+        remaining = values[...]
+        self.step = step
+        return self
+    }
+
+    func advanceOneStep() {
+        guard let step, let value = remaining.popFirst() else { return }
+        if !step(value) || remaining.isEmpty {
+            invalidate()
+        }
+    }
+
+    func invalidate() {
+        remaining = []
+        step = nil
+    }
+}
+
+/// An unscheduled timer with a fixed deadline. Delivering its callback directly
+/// also lets tests simulate a stale callback after invalidation.
+final class ManualPauseTimer {
+    private let now = Date(timeIntervalSince1970: 1_786_258_800)
+    private(set) var timer: Timer!
+    private var action: ((Timer) -> Void)!
+
+    func schedule(interval: TimeInterval, action: @escaping @Sendable (Timer) -> Void) -> Timer {
+        let timer = Timer(fire: now.addingTimeInterval(interval), interval: 0, repeats: false, block: action)
+        self.timer = timer
+        self.action = action
+        return timer
+    }
+
+    func deliverExpiry() {
+        action(timer)
+    }
+}
+
+extension XCTestCase {
+    func makeIsolatedDefaults() throws -> UserDefaults {
+        let suiteName = "ShiftyTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        addTeardownBlock { defaults.removePersistentDomain(forName: suiteName) }
+        return defaults
     }
 }

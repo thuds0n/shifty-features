@@ -16,7 +16,7 @@ env:
 
 jobs:
   debug-and-tests:
-    name: Debug build and unit tests
+    name: Debug build, unit and UI tests
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -39,17 +39,18 @@ jobs:
             -project "$PROJECT" -scheme "$SCHEME" -configuration Debug \
             -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO | xcbeautify
 
-      - name: Unit tests
+      - name: Unit and UI tests
         run: |
           set -o pipefail
           xcodebuild test \
             -project "$PROJECT" -scheme "$SCHEME" \
-            -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO \
-            -only-testing:ShiftyTests \
+            -destination 'platform=macOS' -parallel-testing-enabled NO \
+            CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= \
+            -only-testing:ShiftyTests -only-testing:ShiftyUITests \
             -resultBundlePath TestResults.xcresult | xcbeautify
 
       - name: Upload test results
-        if: failure()
+        if: ${{ !cancelled() && hashFiles('TestResults.xcresult/Info.plist') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: TestResults

@@ -14,7 +14,10 @@
 @implementation AppleEventsManager : NSObject
 
 + (PrivacyConsentState)automationConsentForBundleIdentifier:(NSString *)bundleIdentifier {
-    
+    return [self automationConsentForBundleIdentifier:bundleIdentifier allowPrompt:YES];
+}
+
++ (PrivacyConsentState)automationConsentForBundleIdentifier:(NSString *)bundleIdentifier allowPrompt:(BOOL)allowPrompt {
     PrivacyConsentState result;
 
     AEAddressDesc addressDesc;
@@ -23,7 +26,7 @@
     AECreateDesc(typeApplicationBundleID, bundleIdentifierCString, strlen(bundleIdentifierCString), &addressDesc);
     
     // askUserIfNeeded must be YES in order to return errAEEventNotPermitted: http://www.openradar.me/radar?id=4945773766639616
-    OSStatus appleScriptPermission = AEDeterminePermissionToAutomateTarget(&addressDesc, typeWildCard, typeWildCard, YES);
+    OSStatus appleScriptPermission = AEDeterminePermissionToAutomateTarget(&addressDesc, typeWildCard, typeWildCard, allowPrompt);
     AEDisposeDesc(&addressDesc);
     
     switch (appleScriptPermission) {

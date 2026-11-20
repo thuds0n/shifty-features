@@ -8,18 +8,38 @@
 
 import Cocoa
 import Intents
+import SwiftUI
 
 @NSApplicationMain
 @MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+    static let isUnitTestHost: Bool = {
+        #if DEBUG
+        ProcessInfo.processInfo.environment["SHIFTY_UNIT_TEST_HOST"] == "1"
+        #else
+        false
+        #endif
+    }()
+
+    static var preferencesTestProfile: UUID? {
+        #if DEBUG
+        ProcessInfo.processInfo.environment["SHIFTY_PREFERENCES_TEST_PROFILE"].flatMap(UUID.init(uuidString:))
+        #else
+        nil
+        #endif
+    }
+
     let prefs = UserDefaults.standard
-    let integrations = SystemIntegration.shared
+    lazy var integrations = SystemIntegration.shared
     @IBOutlet weak var statusMenu: NSMenu!
-    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    lazy var statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var statusItemClicked: (() -> Void)?
     private var suppressStatusToggleUntil: Date = .distantPast
-    private let circadianCoordinator = CircadianWorkspaceCoordinator.shared
+    private lazy var circadianCoordinator = CircadianWorkspaceCoordinator.shared
+    #if DEBUG
+    private var preferencesTestRuleKeyMonitor: Any?
+    #endif
 
     lazy var preferenceWindowController: PrefWindowController = {
         // Every pane shares one size so switching tabs doesn't resize the window.
@@ -37,7 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             image: NSImage(systemSymbolName: "sun.horizon", accessibilityDescription: nil),
             label: NSLocalizedString("prefs.circadian", comment: "Circadian"),
             size: paneSize,
-            rootView: PrefCircadianView())
+            rootView: PrefCircadianView(coordinator: circadianCoordinator))
 
         let shortcuts = HostedPreferencePane(
             identifier: "shortcuts",
@@ -46,12 +66,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             size: paneSize,
             rootView: PrefShortcutsView())
 
-        let rules = HostedPreferencePane(
-            identifier: "rules",
-            image: NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil),
-            label: NSLocalizedString("prefs.rules", comment: "Rules"),
-            size: paneSize,
-            rootView: PrefRulesView())
+        let rules = makeRulesPane(content: PrefRulesView(ruleManager: .shared))
 
         let about = HostedPreferencePane(
             identifier: "about",
@@ -65,10 +80,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             title: NSLocalizedString("prefs.title", comment: "Preferences"))
     }()
 
+    private func makeRulesPane<Content: View>(content: Content) -> NSViewController & PreferencesPane {
+        HostedPreferencePane(
+            identifier: "rules",
+            image: NSImage(systemSymbolName: "list.bullet.rectangle", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.rules", comment: "Rules"),
+            size: PrefWindowController.paneSize,
+            rootView: content)
+    }
+
     var setupWindow: NSWindow!
     var setupWindowController: NSWindowController!
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        #if DEBUG
+        if let profile = Self.preferencesTestProfile {
+            showTestPreferences(profile: profile)
+            return
+        }
+        #endif
+        guard !Self.isUnitTestHost else { return }
         _ = PrefManager.shared
 
         UserDefaults.standard.register(defaults: ["NSApplicationCrashOnExceptions": true])
@@ -261,6 +292,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
+        #if DEBUG
+        if let monitor = preferencesTestRuleKeyMonitor {
+            NSEvent.removeMonitor(monitor)
+        }
+        #endif
+        guard !Self.isUnitTestHost, Self.preferencesTestProfile == nil else { return }
         circadianCoordinator.stop()
         logw("App terminated")
     }
@@ -291,3 +328,196 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return nil
     }
 }
+
+#if DEBUG
+private extension AppDelegate {
+    func showTestPreferences(profile: UUID) {
+        let environment = ProcessInfo.processInfo.environment
+        let suite = "ShiftyUITests.\(profile.uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        if environment["SHIFTY_RESET_TEST_PROFILE"] == "1" {
+            defaults.removePersistentDomain(forName: suite)
+        }
+        let pane: NSViewController & PreferencesPane
+        switch environment["SHIFTY_PREFERENCES_TEST_PANE"] {
+        case "shortcuts":
+            pane = HostedPreferencePane(
+                identifier: "shortcuts", image: NSImage(systemSymbolName: "keyboard", accessibilityDescription: nil),
+                label: NSLocalizedString("prefs.shortcuts", comment: "Shortcuts"), size: PrefWindowController.paneSize,
+                rootView: PrefShortcutsView(defaults: defaults, showsTrueTone: true))
+        case "rules":
+            let ruleManager = RuleManager(
+                defaults: defaults, context: PreferencesTestRuleContext(),
+                notificationCenter: NotificationCenter(), nightShiftEventHandler: { _ in })
+            pane = makeRulesPane(content: PrefRulesView(ruleManager: ruleManager))
+            if let domain = environment["SHIFTY_PREFERENCES_TEST_DOMAIN"] {
+                // Route a local test keystroke to the manager while the Rules pane is open.
+                preferencesTestRuleKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                    guard event.modifierFlags.intersection(.deviceIndependentFlagsMask) == [.command, .shift],
+                          event.charactersIgnoringModifiers?.lowercased() == "d" else { return event }
+                    ruleManager.addDomainDisableRule(forDomain: domain)
+                    return nil
+                }
+            }
+        case "live-chrome-rules":
+            let pid = environment["SHIFTY_LIVE_CHROME_PID"].flatMap(Int32.init)
+            let fixture = LiveChromeRulesFixture(defaults: defaults, chromePID: pid)
+            pane = makeRulesPane(content: LiveChromeRulesView(fixture: fixture))
+        default:
+            pane = makeTestCircadianPane(defaults: defaults)
+        }
+        preferenceWindowController = PrefWindowController(
+            viewControllers: [pane], title: NSLocalizedString("prefs.title", comment: "Preferences"),
+            remembersPosition: false)
+        preferenceWindowController.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func makeTestCircadianPane(defaults: UserDefaults) -> NSViewController & PreferencesPane {
+        defaults.register(defaults: [Keys.isCircadianModeEnabled: true])
+        let coordinator = CircadianWorkspaceCoordinator(
+            transition: CircadianTransitionEngine(),
+            activityOverride: ActivityOverrideManager(notificationCenter: NotificationCenter(), frontmostBundleIdentifier: { nil }),
+            automationBridge: DisabledCircadianAutomationBridge(),
+            nightShift: PreferencesTestDisplay(),
+            modeStore: UserDefaultsCircadianModeStore(defaults: defaults),
+            configurationStore: UserDefaultsCircadianConfigurationStore(defaults: defaults),
+            clock: PreferencesTestClock())
+        return HostedPreferencePane(
+            identifier: "circadian", image: NSImage(systemSymbolName: "sun.horizon", accessibilityDescription: nil),
+            label: NSLocalizedString("prefs.circadian", comment: "Circadian"), size: PrefWindowController.paneSize,
+            rootView: PrefCircadianView(coordinator: coordinator).defaultAppStorage(defaults))
+    }
+}
+
+private final class PreferencesTestRuleContext: RuleContextProviding {
+    private let readWebsite: () -> WebsiteContext
+    let frontmostBundleIdentifier: String? = nil
+    let runningBundleIdentifiers: [String] = []
+    var website: WebsiteContext { readWebsite() }
+    let isSupportedBrowserInFront = false
+
+    init(readWebsite: @escaping () -> WebsiteContext = { WebsiteContext(domain: nil, subdomain: nil) }) {
+        self.readWebsite = readWebsite
+    }
+
+    func stopBrowserWatcher() {}
+    func updateForSupportedBrowser() {}
+}
+
+private struct LiveChromeRulesView: View {
+    @ObservedObject var fixture: LiveChromeRulesFixture
+
+    var body: some View {
+        VStack {
+            PrefRulesView(ruleManager: fixture.ruleManager)
+            Text(verbatim: fixture.status)
+                .accessibilityIdentifier("liveChrome.status")
+            Button("Toggle Chrome domain rule", action: fixture.toggleDomainRule)
+                .accessibilityIdentifier("liveChrome.toggleDomainRule")
+                .disabled(!fixture.isOnRuleDomain)
+                .padding(.bottom)
+        }
+        .onAppear(perform: fixture.start)
+    }
+}
+
+@MainActor
+private final class LiveChromeRulesFixture: ObservableObject {
+    @Published private(set) var status = "Starting Chrome check"
+    private let defaults: UserDefaults
+    private let chromePID: pid_t?
+    private var chrome: NSRunningApplication?
+    private let display = LiveChromeTestDisplay()
+    private lazy var browser = BrowserManager(currentApplication: { [weak self] in self?.chrome },
+                                               isWebsiteShiftingEnabled: { true })
+    private lazy var nightShift = NightShiftManager(
+        client: display, defaults: defaults, wakeNotificationCenter: NotificationCenter(),
+        ruleManager: { [unowned self] in self.ruleManager })
+    lazy var ruleManager = RuleManager(
+        defaults: defaults,
+        context: PreferencesTestRuleContext { [weak self] in
+            self?.testWebsite ?? WebsiteContext(domain: nil, subdomain: nil)
+        },
+        notificationCenter: NotificationCenter(),
+        nightShiftEventHandler: { [weak self] in self?.respond(to: $0) })
+
+    var isOnRuleDomain: Bool { status.hasPrefix("example.com · ") }
+
+    init(defaults: UserDefaults, chromePID: pid_t?) {
+        self.defaults = defaults
+        self.chromePID = chromePID
+    }
+
+    func start() {
+        guard status == "Starting Chrome check" else { return }
+        guard AXIsProcessTrusted() else {
+            status = "Accessibility permission required for this Shifty build"
+            return
+        }
+        let bundleID = SupportedBrowserID.chrome.rawValue
+        guard let chromePID, let runningChrome = NSRunningApplication(processIdentifier: chromePID),
+              runningChrome.bundleIdentifier == bundleID else {
+            status = "The Chrome test process is unavailable"
+            return
+        }
+        guard AppleEventsManager.automationConsent(forBundleIdentifier: bundleID, allowPrompt: false) == .granted else {
+            status = "Chrome Automation permission required for this Shifty build"
+            return
+        }
+        chrome = runningChrome
+        browser.watchCurrentBrowser { [weak self] in
+            guard let self else { return }
+            self.respond(to: WebsiteContext.ruleEvent(
+                subdomainRule: self.ruleManager.ruleForCurrentSubdomain,
+                isDomainDisabled: self.ruleManager.isDisabledForDomain))
+        }
+    }
+
+    func toggleDomainRule() {
+        guard testWebsite.domain == "example.com" else { return }
+        ruleManager.toggleCurrentDomainDisableRule()
+    }
+
+    private var testWebsite: WebsiteContext {
+        let website = browser.currentWebsite
+        if website.domain == "example.com" || website.domain == "example.org" { return website }
+        return WebsiteContext(domain: nil, subdomain: nil)
+    }
+
+    private func respond(to event: NightShiftEvent) {
+        nightShift.respond(to: event)
+        let state = display.isNightShiftEnabled ? "on" : "off"
+        status = "\(testWebsite.domain ?? "Waiting for a test domain") · simulated Night Shift \(state)"
+    }
+}
+
+private final class LiveChromeTestDisplay: NightShiftSystemControlling {
+    let supportsNightShift = true
+    let scheduledState = true
+    private(set) var isNightShiftEnabled = true
+    var colorTemperature: Float = 0.5
+    var schedule: ScheduleType = .solar
+
+    func previewColorTemperature(_ value: Float) {}
+    func setNightShiftEnabled(_ newValue: Bool) { isNightShiftEnabled = newValue }
+    func setToSchedule() { setNightShiftEnabled(scheduledState) }
+    func setStatusNotificationBlock(_ block: @escaping () -> Void) {}
+}
+
+private struct PreferencesTestClock: WorkspaceClock {
+    let now = Calendar.current.date(from: DateComponents(year: 2026, month: 8, day: 9, hour: 21))!
+}
+
+private final class PreferencesTestDisplay: WorkspaceNightShiftControlling {
+    var currentWorkspaceOutput = WorkspaceOutputState(isNightShiftEnabled: true, colorTemperature: 0.5)
+    var isPaused = false
+
+    func applyWorkspacePolicyDecision(_ decision: WorkspacePolicyDecision) {
+        if case .applyStrength(let strength) = decision { currentWorkspaceOutput.colorTemperature = strength }
+    }
+
+    func pause(for duration: TimeInterval) { isPaused = true }
+    func resumeFromPause() { isPaused = false }
+}
+#endif

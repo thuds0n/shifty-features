@@ -9,13 +9,19 @@ import Cocoa
 
 
 class NightShiftManager {
+    typealias PauseTimerFactory = (TimeInterval, @escaping @Sendable (Timer) -> Void) -> Timer
+
     static let shared = NightShiftManager()
-    let integrations = SystemIntegration.shared
     let client: NightShiftSystemControlling
     
     var nightShiftChangeListeners = [() -> Void]()
 
-    var userSet: UserSet = .notSet
+    var userSet: UserSet = .notSet {
+        didSet {
+            scheduledStateAtManualOverride = userSet == .notSet ? nil : client.scheduledState
+        }
+    }
+    private var scheduledStateAtManualOverride: Bool?
     var userInitiatedShift = false
     
     static var supportsNightShift: Bool {
@@ -43,6 +49,10 @@ class NightShiftManager {
     }
 
     private let rampScheduler: StrengthRampScheduling
+    private let defaults: UserDefaults
+    private let makePauseTimer: PauseTimerFactory
+    private let wakeNotificationCenter: NotificationCenter
+    private var wakeObserver: NSObjectProtocol?
     /// The rules consulted for disable state. A closure because `RuleManager.shared`
     /// in turn reports events to `NightShiftManager.shared`.
     private let ruleManager: () -> RuleManager
@@ -58,7 +68,7 @@ class NightShiftManager {
     }
     
     var nightShiftDisableTimerState = DisableTimer.off
-    var nightShiftDisableTimer: Timer? {
+    private(set) var nightShiftDisableTimer: Timer? {
         willSet {
             if let timer = nightShiftDisableTimer {
                 timer.invalidate()
@@ -88,17 +98,26 @@ class NightShiftManager {
     init(
         client: NightShiftSystemControlling = SystemIntegration.shared.nightShiftSystem,
         rampScheduler: StrengthRampScheduling = TimerStrengthRampScheduler(),
+        defaults: UserDefaults = .standard,
+        makePauseTimer: @escaping PauseTimerFactory = { interval, action in
+            Timer.scheduledTimer(withTimeInterval: interval, repeats: false, block: action)
+        },
+        wakeNotificationCenter: NotificationCenter = NSWorkspace.shared.notificationCenter,
         ruleManager: @escaping () -> RuleManager = { RuleManager.shared }
     ) {
         self.client = client
         self.rampScheduler = rampScheduler
+        self.defaults = defaults
+        self.makePauseTimer = makePauseTimer
+        self.wakeNotificationCenter = wakeNotificationCenter
         self.ruleManager = ruleManager
         var prevSchedule = client.schedule
         
         updateDarkMode()
         
         // @convention block called by CoreBrightness
-        client.setStatusNotificationBlock {
+        client.setStatusNotificationBlock { [weak self] in
+            guard let self else { return }
             if self.schedule == prevSchedule {
                 self.respond(to: self.isNightShiftEnabled
                         ? .enteredScheduledNightShift : .exitedScheduledNightShift)
@@ -116,17 +135,21 @@ class NightShiftManager {
             }
         }
         
-        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: nil) { _ in
+        wakeObserver = wakeNotificationCenter.addObserver(
+            forName: NSWorkspace.didWakeNotification, object: nil, queue: nil
+        ) { [weak self] _ in
+            guard let self else { return }
             logw("Wake from sleep notification posted")
-            
-            if self.client.scheduledState != self.client.isNightShiftEnabled
-            {
-                self.respond(to: self.client.scheduledState
-                        ? .enteredScheduledNightShift : .exitedScheduledNightShift)
-            }
-            
+            self.reconcile()
             self.updateDarkMode()
         }
+    }
+
+    deinit {
+        if let wakeObserver {
+            wakeNotificationCenter.removeObserver(wakeObserver)
+        }
+        nightShiftDisableTimer?.invalidate()
     }
     
     func onNightShiftChange(_ listener: @escaping () -> Void) {
@@ -134,19 +157,20 @@ class NightShiftManager {
     }
     
     func updateDarkMode() {
-        if UserDefaults.standard.bool(forKey: Keys.isDarkModeSyncEnabled) {
+        if defaults.bool(forKey: Keys.isDarkModeSyncEnabled) {
             let scheduledState = client.scheduledState
+            let appearance = SystemIntegration.shared.appearance
             
             switch client.schedule {
             case .off:
                 let darkModeState = isNightShiftEnabled || isDisableRuleActive || isDisabledWithTimer || userSet == .on
-                integrations.appearance.darkModeEnabled = darkModeState
+                appearance.darkModeEnabled = darkModeState
                 logw("Dark mode set to \(darkModeState)")
             case .solar:
-                integrations.appearance.darkModeEnabled = scheduledState
+                appearance.darkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             case .custom(start: _, end: _):
-                integrations.appearance.darkModeEnabled = scheduledState
+                appearance.darkModeEnabled = scheduledState
                 logw("Dark mode set to \(scheduledState)")
             }
         }
@@ -183,12 +207,12 @@ class NightShiftManager {
         case .userDisabledNightShift:
             userSet = .off
         case .nightShiftDisableRuleActivated:
-            if UserDefaults.standard.bool(forKey: Keys.trueToneControl) {
-                integrations.trueTone.isEnabled = false
+            if defaults.bool(forKey: Keys.trueToneControl) {
+                SystemIntegration.shared.trueTone.isEnabled = false
             }
         case .nightShiftDisableRuleDeactivated:
-            if !isDisableRuleActive && UserDefaults.standard.bool(forKey: Keys.trueToneControl) {
-                integrations.trueTone.isEnabled = true
+            if !isDisableRuleActive && defaults.bool(forKey: Keys.trueToneControl) {
+                SystemIntegration.shared.trueTone.isEnabled = true
             }
         case .nightShiftEnableRuleActivated, .nightShiftEnableRuleDeactivated,
              .nightShiftDisableTimerStarted, .nightShiftDisableTimerEnded:
@@ -199,10 +223,15 @@ class NightShiftManager {
         logw("Responded to event: \(event)")
     }
 
-    /// Applies `NightShiftPolicy` to CoreBrightness when the decision changes, or when
-    /// the system has drifted from a forced on/off (for example, a schedule start
-    /// during a pause).
+    /// Applies `NightShiftPolicy` when the decision changes or the display drifts
+    /// from the expected state.
     private func reconcile(force: Bool = false) {
+        // A schedule boundary can pass while the Mac sleeps or a pause keeps the
+        // display off, so a change in the display state isn't a reliable signal.
+        if let scheduledStateAtManualOverride, scheduledStateAtManualOverride != client.scheduledState {
+            userSet = .notSet
+        }
+
         let output = NightShiftPolicy.output(for: policyInputs)
         let expectedState: Bool
         switch output {
@@ -214,11 +243,11 @@ class NightShiftManager {
             expectedState = client.scheduledState
         }
 
-        let clientMatches = output == .followSchedule || client.isNightShiftEnabled == expectedState
+        let clientMatches = client.isNightShiftEnabled == expectedState
         guard force || output != appliedOutput || !clientMatches else { return }
         appliedOutput = output
 
-        if client.isNightShiftEnabled != expectedState {
+        if !clientMatches {
             userInitiatedShift = true
         }
         switch output {
@@ -233,32 +262,36 @@ class NightShiftManager {
     
     
     func setDisableTimer(forTimeInterval timeInterval: TimeInterval) {
-        DispatchQueue.main.async {
-            let disableTimer = Timer.scheduledTimer(
-                withTimeInterval: timeInterval,
-                repeats: false,
-                block: { _ in
-                    self.nightShiftDisableTimer = nil
-                    self.nightShiftDisableTimerState = .off
-                    self.respond(to: .nightShiftDisableTimerEnded)
-                })
-            
-            // For longer timers, increase the tolerance to save resources
-            if timeInterval > 1800 {
-                disableTimer.tolerance = 60
-            } else if timeInterval > 300 {
-                disableTimer.tolerance = 10
+        if Thread.isMainThread {
+            startDisableTimer(for: timeInterval)
+        } else {
+            DispatchQueue.main.async {
+                self.startDisableTimer(for: timeInterval)
             }
-            
-            if timeInterval.rounded() == 3600 {
-                self.nightShiftDisableTimerState = .hour(endDate: disableTimer.fireDate)
-            } else {
-                self.nightShiftDisableTimerState = .custom(endDate: disableTimer.fireDate)
-            }
-            
-            self.nightShiftDisableTimer = disableTimer
-            self.respond(to: .nightShiftDisableTimerStarted)
         }
+    }
+
+    private func startDisableTimer(for timeInterval: TimeInterval) {
+        let disableTimer = makePauseTimer(timeInterval) { [weak self] timer in
+            guard let self, self.nightShiftDisableTimer === timer else { return }
+            self.invalidateDisableTimer()
+        }
+
+        // For longer timers, increase the tolerance to save resources.
+        if timeInterval > 1800 {
+            disableTimer.tolerance = 60
+        } else if timeInterval > 300 {
+            disableTimer.tolerance = 10
+        }
+
+        if timeInterval.rounded() == 3600 {
+            nightShiftDisableTimerState = .hour(endDate: disableTimer.fireDate)
+        } else {
+            nightShiftDisableTimerState = .custom(endDate: disableTimer.fireDate)
+        }
+
+        nightShiftDisableTimer = disableTimer
+        respond(to: .nightShiftDisableTimerStarted)
     }
     
     func invalidateDisableTimer() {
@@ -278,7 +311,7 @@ class NightShiftManager {
     func applyWorkspacePolicyDecision(_ decision: WorkspacePolicyDecision) {
         switch decision {
         case .noChange:
-            return
+            cancelStrengthRamp()
         case .applyStrength(let strength):
             rampStrength(to: strength)
         }

@@ -185,10 +185,7 @@ final class CircadianWorkspaceTests: XCTestCase {
     }
 
     func testConfigurationStoreRoundTripsAndDefaultsWhenEmptyOrUnreadable() throws {
-        let suiteName = "CircadianWorkspaceTests.configurationStore"
-        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
-        defaults.removePersistentDomain(forName: suiteName)
-        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let defaults = try makeIsolatedDefaults()
         let store = UserDefaultsCircadianConfigurationStore(defaults: defaults)
 
         XCTAssertEqual(store.configuration, .default)
@@ -203,14 +200,6 @@ final class CircadianWorkspaceTests: XCTestCase {
 
         defaults.set(Data("not json".utf8), forKey: Keys.circadianConfiguration)
         XCTAssertEqual(store.configuration, .default)
-    }
-
-    @MainActor
-    func testIdleCLIPayloadIsAValidPropertyListAndOmitsSuspendReason() {
-        let payload = CircadianWorkspaceCoordinator.shared.currentCLIStatePayload()
-
-        XCTAssertTrue(PropertyListSerialization.propertyList(payload, isValidFor: .binary))
-        XCTAssertNil(payload["suspendReason"])
     }
 
     private func date(year: Int, month: Int, day: Int, hour: Int, minute: Int = 0) -> Date {
